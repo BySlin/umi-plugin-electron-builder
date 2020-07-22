@@ -104,6 +104,7 @@ export default function(api: IApi) {
           outputDir: joi.string(),
           externals: joi.array(),
           builderOptions: joi.object(),
+          routerMode: joi.string(),
         });
       },
     },
