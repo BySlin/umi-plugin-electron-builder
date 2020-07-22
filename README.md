@@ -75,7 +75,16 @@ export default defineConfig({
     routerMode: 'hash',         //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
-    builderOptions: {}         	//electronBuilder参数
+    builderOptions: {
+      appId: 'com.test.test',
+      productName: '测试',
+      publish: [
+        {
+          provider: 'generic',
+          url: 'http://localhost/test',
+        },
+      ],
+    }//electronBuilder参数
   },
   routes: [
     {path: '/', component: '@/pages/index'},
