@@ -1,0 +1,47 @@
+{
+  "name": "umi-plugin-electron-builder",
+  "version": "0.0.25",
+  "description": "Umi plugin for electron-builder",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "electron:dev": "cross-env APP_ROOT=src/fixtures/normal umi dev electron",
+    "electron:build": "cross-env APP_ROOT=src/fixtures/normal umi build electron",
+    "build": "father-build"
+  },
+  "files": [
+    "lib",
+    "template"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BySlin/umi-plugin-electron-builder"
+  },
+  "keywords": [
+    "umi"
+  ],
+  "authors": [
+    "BySlin <by2292735470@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": "https://github.com/BySlin/umi-plugin-electron-builder/issues",
+  "homepage": "https://github.com/BySlin/umi-plugin-electron-builder/tree/master#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@types/node": "^12.12.47",
+    "electron": "^9.0.5",
+    "electron-builder": "^22.7.0",
+    "electron-devtools-installer": "^3.1.0",
+    "electron-webpack": "^2.8.2",
+    "electron-webpack-ts": "^4.0.1",
+    "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "father-build": "^1.18.0",
+    "umi": "3.2.3"
+  }
+}

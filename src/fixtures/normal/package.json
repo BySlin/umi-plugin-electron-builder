@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "postinstall": "umi g tmp && electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "electron:pack": "umi build electron pack",
+    "electron:dev": "umi dev electron",
+    "electron:build": "umi build electron"
+  },
+  "dependencies": {
+    "electron-updater": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.47",
+    "electron": "^9.0.5",
+    "electron-builder": "^22.7.0",
+    "electron-webpack": "^2.8.2",
+    "electron-webpack-ts": "^4.0.1",
+    "typescript": "^3.9.6",
+    "@types/electron-devtools-installer": "^2.2.0",
+    "electron-devtools-installer": "^3.1.0"
+  },
+  "electronWebpack": {
+    "renderer": null
+  },
+  "name": "electron_builder_app",
+  "version": "0.0.1",
+  "main": "main.js"
+}
