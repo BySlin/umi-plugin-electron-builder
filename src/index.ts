@@ -63,6 +63,10 @@ export default function(api: IApi) {
     isUpdatePkg = true;
   }
 
+  if (api.pkg.dependencies == undefined) {
+    api.pkg.devDependencies = {};
+  }
+
   for (let key in dependencies) {
     if (api.pkg.devDependencies![key] == null) {
       api.pkg.devDependencies![key] = dependencies[key];
