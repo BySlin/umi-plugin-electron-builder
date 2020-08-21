@@ -33,9 +33,29 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:pack": "umi build electron pack",
     "electron:dev": "umi dev electron",
     "electron:build": "umi build electron"
-  }
+  },
+  "devDependencies": {
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@types/node": "^12.12.54",
+    "electron": "^9.2.1",
+    "electron-builder": "^22.8.0",
+    "electron-devtools-installer": "^3.1.1",
+    "electron-webpack": "^2.8.2",
+    "electron-webpack-ts": "^4.0.1",
+    "typescript": "^4.0.2"
+  },
+  "electronWebpack": {
+    "renderer": null
+  },
+  "name": "electron_builder_app",
+  "version": "0.0.1",
+  "main": "main.js"
 }
 ```
+第一次增加完成后，关闭Electron，再次执行yarn更鞋依赖，由于umijs自带@types/node版本过高，
+与electron内置node版本不匹配，需要将@types/node的版本与electron内置node版本匹配，
+版本不不匹配会产生ValidationError: ForkTsCheckerWebpackPlugin Invalid Options 报错
 
 ## Usage
 
