@@ -63,7 +63,7 @@ export default function(api: IApi) {
     isUpdatePkg = true;
   }
 
-  if (api.pkg.dependencies == undefined) {
+  if (api.pkg.devDependencies == undefined) {
     api.pkg.devDependencies = {};
   }
 
