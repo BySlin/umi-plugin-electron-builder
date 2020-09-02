@@ -64,7 +64,7 @@ export default function(api: IApi) {
   }
 
   if (api.pkg.scripts['electron:build:linux'] == null) {
-    api.pkg.scripts['electron:build:linux'] = 'umi build electron -linux';
+    api.pkg.scripts['electron:build:linux'] = 'umi build electron --linux';
     isUpdatePkg = true;
   }
 

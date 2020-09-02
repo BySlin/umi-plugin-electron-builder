@@ -33,7 +33,7 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:dev": "umi dev electron",
     "electron:build:win": "umi build electron --win",
     "electron:build:mac": "umi build electron --mac",
-    "electron:build:linux": "umi build electron -linux"
+    "electron:build:linux": "umi build electron --linux"
   },
   "dependencies": {},
   "devDependencies": {
