@@ -32,10 +32,5 @@ export default (scheme: string) => {
         respond({ mimeType, data });
       });
     },
-    (error) => {
-      if (error) {
-        console.error(`Failed to register ${scheme} protocol`, error);
-      }
-    },
   );
 };

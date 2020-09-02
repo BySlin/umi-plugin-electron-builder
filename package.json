@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -32,8 +32,8 @@
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@types/electron-devtools-installer": "^2.2.0",
-    "@types/node": "^12.12.52",
-    "electron": "^9.2.1",
+    "@types/node": "^12.12.54",
+    "electron": "^10.1.1",
     "electron-builder": "^22.8.0",
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.2",
-    "father-build": "^1.18.2",
-    "umi": "^3.2.16"
+    "father-build": "^1.18.4",
+    "umi": "^3.2.19"
   }
 }

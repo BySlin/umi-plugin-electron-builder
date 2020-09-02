@@ -3,7 +3,7 @@ import * as path from 'path';
 import { IApi, utils } from 'umi';
 
 const { dependencies } = require('../package.json');
-const { execa } = utils;
+const { execa, yargs, lodash: { merge } } = utils;
 
 const electronWebpackCli = require.resolve('electron-webpack/out/cli');
 
@@ -48,18 +48,23 @@ export default function(api: IApi) {
     }
   }
 
-  if (api.pkg.scripts['electron:pack'] == null) {
-    api.pkg.scripts['electron:pack'] = 'umi build electron pack';
-    isUpdatePkg = true;
-  }
-
   if (api.pkg.scripts['electron:dev'] == null) {
     api.pkg.scripts['electron:dev'] = 'umi dev electron';
     isUpdatePkg = true;
   }
 
-  if (api.pkg.scripts['electron:build'] == null) {
-    api.pkg.scripts['electron:build'] = 'umi build electron';
+  if (api.pkg.scripts['electron:build:win'] == null) {
+    api.pkg.scripts['electron:build:win'] = 'umi build electron --win';
+    isUpdatePkg = true;
+  }
+
+  if (api.pkg.scripts['electron:build:mac'] == null) {
+    api.pkg.scripts['electron:build:mac'] = 'umi build electron --mac';
+    isUpdatePkg = true;
+  }
+
+  if (api.pkg.scripts['electron:build:linux'] == null) {
+    api.pkg.scripts['electron:build:linux'] = 'umi build electron -linux';
     isUpdatePkg = true;
   }
 
@@ -234,22 +239,23 @@ export default function(api: IApi) {
           );
           fse.removeSync(distMainPath);
           //打包electron
-          const command = api.args._[1];
-          let dir = false;
-          if (command === 'pack') {
-            dir = true;
-            api.logger.info('pack electron');
-          } else {
-            api.logger.info('build electron');
-          }
+          api.logger.info('build electron');
+
+          const configureBuildCommand = require('electron-builder/out/builder')
+            .configureBuildCommand;
+
+          const builderArgs = yargs
+            .command(['build', '*'], 'Build', configureBuildCommand)
+            .parse(process.argv);
+
           require('electron-builder')
-            .build({
-              config: {
-                ...defaultBuildConfig,
-                ...builderOptions,
-              },
-              dir,
-            })
+            .build(merge({
+              config: merge(
+                defaultBuildConfig,
+                builderOptions,
+              ),
+              ...builderArgs,
+            }))
             .then(() => {
               api.logger.info('build electron success');
             });

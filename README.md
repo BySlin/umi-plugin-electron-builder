@@ -30,15 +30,17 @@ $ yarn add umi-plugin-electron-builder --dev
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "electron:pack": "umi build electron pack",
     "electron:dev": "umi dev electron",
-    "electron:build": "umi build electron"
+    "electron:build:win": "umi build electron --win",
+    "electron:build:mac": "umi build electron --mac",
+    "electron:build:linux": "umi build electron -linux"
   },
+  "dependencies": {},
   "devDependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/node": "^12.12.54",
-    "electron": "^9.2.1",
+    "electron": "^10.1.1",
     "electron-builder": "^22.8.0",
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
@@ -52,10 +54,14 @@ $ yarn add umi-plugin-electron-builder --dev
   "version": "0.0.1",
   "main": "main.js"
 }
+
 ```
 第一次增加完成后，关闭Electron，再次执行yarn更鞋依赖，由于umijs自带@types/node版本过高，
 与electron内置node版本不匹配，需要将@types/node的版本与electron内置node版本匹配，
 版本不不匹配会产生ValidationError: ForkTsCheckerWebpackPlugin Invalid Options 报错
+
+### Electron 版本降级
+你可以手动将package.json中的electron修改至低版本，插件与electron版本无关
 
 ## Usage
 
@@ -65,16 +71,16 @@ $ yarn add umi-plugin-electron-builder --dev
 $ umi dev electron
 ```
 
-### 打包
+### 打包 
+如报错请在对应系统上打包，路径不能有中文
 
 ```
-$ umi build electron pack
-```
-
-### 打包并封装安装包
-
-```
-$ umi build electron
+//windows
+$ umi build electron --win
+//mac
+$ umi build electron --mac
+//linux
+$ umi build electron --linux
 ```
 
 ### 使用node环境下运行的模块
