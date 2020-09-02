@@ -6,7 +6,9 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "electron:dev": "cross-env APP_ROOT=src/fixtures/normal umi dev electron",
-    "electron:build": "cross-env APP_ROOT=src/fixtures/normal umi build electron",
+    "electron:build:win": "cross-env APP_ROOT=src/fixtures/normal umi build electron --win",
+    "electron:build:mac": "cross-env APP_ROOT=src/fixtures/normal umi build electron --mac",
+    "electron:build:linux": "cross-env APP_ROOT=src/fixtures/normal umi build electron --linux",
     "build": "father-build"
   },
   "files": [
