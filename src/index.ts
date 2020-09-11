@@ -97,6 +97,7 @@ export default function(api: IApi) {
       path.join(api.cwd, 'package.json'),
       JSON.stringify(api.pkg, null, 2),
     );
+    //当package.json被修改时更新依赖
     api.logger.info('update dev dependencies');
     execa.commandSync('yarn', commonOpts);
     api.logger.info('update dev dependencies success');
