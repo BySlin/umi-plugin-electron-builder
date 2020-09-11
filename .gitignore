@@ -34,3 +34,4 @@ dist_electron
 node_modules
 main
 */yarn.lock
+/src/fixtures/normal/yarn.lock
