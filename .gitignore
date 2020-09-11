@@ -30,8 +30,6 @@ dist_electron
 *.njsproj
 *.sln
 *.sw*
-/src/fixtures/normal/dist/
 node_modules
-main
 */yarn.lock
 /src/fixtures/normal/yarn.lock
