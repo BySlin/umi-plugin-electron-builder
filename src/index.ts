@@ -15,6 +15,19 @@ interface ElectronBuilder {
 }
 
 export default function(api: IApi) {
+  const isElectron = api.args._[0] === 'electron';
+
+  const commonOpts: any = {
+    cwd: api.cwd,
+    cleanup: true,
+    stdin: 'inherit',
+    stdout: 'inherit',
+    stderr: 'inherit',
+    env: {
+      FORCE_COLOR: 'true',
+    },
+  };
+
   let isUpdatePkg = false;
   if (api.pkg.electronWebpack == null) {
     api.pkg.electronWebpack = {
@@ -84,20 +97,10 @@ export default function(api: IApi) {
       path.join(api.cwd, 'package.json'),
       JSON.stringify(api.pkg, null, 2),
     );
+    api.logger.info('update dev dependencies');
+    execa.commandSync('yarn', commonOpts);
+    api.logger.info('update dev dependencies success');
   }
-
-  const isElectron = api.args._[0] === 'electron';
-
-  const commonOpts: any = {
-    cwd: api.cwd,
-    cleanup: true,
-    stdin: 'inherit',
-    stdout: 'inherit',
-    stderr: 'inherit',
-    env: {
-      FORCE_COLOR: 'true',
-    },
-  };
 
   api.describe({
     key: 'electronBuilder',
