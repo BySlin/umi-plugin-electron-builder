@@ -71,6 +71,11 @@ $ umi build electron --win
 $ umi build electron --mac
 //linux
 $ umi build electron --linux
+//按平台打包
+$ umi build electron --win --ia32    //32位
+$ umi build electron --win --x64     //64位
+$ umi build electron --win --armv7l  //arm32位
+$ umi build electron --win --arm64   //arm64位
 ```
 
 ### 使用node环境下运行的模块
