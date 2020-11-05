@@ -105,6 +105,7 @@ export default function(api: IApi) {
     isUpdatePkg = true;
   }
 
+  //将@types/node切换到electron对应的@types/node
   const electronPackageJson = fse.readJSONSync(require.resolve('electron/package.json'));
   if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
     api.pkg.devDependencies!['@types/node'] = electronPackageJson.dependencies['@types/node'];
