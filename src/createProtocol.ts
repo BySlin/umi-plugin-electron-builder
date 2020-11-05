@@ -9,7 +9,7 @@ export default (scheme: string) => {
       let pathName = new URL(request.url).pathname;
       pathName = decodeURI(pathName); // Needed in case URL contains spaces
 
-      let filePath = path.join(process.resourcesPath, 'app', pathName);
+      let filePath = path.join(__dirname, pathName);
       respond({ path: filePath });
     },
   );
