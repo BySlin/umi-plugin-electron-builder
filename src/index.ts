@@ -85,11 +85,20 @@ export default function(api: IApi) {
     api.pkg.devDependencies = {};
   }
 
-  for (let key in dependencies) {
-    if (api.pkg.devDependencies![key] == null) {
-      api.pkg.devDependencies![key] = dependencies[key];
-      isUpdatePkg = true;
-    }
+  if (api.pkg.devDependencies!['electron'] == null) {
+    api.pkg.devDependencies!['electron'] = dependencies['electron'];
+    isUpdatePkg = true;
+  }
+
+  if (api.pkg.devDependencies!['electron-builder'] == null) {
+    api.pkg.devDependencies!['electron-builder'] = dependencies['electron-builder'];
+    isUpdatePkg = true;
+  }
+
+  const electronPackageJson = fse.readJSONSync(require.resolve('electron/package.json'));
+  if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
+    api.pkg.devDependencies!['@types/node'] = electronPackageJson.dependencies['@types/node'];
+    isUpdatePkg = true;
   }
 
   if (isUpdatePkg) {

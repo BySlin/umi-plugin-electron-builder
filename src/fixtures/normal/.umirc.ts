@@ -6,6 +6,7 @@ export default {
     builderOptions: {
       appId: 'com.test.test',
       productName: '测试',
+      asar: false,
       publish: [
         {
           provider: 'generic',
