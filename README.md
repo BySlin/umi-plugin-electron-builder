@@ -28,17 +28,11 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:build:mac": "umi build electron --mac",
     "electron:build:linux": "umi build electron --linux"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@types/electron-devtools-installer": "^2.2.0",
-    "@types/node": "^12.12.57",
-    "electron": "^10.1.1",
-    "electron-builder": "^22.8.0",
-    "electron-devtools-installer": "^3.1.1",
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1",
     "electron-webpack": "^2.8.2",
-    "electron-webpack-ts": "^4.0.1",
-    "typescript": "^4.0.2"
+    "electron-webpack-ts": "^4.0.1"
   },
   "electronWebpack": {
     "renderer": null
