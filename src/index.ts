@@ -95,6 +95,16 @@ export default function(api: IApi) {
     isUpdatePkg = true;
   }
 
+  if (api.pkg.devDependencies!['electron-webpack'] == null) {
+    api.pkg.devDependencies!['electron-webpack'] = dependencies['electron-webpack'];
+    isUpdatePkg = true;
+  }
+
+  if (api.pkg.devDependencies!['electron-webpack-ts'] == null) {
+    api.pkg.devDependencies!['electron-webpack-ts'] = dependencies['electron-webpack-ts'];
+    isUpdatePkg = true;
+  }
+
   const electronPackageJson = fse.readJSONSync(require.resolve('electron/package.json'));
   if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
     api.pkg.devDependencies!['@types/node'] = electronPackageJson.dependencies['@types/node'];
