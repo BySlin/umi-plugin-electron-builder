@@ -123,10 +123,6 @@ export default function(api: IApi) {
     api.logger.info('update dev dependencies success');
   }
 
-  if (!isElectron) {
-    return;
-  }
-
   api.describe({
     key: 'electronBuilder',
     config: {
@@ -146,6 +142,10 @@ export default function(api: IApi) {
       },
     },
   });
+
+  if (!isElectron) {
+    return;
+  }
 
   api.modifyConfig((config) => {
     const {
