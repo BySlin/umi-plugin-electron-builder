@@ -17,6 +17,10 @@ interface ElectronBuilder {
 export default function(api: IApi) {
   const isElectron = api.args._[0] === 'electron';
 
+  if (!isElectron) {
+    return;
+  }
+
   const commonOpts: any = {
     cwd: api.cwd,
     cleanup: true,
@@ -142,151 +146,150 @@ export default function(api: IApi) {
       },
     },
   });
-  if (isElectron) {
-    api.modifyConfig((config) => {
-      const {
-        outputDir,
-        externals,
-        routerMode,
-      } = config.electronBuilder as ElectronBuilder;
-      config.outputPath = path.join(outputDir, 'bundled');
-      //Electron模式下路由更改为hash|memory
-      config.history = {
-        type: routerMode,
-      };
 
-      const configExternals: any = {
-        electron: `require('electron')`,
-      };
+  api.modifyConfig((config) => {
+    const {
+      outputDir,
+      externals,
+      routerMode,
+    } = config.electronBuilder as ElectronBuilder;
+    config.outputPath = path.join(outputDir, 'bundled');
+    //Electron模式下路由更改为hash|memory
+    config.history = {
+      type: routerMode,
+    };
 
-      if (externals.length > 0) {
-        for (const moduleName of externals) {
-          configExternals[moduleName] = `require('${moduleName}')`;
+    const configExternals: any = {
+      electron: `require('electron')`,
+    };
+
+    if (externals.length > 0) {
+      for (const moduleName of externals) {
+        configExternals[moduleName] = `require('${moduleName}')`;
+      }
+    }
+
+    config.externals = { ...configExternals, ...config.externals };
+    return config;
+  });
+
+  //配置ElectronTarget
+  api.chainWebpack((config) => {
+    config.target('electron-renderer');
+    return config;
+  });
+
+  //start dev electron
+  api.onDevCompileDone(({ isFirstCompile }) => {
+    checkMainProcess();
+    if (isFirstCompile) {
+      api.logger.info('start dev electron');
+      const child = execa.node(electronWebpackCli, ['dev'], commonOpts);
+      child.on('close', () => {
+        fse.removeSync(path.join(api.cwd, 'dist', 'main'));
+        process.exit(0);
+      });
+    }
+  });
+
+  //build electron
+  api.onBuildComplete(({ err }) => {
+    checkMainProcess();
+    if (err == null) {
+      const { builderOptions, externals, outputDir } = api.config
+        .electronBuilder as ElectronBuilder;
+
+      const absOutputDir = path.join(api.cwd, outputDir);
+      const externalsPath = api.paths.absNodeModulesPath;
+
+      delete api.pkg.scripts;
+      delete api.pkg.devDependencies;
+      delete api.pkg.electronWebpack;
+      Object.keys(api.pkg.dependencies!).forEach((dependency) => {
+        if (!externals.includes(dependency)) {
+          delete api.pkg.dependencies![dependency];
+        }
+      });
+
+      const buildDependencies = [
+        'source-map-support',
+        'electron-devtools-installer',
+      ];
+
+      for (const dep of buildDependencies) {
+        let depPackageJsonPath = path.join(externalsPath!, dep, 'package.json');
+        if (fse.existsSync(depPackageJsonPath)) {
+          api.pkg.dependencies![dep] = require(depPackageJsonPath).version;
+        } else {
+          api.pkg.dependencies![dep] = require(path.join(
+            process.cwd(),
+            'node_modules',
+            dep,
+            'package.json',
+          )).version;
         }
       }
 
-      config.externals = { ...configExternals, ...config.externals };
-      return config;
-    });
+      // Prevent electron-builder from installing app deps
+      fse.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
 
-    //配置ElectronTarget
-    api.chainWebpack((config) => {
-      config.target('electron-renderer');
-      return config;
-    });
+      fse.writeFileSync(
+        `${absOutputDir}/bundled/package.json`,
+        JSON.stringify(api.pkg, null, 2),
+      );
 
-    //start dev electron
-    api.onDevCompileDone(({ isFirstCompile }) => {
-      checkMainProcess();
-      if (isFirstCompile) {
-        api.logger.info('start dev electron');
-        const child = execa.node(electronWebpackCli, ['dev'], commonOpts);
-        child.on('close', () => {
-          fse.removeSync(path.join(api.cwd, 'dist', 'main'));
-          process.exit(0);
-        });
-      }
-    });
+      const defaultBuildConfig = {
+        directories: {
+          output: absOutputDir,
+          app: `${absOutputDir}/bundled`,
+        },
+        files: ['**'],
+        extends: null,
+      };
 
-    //build electron
-    api.onBuildComplete(({ err }) => {
-      checkMainProcess();
-      if (err == null) {
-        const { builderOptions, externals, outputDir } = api.config
-          .electronBuilder as ElectronBuilder;
-
-        const absOutputDir = path.join(api.cwd, outputDir);
-        const externalsPath = api.paths.absNodeModulesPath;
-
-        delete api.pkg.scripts;
-        delete api.pkg.devDependencies;
-        delete api.pkg.electronWebpack;
-        Object.keys(api.pkg.dependencies!).forEach((dependency) => {
-          if (!externals.includes(dependency)) {
-            delete api.pkg.dependencies![dependency];
-          }
-        });
-
-        const buildDependencies = [
-          'source-map-support',
-          'electron-devtools-installer',
-        ];
-
-        for (const dep of buildDependencies) {
-          let depPackageJsonPath = path.join(externalsPath!, dep, 'package.json');
-          if (fse.existsSync(depPackageJsonPath)) {
-            api.pkg.dependencies![dep] = require(depPackageJsonPath).version;
-          } else {
-            api.pkg.dependencies![dep] = require(path.join(
-              process.cwd(),
-              'node_modules',
-              dep,
-              'package.json',
-            )).version;
-          }
-        }
-
-        // Prevent electron-builder from installing app deps
-        fse.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
-
-        fse.writeFileSync(
-          `${absOutputDir}/bundled/package.json`,
-          JSON.stringify(api.pkg, null, 2),
-        );
-
-        const defaultBuildConfig = {
-          directories: {
-            output: absOutputDir,
-            app: `${absOutputDir}/bundled`,
+      api.logger.info('build main process');
+      const child = execa.node(electronWebpackCli, ['main'], commonOpts);
+      child.on('exit', () => {
+        const distMainPath = path.join(api.cwd, 'dist', 'main');
+        fse.moveSync(
+          path.join(distMainPath, 'main.js'),
+          path.join(absOutputDir, 'bundled', 'main.js'),
+          {
+            overwrite: true,
           },
-          files: ['**'],
-          extends: null,
-        };
+        );
+        fse.moveSync(
+          path.join(distMainPath, 'main.js.map'),
+          path.join(absOutputDir, 'bundled', 'main.js.map'),
+          {
+            overwrite: true,
+          },
+        );
+        fse.removeSync(distMainPath);
+        //打包electron
+        api.logger.info('build electron');
 
-        api.logger.info('build main process');
-        const child = execa.node(electronWebpackCli, ['main'], commonOpts);
-        child.on('exit', () => {
-          const distMainPath = path.join(api.cwd, 'dist', 'main');
-          fse.moveSync(
-            path.join(distMainPath, 'main.js'),
-            path.join(absOutputDir, 'bundled', 'main.js'),
-            {
-              overwrite: true,
-            },
-          );
-          fse.moveSync(
-            path.join(distMainPath, 'main.js.map'),
-            path.join(absOutputDir, 'bundled', 'main.js.map'),
-            {
-              overwrite: true,
-            },
-          );
-          fse.removeSync(distMainPath);
-          //打包electron
-          api.logger.info('build electron');
+        const configureBuildCommand = require('electron-builder/out/builder')
+          .configureBuildCommand;
 
-          const configureBuildCommand = require('electron-builder/out/builder')
-            .configureBuildCommand;
+        const builderArgs = yargs
+          .command(['build', '*'], 'Build', configureBuildCommand)
+          .parse(process.argv);
 
-          const builderArgs = yargs
-            .command(['build', '*'], 'Build', configureBuildCommand)
-            .parse(process.argv);
-
-          require('electron-builder')
-            .build(merge({
-              config: merge(
-                defaultBuildConfig,
-                builderOptions,
-              ),
-              ...builderArgs,
-            }))
-            .then(() => {
-              api.logger.info('build electron success');
-            });
-        });
-      }
-    });
-  }
+        require('electron-builder')
+          .build(merge({
+            config: merge(
+              defaultBuildConfig,
+              builderOptions,
+            ),
+            ...builderArgs,
+          }))
+          .then(() => {
+            api.logger.info('build electron success');
+          });
+      });
+    }
+  });
 
   //检测主进程相关文件是否存在
   function checkMainProcess() {
