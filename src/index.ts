@@ -17,10 +17,6 @@ interface ElectronBuilder {
 export default function(api: IApi) {
   const isElectron = api.args._[0] === 'electron';
 
-  if (!isElectron) {
-    return;
-  }
-
   const commonOpts: any = {
     cwd: api.cwd,
     cleanup: true,
@@ -125,6 +121,10 @@ export default function(api: IApi) {
     api.logger.info('update dev dependencies');
     execa.commandSync('yarn', commonOpts);
     api.logger.info('update dev dependencies success');
+  }
+
+  if (!isElectron) {
+    return;
   }
 
   api.describe({
