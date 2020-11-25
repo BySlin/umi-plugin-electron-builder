@@ -7,6 +7,10 @@
 
 仅支持umi3
 ```
+$ npm i umi-plugin-electron-builder --save-dev
+```
+or
+```
 $ yarn add umi-plugin-electron-builder --dev
 ```
 

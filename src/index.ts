@@ -309,7 +309,7 @@ export default function(api: IApi) {
   //安装依赖
   function installRely(command: string) {
     if (isNpm()) {
-      execa.commandSync(`npm i ${command} --dev`, commonOpts);
+      execa.commandSync(`npm i ${command} --save-dev`, commonOpts);
     } else if (isYarn()) {
       execa.commandSync(`yarn add ${command} --dev`, commonOpts);
     } else {
