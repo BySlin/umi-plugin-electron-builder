@@ -2,7 +2,6 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { IApi, utils } from 'umi';
 
-const { dependencies } = require('../package.json');
 const { execa, yargs, lodash: { merge } } = utils;
 
 const electronWebpackCli = require.resolve('electron-webpack/out/cli');
@@ -28,99 +27,95 @@ export default function(api: IApi) {
     },
   };
 
+  if (api.pkg.devDependencies == undefined) {
+    api.pkg.devDependencies = {};
+  }
+
+  //检测依赖是否安装
+  const relys = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
+  //需要安装的依赖
+  const requiredRelys = [];
+  for (let rely of relys) {
+    if (api.pkg.devDependencies![rely] == null) {
+      requiredRelys.push(rely);
+    }
+  }
+
+  //安装需要的依赖
+  if (requiredRelys.length > 0) {
+    installRely(requiredRelys.join(' '));
+    //将@types/node切换到electron对应的@types/node
+    const electronPackageJson = fse.readJSONSync(path.join(api.paths.absNodeModulesPath!, 'electron', 'package.json'));
+    if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
+      const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
+      installRely(`@types/node@${electronTypesNodeVersion}`);
+    }
+  }
+
+  //重新读一遍package.json
+  const pkg = fse.readJSONSync(path.join(api.paths.absSrcPath!, '..', 'package.json'));
+
   let isUpdatePkg = false;
-  if (api.pkg.electronWebpack == null) {
-    api.pkg.electronWebpack = {
+  if (pkg.electronWebpack == null) {
+    pkg.electronWebpack = {
       renderer: null,
     };
     isUpdatePkg = true;
   }
-  if (api.pkg.name == null) {
-    api.pkg.name = 'electron_builder_app';
+  if (pkg.name == null) {
+    pkg.name = 'electron_builder_app';
     isUpdatePkg = true;
   }
-  if (api.pkg.version == null) {
-    api.pkg.version = '0.0.1';
+  if (pkg.version == null) {
+    pkg.version = '0.0.1';
     isUpdatePkg = true;
   }
-  if (api.pkg.main !== 'main.js') {
-    api.pkg.main = 'main.js';
+  if (pkg.main !== 'main.js') {
+    pkg.main = 'main.js';
     isUpdatePkg = true;
   }
 
   const installAppDeps = 'electron-builder install-app-deps';
   const scripts = ['postinstall', 'postuninstall'];
+
   for (let key of scripts) {
-    if (api.pkg.scripts[key] == null) {
-      api.pkg.scripts[key] = installAppDeps;
+    if (pkg.scripts[key] == null) {
+      pkg.scripts[key] = installAppDeps;
       isUpdatePkg = true;
     }
-    if (api.pkg.scripts[key].indexOf(installAppDeps) == -1) {
-      api.pkg.scripts[key] = `${api.pkg.scripts[key]} && ${installAppDeps}`;
+    if (pkg.scripts[key].indexOf(installAppDeps) == -1) {
+      pkg.scripts[key] = `${pkg.scripts[key]} && ${installAppDeps}`;
       isUpdatePkg = true;
     }
   }
 
-  if (api.pkg.scripts['electron:dev'] == null) {
-    api.pkg.scripts['electron:dev'] = 'umi dev electron';
+  if (pkg.scripts['electron:dev'] == null) {
+    pkg.scripts['electron:dev'] = 'umi dev electron';
     isUpdatePkg = true;
   }
 
-  if (api.pkg.scripts['electron:build:win'] == null) {
-    api.pkg.scripts['electron:build:win'] = 'umi build electron --win';
+  if (pkg.scripts['electron:build:win'] == null) {
+    pkg.scripts['electron:build:win'] = 'umi build electron --win';
     isUpdatePkg = true;
   }
 
-  if (api.pkg.scripts['electron:build:mac'] == null) {
-    api.pkg.scripts['electron:build:mac'] = 'umi build electron --mac';
+  if (pkg.scripts['electron:build:mac'] == null) {
+    pkg.scripts['electron:build:mac'] = 'umi build electron --mac';
     isUpdatePkg = true;
   }
 
-  if (api.pkg.scripts['electron:build:linux'] == null) {
-    api.pkg.scripts['electron:build:linux'] = 'umi build electron --linux';
-    isUpdatePkg = true;
-  }
-
-  if (api.pkg.devDependencies == undefined) {
-    api.pkg.devDependencies = {};
-  }
-
-  if (api.pkg.devDependencies!['electron'] == null) {
-    api.pkg.devDependencies!['electron'] = dependencies['electron'];
-    isUpdatePkg = true;
-  }
-
-  if (api.pkg.devDependencies!['electron-builder'] == null) {
-    api.pkg.devDependencies!['electron-builder'] = dependencies['electron-builder'];
-    isUpdatePkg = true;
-  }
-
-  if (api.pkg.devDependencies!['electron-webpack'] == null) {
-    api.pkg.devDependencies!['electron-webpack'] = dependencies['electron-webpack'];
-    isUpdatePkg = true;
-  }
-
-  if (api.pkg.devDependencies!['electron-webpack-ts'] == null) {
-    api.pkg.devDependencies!['electron-webpack-ts'] = dependencies['electron-webpack-ts'];
-    isUpdatePkg = true;
-  }
-
-  //将@types/node切换到electron对应的@types/node
-  const electronPackageJson = fse.readJSONSync(require.resolve('electron/package.json'));
-  if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
-    api.pkg.devDependencies!['@types/node'] = electronPackageJson.dependencies['@types/node'];
+  if (pkg.scripts['electron:build:linux'] == null) {
+    pkg.scripts['electron:build:linux'] = 'umi build electron --linux';
     isUpdatePkg = true;
   }
 
   if (isUpdatePkg) {
+    //更新package.json
+    api.logger.info('update package.json');
     fse.writeFileSync(
       path.join(api.cwd, 'package.json'),
-      JSON.stringify(api.pkg, null, 2),
+      JSON.stringify(pkg, null, 2),
     );
-    //当package.json被修改时更新依赖
-    api.logger.info('update dev dependencies');
-    execa.commandSync('yarn', commonOpts);
-    api.logger.info('update dev dependencies success');
   }
 
   api.describe({
@@ -296,6 +291,29 @@ export default function(api: IApi) {
     const mainPath = path.join(api.paths.absSrcPath as string, 'main');
     if (!fse.pathExistsSync(mainPath)) {
       fse.copySync(path.join(__dirname, '..', 'template'), mainPath);
+    }
+  }
+
+  //检测是否使用npm
+  function isNpm() {
+    const packageLockJsonPath = path.join(api.cwd, 'package-lock.json');
+    return fse.pathExistsSync(packageLockJsonPath);
+  }
+
+  //检测是否使用yarn
+  function isYarn() {
+    const yarnLockPath = path.join(api.cwd, 'yarn.lock');
+    return fse.pathExistsSync(yarnLockPath);
+  }
+
+  //安装依赖
+  function installRely(command: string) {
+    if (isNpm()) {
+      execa.commandSync(`npm i ${command} --dev`, commonOpts);
+    } else if (isYarn()) {
+      execa.commandSync(`yarn add ${command} --dev`, commonOpts);
+    } else {
+      execa.commandSync(`yarn add ${command} --dev`, commonOpts);
     }
   }
 }

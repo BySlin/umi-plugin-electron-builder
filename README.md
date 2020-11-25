@@ -10,9 +10,9 @@
 $ yarn add umi-plugin-electron-builder --dev
 ```
 
-安装之后
+安装之后会自动生成相关文件
 
-执行umi dev electron 会生成相关文件
+默认安装最新版本的electron
 
 自动生成主进程文件src/main/main.ts
 
@@ -27,12 +27,6 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:build:win": "umi build electron --win",
     "electron:build:mac": "umi build electron --mac",
     "electron:build:linux": "umi build electron --linux"
-  },
-  "devDependencies": {
-    "electron": "^11.0.3",
-    "electron-builder": "^22.9.1",
-    "electron-webpack": "^2.8.2",
-    "electron-webpack-ts": "^4.0.1"
   },
   "electronWebpack": {
     "renderer": null
