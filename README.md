@@ -29,7 +29,7 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:build:linux": "umi build electron --linux"
   },
   "devDependencies": {
-    "electron": "^10.1.5",
+    "electron": "^11.0.3",
     "electron-builder": "^22.9.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1"
