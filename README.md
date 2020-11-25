@@ -18,7 +18,7 @@ $ yarn add umi-plugin-electron-builder --dev
 
 自动在package.json增加
 
-```json
+```json5
 {
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
@@ -37,7 +37,7 @@ $ yarn add umi-plugin-electron-builder --dev
   "electronWebpack": {
     "renderer": null
   },
-  "name": "electron_builder_app",
+  "name": "electron_builder_app",   //这里需要修改成你自己的应用名称
   "version": "0.0.1",
   "main": "main.js"
 }
