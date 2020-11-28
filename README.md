@@ -105,6 +105,6 @@ export default defineConfig({
   ],
 });
 ```
-在Electron10以上使用contextIsolation时rendererTarget需要设置成web
+在Electron10以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时rendererTarget需要设置成web
 
 builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
