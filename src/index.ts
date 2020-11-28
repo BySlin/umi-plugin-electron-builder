@@ -11,6 +11,7 @@ interface ElectronBuilder {
   outputDir: string;
   builderOptions: any;
   routerMode: 'hash' | 'memory'
+  rendererTarget: 'electron-renderer' | 'web';
 }
 
 export default function(api: IApi) {
@@ -126,6 +127,7 @@ export default function(api: IApi) {
         externals: [],
         outputDir: 'dist_electron',
         routerMode: 'hash',
+        rendererTarget: 'electron-renderer',
       },
       schema(joi) {
         return joi.object({
@@ -133,6 +135,7 @@ export default function(api: IApi) {
           externals: joi.array(),
           builderOptions: joi.object(),
           routerMode: joi.string(),
+          rendererTarget: joi.string(),
         });
       },
     },
@@ -170,7 +173,11 @@ export default function(api: IApi) {
 
   //配置ElectronTarget
   api.chainWebpack((config) => {
-    config.target('electron-renderer');
+    const {
+      rendererTarget,
+    } = api.config.electronBuilder as ElectronBuilder;
+
+    config.target(rendererTarget);
     return config;
   });
 

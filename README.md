@@ -88,6 +88,7 @@ export default defineConfig({
     routerMode: 'hash',         //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
+    rendererTarget: 'electron-renderer', //构建目标electron-renderer或web
     builderOptions: {
       appId: 'com.test.test',
       productName: '测试',
@@ -104,5 +105,6 @@ export default defineConfig({
   ],
 });
 ```
+在Electron10以上使用contextIsolation时rendererTarget需要设置成web
 
 builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
