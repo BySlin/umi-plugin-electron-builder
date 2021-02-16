@@ -244,14 +244,14 @@ export default function(api: IApi) {
       const absOutputDir = path.join(api.cwd, outputDir);
       const externalsPath = api.paths.absNodeModulesPath;
 
-      const pkg = merge(getRootPkg(), getCurrentPkg());
+      const buildPkg = merge(getRootPkg(), getCurrentPkg());
 
-      delete pkg.scripts;
-      delete pkg.devDependencies;
-      delete pkg.electronWebpack;
-      Object.keys(pkg.dependencies!).forEach((dependency) => {
+      delete buildPkg.scripts;
+      delete buildPkg.devDependencies;
+      delete buildPkg.electronWebpack;
+      Object.keys(buildPkg.dependencies!).forEach((dependency) => {
         if (!externals.includes(dependency)) {
-          delete pkg.dependencies![dependency];
+          delete buildPkg.dependencies![dependency];
         }
       });
 
@@ -263,9 +263,9 @@ export default function(api: IApi) {
       for (const dep of buildDependencies) {
         let depPackageJsonPath = path.join(externalsPath!, dep, 'package.json');
         if (fse.existsSync(depPackageJsonPath)) {
-          pkg.dependencies![dep] = require(depPackageJsonPath).version;
+          buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
-          pkg.dependencies![dep] = require(path.join(
+          buildPkg.dependencies![dep] = require(path.join(
             process.cwd(),
             'node_modules',
             dep,
@@ -279,7 +279,7 @@ export default function(api: IApi) {
 
       fse.writeFileSync(
         `${absOutputDir}/bundled/package.json`,
-        JSON.stringify(pkg, null, 2),
+        JSON.stringify(buildPkg, null, 2),
       );
 
       const defaultBuildConfig = {
