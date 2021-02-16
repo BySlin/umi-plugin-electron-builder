@@ -85,8 +85,6 @@ export default function(api: IApi) {
     }
   }
 
-  //根项目pkg
-  const rootPkg = getRootPkg();
   //当前项目pkg
   const currentPkg = getCurrentPkg();
   let isUpdateRootPkg = false, isUpdateCurrentPkg = false;
@@ -113,6 +111,8 @@ export default function(api: IApi) {
     );
   }
 
+  //根项目pkg
+  const rootPkg = getRootPkg();
   const installAppDeps = 'electron-builder install-app-deps';
   const scripts = ['postinstall', 'postuninstall'];
 
