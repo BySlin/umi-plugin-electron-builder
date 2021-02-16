@@ -1,10 +1,27 @@
 import * as fse from 'fs-extra';
+import { readdir, remove } from 'fs-extra';
 import * as path from 'path';
 import { IApi, utils } from 'umi';
+import { getFreePort, orNullIfFileNotExist } from 'electron-webpack/out/util';
+import {
+  DelayedFunction,
+  getCommonEnv,
+  logError,
+  logProcess,
+  logProcessErrorOutput,
+} from 'electron-webpack/out/dev/devUtil';
+import { HmrServer } from 'electron-webpack/out/electron-main-hmr/HmrServer';
+import chalk from 'chalk';
+import webpack, { Compiler, Configuration } from 'webpack';
+import { spawn } from 'child_process';
+import { getElectronWebpackConfiguration, getPackageMetadata } from 'electron-webpack/out/config';
+import { getMainConfiguration } from 'electron-webpack/out/main';
+import * as BluebirdPromise from 'bluebird';
 
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { execa, yargs, lodash: { merge } } = utils;
-
-const electronWebpackCli = require.resolve('electron-webpack/out/cli');
+const debug = require('debug')('electron-webpack');
+let socketPath: string | null = null;
 
 interface ElectronBuilder {
   externals: string[];
@@ -12,9 +29,22 @@ interface ElectronBuilder {
   builderOptions: any;
   routerMode: 'hash' | 'memory'
   rendererTarget: 'electron-renderer' | 'web';
+  mainWebpackConfig: (config: Configuration) => void;
 }
 
 export default function(api: IApi) {
+  //是否设置了APP_ROOT，非默认项目结构
+  const isSetAppRoot = process.env.APP_ROOT != null && process.env.APP_ROOT != '';
+  const nodeModulesPath = isSetAppRoot ? path.join(process.cwd(), 'node_modules') : api.paths.absNodeModulesPath!;
+
+  function getRootPkg() {
+    return fse.readJSONSync(path.join(process.cwd(), 'package.json'));
+  }
+
+  function getCurrentPkg() {
+    return fse.readJSONSync(path.join(api.cwd, 'package.json'));
+  }
+
   const commonOpts: any = {
     cwd: api.cwd,
     cleanup: true,
@@ -26,8 +56,11 @@ export default function(api: IApi) {
     },
   };
 
-  if (api.pkg.devDependencies == undefined) {
-    api.pkg.devDependencies = {};
+  //依赖安装到根项目
+  let pkg = getRootPkg();
+
+  if (pkg.devDependencies == undefined) {
+    pkg.devDependencies = {};
   }
 
   //检测依赖是否安装
@@ -35,7 +68,8 @@ export default function(api: IApi) {
   //需要安装的依赖
   const requiredRelys = [];
   for (let rely of relys) {
-    if (api.pkg.devDependencies![rely] == null) {
+    //通过目录检查依赖是否安装
+    if (!fse.pathExistsSync(path.join(nodeModulesPath, rely))) {
       requiredRelys.push(rely);
     }
   }
@@ -51,69 +85,74 @@ export default function(api: IApi) {
     }
   }
 
-  //重新读一遍package.json
-  const pkg = fse.readJSONSync(path.join(api.paths.absSrcPath!, '..', 'package.json'));
+  //根项目pkg
+  const rootPkg = getRootPkg();
+  //当前项目pkg
+  const currentPkg = getCurrentPkg();
+  let isUpdateRootPkg = false, isUpdateCurrentPkg = false;
 
-  let isUpdatePkg = false;
-  if (pkg.electronWebpack == null) {
-    pkg.electronWebpack = {
-      renderer: null,
-    };
-    isUpdatePkg = true;
+  if (currentPkg.name == null) {
+    currentPkg.name = 'electron_builder_app';
+    isUpdateCurrentPkg = true;
   }
-  if (pkg.name == null) {
-    pkg.name = 'electron_builder_app';
-    isUpdatePkg = true;
+  if (currentPkg.version == null) {
+    currentPkg.version = '0.0.1';
+    isUpdateCurrentPkg = true;
   }
-  if (pkg.version == null) {
-    pkg.version = '0.0.1';
-    isUpdatePkg = true;
+  if (currentPkg.main !== 'main.js') {
+    currentPkg.main = 'main.js';
+    isUpdateCurrentPkg = true;
   }
-  if (pkg.main !== 'main.js') {
-    pkg.main = 'main.js';
-    isUpdatePkg = true;
+
+  if (isUpdateCurrentPkg) {
+    //更新package.json
+    api.logger.info('update package.json');
+    fse.writeFileSync(
+      path.join(api.cwd, 'package.json'),
+      JSON.stringify(currentPkg, null, 2),
+    );
   }
 
   const installAppDeps = 'electron-builder install-app-deps';
   const scripts = ['postinstall', 'postuninstall'];
 
   for (let key of scripts) {
-    if (pkg.scripts[key] == null) {
-      pkg.scripts[key] = installAppDeps;
-      isUpdatePkg = true;
+    if (rootPkg.scripts[key] == null) {
+      rootPkg.scripts[key] = installAppDeps;
+      isUpdateRootPkg = true;
     }
-    if (pkg.scripts[key].indexOf(installAppDeps) == -1) {
-      pkg.scripts[key] = `${pkg.scripts[key]} && ${installAppDeps}`;
-      isUpdatePkg = true;
+    if (rootPkg.scripts[key].indexOf(installAppDeps) == -1) {
+      rootPkg.scripts[key] = `${pkg.scripts[key]} && ${installAppDeps}`;
+      isUpdateRootPkg = true;
     }
   }
 
-  if (pkg.scripts['electron:dev'] == null) {
-    pkg.scripts['electron:dev'] = 'umi dev electron';
-    isUpdatePkg = true;
+  if (rootPkg.scripts['electron:dev'] == null) {
+    rootPkg.scripts['electron:dev'] = 'umi dev electron';
+    isUpdateRootPkg = true;
   }
 
-  if (pkg.scripts['electron:build:win'] == null) {
-    pkg.scripts['electron:build:win'] = 'umi build electron --win';
-    isUpdatePkg = true;
+  if (rootPkg.scripts['electron:build:win'] == null) {
+    rootPkg.scripts['electron:build:win'] = 'umi build electron --win';
+    isUpdateRootPkg = true;
   }
 
-  if (pkg.scripts['electron:build:mac'] == null) {
-    pkg.scripts['electron:build:mac'] = 'umi build electron --mac';
-    isUpdatePkg = true;
+  if (rootPkg.scripts['electron:build:mac'] == null) {
+    rootPkg.scripts['electron:build:mac'] = 'umi build electron --mac';
+    isUpdateRootPkg = true;
   }
 
-  if (pkg.scripts['electron:build:linux'] == null) {
-    pkg.scripts['electron:build:linux'] = 'umi build electron --linux';
-    isUpdatePkg = true;
+  if (rootPkg.scripts['electron:build:linux'] == null) {
+    rootPkg.scripts['electron:build:linux'] = 'umi build electron --linux';
+    isUpdateRootPkg = true;
   }
 
-  if (isUpdatePkg) {
+  if (isUpdateRootPkg) {
     //更新package.json
     api.logger.info('update package.json');
     fse.writeFileSync(
-      path.join(api.cwd, 'package.json'),
-      JSON.stringify(pkg, null, 2),
+      path.join(process.cwd(), 'package.json'),
+      JSON.stringify(rootPkg, null, 2),
     );
   }
 
@@ -126,6 +165,8 @@ export default function(api: IApi) {
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'electron-renderer',
+        mainConfiguration: () => {
+        },
       },
       schema(joi) {
         return joi.object({
@@ -134,6 +175,7 @@ export default function(api: IApi) {
           builderOptions: joi.object(),
           routerMode: joi.string(),
           rendererTarget: joi.string(),
+          mainConfiguration: joi.func(),
         });
       },
     },
@@ -185,11 +227,10 @@ export default function(api: IApi) {
     checkMainProcess();
     if (isFirstCompile) {
       api.logger.info('start dev electron');
-      const child = execa.node(electronWebpackCli, ['dev'], commonOpts);
-      child.on('close', () => {
-        fse.removeSync(path.join(api.cwd, 'dist', 'main'));
-        process.exit(0);
-      });
+      runInDevMode(api)
+        .catch(error => {
+          console.error(error);
+        });
     }
   });
 
@@ -203,12 +244,14 @@ export default function(api: IApi) {
       const absOutputDir = path.join(api.cwd, outputDir);
       const externalsPath = api.paths.absNodeModulesPath;
 
-      delete api.pkg.scripts;
-      delete api.pkg.devDependencies;
-      delete api.pkg.electronWebpack;
-      Object.keys(api.pkg.dependencies!).forEach((dependency) => {
+      const pkg = merge(getRootPkg(), getCurrentPkg());
+
+      delete pkg.scripts;
+      delete pkg.devDependencies;
+      delete pkg.electronWebpack;
+      Object.keys(pkg.dependencies!).forEach((dependency) => {
         if (!externals.includes(dependency)) {
-          delete api.pkg.dependencies![dependency];
+          delete pkg.dependencies![dependency];
         }
       });
 
@@ -220,9 +263,9 @@ export default function(api: IApi) {
       for (const dep of buildDependencies) {
         let depPackageJsonPath = path.join(externalsPath!, dep, 'package.json');
         if (fse.existsSync(depPackageJsonPath)) {
-          api.pkg.dependencies![dep] = require(depPackageJsonPath).version;
+          pkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
-          api.pkg.dependencies![dep] = require(path.join(
+          pkg.dependencies![dep] = require(path.join(
             process.cwd(),
             'node_modules',
             dep,
@@ -236,7 +279,7 @@ export default function(api: IApi) {
 
       fse.writeFileSync(
         `${absOutputDir}/bundled/package.json`,
-        JSON.stringify(api.pkg, null, 2),
+        JSON.stringify(pkg, null, 2),
       );
 
       const defaultBuildConfig = {
@@ -249,46 +292,30 @@ export default function(api: IApi) {
       };
 
       api.logger.info('build main process');
-      const child = execa.node(electronWebpackCli, ['main'], commonOpts);
-      child.on('exit', () => {
-        const distMainPath = path.join(api.cwd, 'dist', 'main');
-        fse.moveSync(
-          path.join(distMainPath, 'main.js'),
-          path.join(absOutputDir, 'bundled', 'main.js'),
-          {
-            overwrite: true,
-          },
-        );
-        fse.moveSync(
-          path.join(distMainPath, 'main.js.map'),
-          path.join(absOutputDir, 'bundled', 'main.js.map'),
-          {
-            overwrite: true,
-          },
-        );
-        fse.removeSync(distMainPath);
-        //打包electron
-        api.logger.info('build electron');
-
-        const configureBuildCommand = require('electron-builder/out/builder')
-          .configureBuildCommand;
-
-        const builderArgs = yargs
-          .command(['build', '*'], 'Build', configureBuildCommand)
-          .parse(process.argv);
-
-        require('electron-builder')
-          .build(merge({
-            config: merge(
-              defaultBuildConfig,
-              builderOptions,
-            ),
-            ...builderArgs,
-          }))
-          .then(() => {
-            api.logger.info('build electron success');
-          });
-      });
+      runInMainBuild(api)
+        .then(() => {
+          //打包electron
+          api.logger.info('build electron');
+          const configureBuildCommand = require('electron-builder/out/builder')
+            .configureBuildCommand;
+          const builderArgs = yargs
+            .command(['build', '*'], 'Build', configureBuildCommand)
+            .parse(process.argv);
+          require('electron-builder')
+            .build(merge({
+              config: merge(
+                defaultBuildConfig,
+                builderOptions,
+              ),
+              ...builderArgs,
+            }))
+            .then(() => {
+              api.logger.info('build electron success');
+            });
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   });
 
@@ -314,12 +341,245 @@ export default function(api: IApi) {
 
   //安装依赖
   function installRely(command: string) {
+    const cwd = isSetAppRoot ? process.cwd() : api.cwd;
     if (isNpm()) {
-      execa.commandSync(`npm i ${command} --save-dev`, commonOpts);
+      execa.commandSync(`npm i ${command} --save-dev`, { ...commonOpts, cwd });
     } else if (isYarn()) {
-      execa.commandSync(`yarn add ${command} --dev`, commonOpts);
+      execa.commandSync(`yarn add ${command} --dev`, { ...commonOpts, cwd });
     } else {
-      execa.commandSync(`yarn add ${command} --dev`, commonOpts);
+      execa.commandSync(`yarn add ${command} --dev`, { ...commonOpts, cwd });
     }
   }
+}
+
+// do not remove main.js to allow IDE to keep breakpoints
+async function emptyMainOutput(api: IApi) {
+  const electronWebpackConfig = await getElectronWebpackConfiguration({
+    projectDir: api.cwd,
+    packageMetadata: getPackageMetadata(api.cwd),
+  });
+  const outDir = path.join(electronWebpackConfig.commonDistDirectory!!, 'main');
+  const files = await orNullIfFileNotExist(readdir(outDir));
+  if (files == null) {
+    return;
+  }
+
+  // @ts-ignore
+  await BluebirdPromise.map(files.filter(it => !it.startsWith('.') && it !== 'main.js'), it => remove(outDir + path.sep + it));
+}
+
+/**
+ * 从dev启动electron
+ * @param api
+ */
+async function runInDevMode(api: IApi) {
+  const wdsHost = 'localhost';
+  const wdsPort = await getFreePort(wdsHost, 9080);
+  const env = {
+    ...getCommonEnv(),
+    ELECTRON_WEBPACK_WDS_HOST: wdsHost,
+    ELECTRON_WEBPACK_WDS_PORT: wdsPort,
+  };
+
+  const hmrServer = new HmrServer();
+  await Promise.all([
+    hmrServer.listen()
+      .then(it => {
+        socketPath = it;
+      }),
+    emptyMainOutput(api)
+      .then(() => startMainDevWatch(api, hmrServer)),
+  ]);
+
+  hmrServer.ipc.on('error', (error: Error) => {
+    logError('Main', error);
+  });
+
+  const electronArgs = process.env.ELECTRON_ARGS;
+  const args = electronArgs != null && electronArgs.length > 0 ? JSON.parse(electronArgs) : [`--inspect=${await getFreePort('127.0.0.1', 5858)}`];
+  args.push(path.join(api.paths.absTmpPath!, 'main/main.js'));
+  // Pass remaining arguments to the application. Remove 3 instead of 2, to remove the `dev` argument as well.
+  args.push(...process.argv.slice(3));
+  // we should start only when both start and main are started
+  startElectron(args, env);
+}
+
+/**
+ * 打包主进程
+ * @param api
+ */
+async function runInMainBuild(api: IApi) {
+  const { outputDir, mainWebpackConfig } = api.config
+    .electronBuilder as ElectronBuilder;
+  const absOutputDir = path.join(api.cwd, outputDir);
+
+  const mainConfig = await getMainConfig(api, true);
+
+  mainConfig.output!.path = path.join(absOutputDir, 'bundled');
+
+  //自定义主进程配置
+  mainWebpackConfig(mainConfig);
+
+  await new Promise<void>((resolve, reject) => {
+    const compiler: Compiler = webpack(mainConfig!!);
+
+    compiler.run((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+/**
+ * 启动主进程并监听主进程变化
+ * @param api
+ * @param hmrServer
+ */
+async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
+  const {
+    mainWebpackConfig,
+  } = api.config.electronBuilder as ElectronBuilder;
+
+  const mainConfig = await getMainConfig(api, false);
+  //修改dev模式下主进程编译目录为src/.umi/main
+  mainConfig.output!.path = path.join(api.paths.absTmpPath!, 'main');
+
+  //自定义主进程配置
+  mainWebpackConfig(mainConfig);
+
+  // @ts-ignore
+  await new Promise((resolve: (() => void) | null, reject: ((error: Error) => void) | null) => {
+    const compiler: Compiler = webpack(mainConfig);
+
+    const printCompilingMessage = new DelayedFunction(() => {
+      logProcess('Main', 'Compiling...', chalk.yellow);
+    });
+    compiler.hooks.compile.tap('electron-webpack-dev-runner', () => {
+      hmrServer.beforeCompile();
+      printCompilingMessage.schedule();
+    });
+
+    let watcher: Compiler.Watching | null = compiler.watch({}, (error, stats) => {
+      printCompilingMessage.cancel();
+
+      if (watcher == null) {
+        return;
+      }
+
+      if (error != null) {
+        if (reject == null) {
+          logError('Main', error);
+        } else {
+          reject(error);
+          reject = null;
+        }
+        return;
+      }
+
+      logProcess('Main', stats.toString({
+        colors: true,
+      }), chalk.yellow);
+
+      if (resolve != null) {
+        resolve();
+        resolve = null;
+        return;
+      }
+
+      hmrServer.built(stats);
+    });
+
+    require('async-exit-hook')((callback: () => void) => {
+      debug(`async-exit-hook: ${callback == null}`);
+      const w = watcher;
+      if (w == null) {
+        return;
+      }
+
+      watcher = null;
+      w.close(() => callback());
+    });
+  });
+}
+
+/**
+ * 获取主进程配置
+ * @param api
+ * @param production
+ */
+async function getMainConfig(api: IApi, production: boolean) {
+  const mainConfig = await getMainConfiguration({
+    configuration: {
+      projectDir: api.cwd,
+    },
+    production,
+    autoClean: false,
+    forkTsCheckerLogger: {
+      info: () => {
+        // ignore
+      },
+
+      warn: (message: string) => {
+        logProcess('Main', message, chalk.yellow);
+      },
+
+      error: (message: string) => {
+        logProcess('Main', message, chalk.red);
+      },
+    },
+  });
+  mainConfig?.plugins?.push(new ProgressBarPlugin());
+  return mainConfig!!;
+}
+
+/**
+ * 启动Electron
+ * @param electronArgs
+ * @param env
+ */
+function startElectron(electronArgs: Array<string>, env: any) {
+  const electronProcess = spawn(require('electron').toString(), electronArgs, {
+    env: {
+      ...env,
+      ELECTRON_HMR_SOCKET_PATH: socketPath,
+    },
+  });
+
+  // required on windows
+  require('async-exit-hook')(() => {
+    electronProcess.kill('SIGINT');
+  });
+
+  let queuedData: string | null = null;
+  electronProcess.stdout.on('data', data => {
+    data = data.toString();
+    // do not print the only line - doesn't make sense
+    if (data.trim() === '[HMR] Updated modules:') {
+      queuedData = data;
+      return;
+    }
+
+    if (queuedData != null) {
+      data = queuedData + data;
+      queuedData = null;
+    }
+
+    logProcess('Electron', data, chalk.blue);
+  });
+
+  logProcessErrorOutput('Electron', electronProcess);
+
+  electronProcess.on('close', exitCode => {
+    debug(`Electron exited with exit code ${exitCode}`);
+    if (exitCode === 100) {
+      setImmediate(() => {
+        startElectron(electronArgs, env);
+      });
+    } else {
+      (process as any).emit('message', 'shutdown');
+    }
+  });
 }
