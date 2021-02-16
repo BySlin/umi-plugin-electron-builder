@@ -15,8 +15,6 @@ interface ElectronBuilder {
 }
 
 export default function(api: IApi) {
-  const isElectron = api.args._[0] === 'electron';
-
   const commonOpts: any = {
     cwd: api.cwd,
     cleanup: true,
@@ -141,6 +139,7 @@ export default function(api: IApi) {
     },
   });
 
+  const isElectron = api.args?._[0] === 'electron';
   if (!isElectron) {
     return;
   }
