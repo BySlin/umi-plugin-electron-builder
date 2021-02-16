@@ -25,8 +25,7 @@ $ yarn add umi-plugin-electron-builder --dev
 ```json5
 {
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
+    "rebuild-deps": "electron-builder install-app-deps",
     "electron:dev": "umi dev electron",
     "electron:build:win": "umi build electron --win",
     "electron:build:mac": "umi build electron --mac",

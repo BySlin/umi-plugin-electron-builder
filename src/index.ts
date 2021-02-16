@@ -114,7 +114,7 @@ export default function(api: IApi) {
   //根项目pkg
   const rootPkg = getRootPkg();
   const installAppDeps = 'electron-builder install-app-deps';
-  const scripts = ['postinstall', 'postuninstall'];
+  const scripts = ['rebuild-deps'];
 
   for (let key of scripts) {
     if (rootPkg.scripts[key] == null) {
