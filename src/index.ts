@@ -165,7 +165,7 @@ export default function(api: IApi) {
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'electron-renderer',
-        mainConfiguration: () => {
+        mainWebpackConfig: () => {
         },
       },
       schema(joi) {
@@ -175,7 +175,7 @@ export default function(api: IApi) {
           builderOptions: joi.object(),
           routerMode: joi.string(),
           rendererTarget: joi.string(),
-          mainConfiguration: joi.func(),
+          mainWebpackConfig: joi.func(),
         });
       },
     },
