@@ -2,6 +2,7 @@ export default {
   routes: [{ path: '/', component: '@/pages/index' }],
   plugins: [require.resolve('../../')],
   electronBuilder: {
+    mainSrc: 'src/bg',
     externals: ['electron-updater'],
     builderOptions: {
       appId: 'com.test.test',

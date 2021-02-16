@@ -24,11 +24,19 @@ const debug = require('debug')('electron-webpack');
 let socketPath: string | null = null;
 
 interface ElectronBuilder {
+  //主进程src目录
+  mainSrc: string;
+  //node模块
   externals: string[];
+  //打包目录
   outputDir: string;
+  //打包参数
   builderOptions: any;
+  //路由模式
   routerMode: 'hash' | 'memory'
+  //页面构建目标
   rendererTarget: 'electron-renderer' | 'web';
+  //主进程webpack配置
   mainWebpackConfig: (config: Configuration) => void;
 }
 
@@ -160,6 +168,7 @@ export default function(api: IApi) {
     key: 'electronBuilder',
     config: {
       default: {
+        mainSrc: 'src/main',
         builderOptions: {},
         externals: [],
         outputDir: 'dist_electron',
@@ -170,6 +179,7 @@ export default function(api: IApi) {
       },
       schema(joi) {
         return joi.object({
+          mainSrc: joi.string(),
           outputDir: joi.string(),
           externals: joi.array(),
           builderOptions: joi.object(),
@@ -321,7 +331,9 @@ export default function(api: IApi) {
 
   //检测主进程相关文件是否存在
   function checkMainProcess() {
-    const mainPath = path.join(api.paths.absSrcPath as string, 'main');
+    const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
+    const mainPath = path.join(api.cwd, mainSrc);
+
     if (!fse.pathExistsSync(mainPath)) {
       fse.copySync(path.join(__dirname, '..', 'template'), mainPath);
     }
@@ -511,9 +523,14 @@ async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
  * @param production
  */
 async function getMainConfig(api: IApi, production: boolean) {
+  const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
+
   const mainConfig = await getMainConfiguration({
     configuration: {
       projectDir: api.cwd,
+      main: {
+        sourceDirectory: path.join(api.cwd, mainSrc),
+      },
     },
     production,
     autoClean: false,

@@ -1,4 +1,5 @@
 # umi-plugin-electron-builder
+
 <a href="https://www.npmjs.com/package/umi-plugin-electron-builder"><img src="https://img.shields.io/npm/v/umi-plugin-electron-builder.svg?sanitize=true" alt="Version"></a>
 
 本插件参考[vue-cli-plugin-electron-builder](https://github.com/nklayman/vue-cli-plugin-electron-builder)
@@ -6,10 +7,13 @@
 ## Installation
 
 仅支持umi3
+
 ```
 $ npm i umi-plugin-electron-builder --save-dev
 ```
+
 or
+
 ```
 $ yarn add umi-plugin-electron-builder --dev
 ```
@@ -31,7 +35,8 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:build:mac": "umi build electron --mac",
     "electron:build:linux": "umi build electron --linux"
   },
-  "name": "electron_builder_app",   //这里需要修改成你自己的应用名称
+  "name": "electron_builder_app",
+  //这里需要修改成你自己的应用名称
   "version": "0.0.1",
   "main": "main.js"
 }
@@ -39,6 +44,7 @@ $ yarn add umi-plugin-electron-builder --dev
 ```
 
 ### Electron 版本降级
+
 你可以手动将package.json中的electron修改至低版本，插件与electron版本无关
 
 ## Usage
@@ -49,7 +55,8 @@ $ yarn add umi-plugin-electron-builder --dev
 $ umi dev electron
 ```
 
-### 打包 
+### 打包
+
 如报错请在对应系统上打包，路径不能有中文
 
 ```
@@ -77,10 +84,11 @@ $ npm i serialport @types/serialport -S
 .umirc.ts
 
 ```javascript
-import {defineConfig} from 'umi';
+import { defineConfig } from 'umi';
 
 export default defineConfig({
-  electronBuilder: {
+  electronBuilder: {            //可选参数
+    mainSrc: 'src/main',        //默认主进程目录
     routerMode: 'hash',         //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
@@ -99,10 +107,11 @@ export default defineConfig({
     }//electronBuilder参数
   },
   routes: [
-    {path: '/', component: '@/pages/index'},
+    { path: '/', component: '@/pages/index' },
   ],
 });
 ```
+
 在Electron10以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时rendererTarget需要设置成web
 
 builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
