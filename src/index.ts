@@ -52,7 +52,7 @@ export default function(api: IApi) {
   }
 
   //重新读一遍package.json
-  const pkg = fse.readJSONSync(path.join(api.paths.absSrcPath!, '..', 'package.json'));
+  const pkg = fse.readJSONSync(path.join(process.cwd(), 'package.json'));
 
   let isUpdatePkg = false;
   if (pkg.electronWebpack == null) {
