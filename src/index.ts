@@ -57,10 +57,10 @@ export default function(api: IApi) {
   };
 
   //依赖安装到根项目
-  let pkg = getRootPkg();
+  let relyPkg = getRootPkg();
 
-  if (pkg.devDependencies == undefined) {
-    pkg.devDependencies = {};
+  if (relyPkg.devDependencies == undefined) {
+    relyPkg.devDependencies = {};
   }
 
   //检测依赖是否安装
@@ -122,7 +122,7 @@ export default function(api: IApi) {
       isUpdateRootPkg = true;
     }
     if (rootPkg.scripts[key].indexOf(installAppDeps) == -1) {
-      rootPkg.scripts[key] = `${pkg.scripts[key]} && ${installAppDeps}`;
+      rootPkg.scripts[key] = `${relyPkg.scripts[key]} && ${installAppDeps}`;
       isUpdateRootPkg = true;
     }
   }
