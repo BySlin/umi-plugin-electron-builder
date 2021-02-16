@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "newLine": "lf",
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "types": ["node"]
   }
 }
