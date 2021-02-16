@@ -25,15 +25,11 @@ $ yarn add umi-plugin-electron-builder --dev
 ```json5
 {
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
+    "rebuild-deps": "electron-builder install-app-deps",
     "electron:dev": "umi dev electron",
     "electron:build:win": "umi build electron --win",
     "electron:build:mac": "umi build electron --mac",
     "electron:build:linux": "umi build electron --linux"
-  },
-  "electronWebpack": {
-    "renderer": null
   },
   "name": "electron_builder_app",   //这里需要修改成你自己的应用名称
   "version": "0.0.1",
@@ -89,6 +85,8 @@ export default defineConfig({
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
     rendererTarget: 'electron-renderer', //构建目标electron-renderer或web
+    mainWebpackConfig(config: Configuration) { //主进程Webpack配置
+    },
     builderOptions: {
       appId: 'com.test.test',
       productName: '测试',
