@@ -1,16 +1,23 @@
 import { defineConfig } from 'umi';
-import path from 'path';
 import { Configuration } from 'webpack';
+import { resolve } from 'path';
+
 
 export default defineConfig({
   routes: [{ path: '/', component: '@/pages/index' }],
-  plugins: [path.join(__dirname, '../../../../src')],
+  plugins: [resolve(__dirname, '../../../../src')],
+  alias: {
+    '@/common': resolve(__dirname, '../common'),
+  },
   electronBuilder: {
     mainSrc: '../main',
     outputDir: '../../dist_electron',
     externals: ['electron-updater'],
     mainWebpackConfig(config: Configuration) {
-      config!.resolve!.alias!['@common'] = path.join(__dirname, '../common');
+      config.resolve!.alias = {
+        '@/common': resolve(__dirname, '../common'),
+        '@': resolve(__dirname, '../main'),
+      };
     },
     builderOptions: {
       appId: 'com.test.test',

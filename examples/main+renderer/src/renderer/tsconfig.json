@@ -15,6 +15,12 @@
       ],
       "@@/*": [
         "src/.umi/*"
+      ],
+      "@/common": [
+        "../common"
+      ],
+      "@/common/*": [
+        "../common/*"
       ]
     },
     "allowSyntheticDefaultImports": true

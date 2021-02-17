@@ -1,5 +1,5 @@
 import React from 'react';
-import { testPrint } from '../../common/out';
+import { testPrint } from '@/common/out';
 
 const App = (props: any) => {
   testPrint();

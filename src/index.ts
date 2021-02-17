@@ -531,7 +531,6 @@ async function getMainConfig(api: IApi, production: boolean) {
       },
     },
   });
-  mainConfig?.resolve?.extensions?.push('.ts');
   mainConfig?.plugins?.push(new ProgressBarPlugin());
   return mainConfig!!;
 }
