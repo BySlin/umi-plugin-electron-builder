@@ -1,16 +1,11 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "electron:dev": "cross-env APP_ROOT=src/renderer umi dev electron",
-    "electron:build:win": "cross-env APP_ROOT=src/renderer umi build electron --win",
-    "electron:build:mac": "cross-env APP_ROOT=src/renderer umi build electron --mac",
-    "electron:build:linux": "cross-env APP_ROOT=src/renderer umi build electron --linux",
-    "build": "father-build",
-    "rebuild-deps": "electron-builder install-app-deps"
+    "build": "father-build"
   },
   "files": [
     "lib",

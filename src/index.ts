@@ -81,12 +81,13 @@ export default function(api: IApi) {
   //安装需要的依赖
   if (requiredRelys.length > 0) {
     installRely(requiredRelys.join(' '));
-    //将@types/node切换到electron对应的@types/node
-    const electronPackageJson = fse.readJSONSync(path.join(api.paths.absNodeModulesPath!, 'electron', 'package.json'));
-    if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
-      const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
-      installRely(`@types/node@${electronTypesNodeVersion}`);
-    }
+  }
+
+  //将@types/node切换到electron对应的@types/node
+  const electronPackageJson = fse.readJSONSync(path.join(nodeModulesPath, 'electron', 'package.json'));
+  if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
+    const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
+    installRely(`@types/node@${electronTypesNodeVersion}`);
   }
 
   //根项目pkg
@@ -531,11 +532,6 @@ async function getMainConfig(api: IApi, production: boolean) {
     },
   });
   mainConfig?.resolve?.extensions?.push('.ts');
-  mainConfig?.module?.rules.push({
-    test: /\.ts?$/,
-    use: 'ts-loader',
-    exclude: /node_modules/,
-  });
   mainConfig?.plugins?.push(new ProgressBarPlugin());
   return mainConfig!!;
 }

@@ -1,8 +1,9 @@
 import { defineConfig } from 'umi';
+import path from 'path';
 
 export default defineConfig({
   routes: [{ path: '/', component: '@/pages/index' }],
-  plugins: [require.resolve('../')],
+  plugins: [path.join(__dirname, '../../../../src')],
   electronBuilder: {
     mainSrc: '../main',
     outputDir: '../../dist_electron',
