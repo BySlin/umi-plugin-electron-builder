@@ -23,15 +23,11 @@
         "../common/*"
       ]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "mock/**/*",
-    "src/**/*",
-    "config/**/*",
-    "../../.umirc.ts",
-    "typings.d.ts"
-  ],
   "exclude": [
     "../../node_modules",
     "lib",
