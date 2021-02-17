@@ -1,5 +1,5 @@
 import { app, BrowserWindow, protocol } from 'electron';
-import createProtocol from './createProtocol';
+import createProtocol from '../createProtocol';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';

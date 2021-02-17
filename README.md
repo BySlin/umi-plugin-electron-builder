@@ -35,10 +35,9 @@ $ yarn add umi-plugin-electron-builder --dev
     "electron:build:mac": "umi build electron --mac",
     "electron:build:linux": "umi build electron --linux"
   },
-  "name": "electron_builder_app",
   //这里需要修改成你自己的应用名称
-  "version": "0.0.1",
-  "main": "main.js"
+  "name": "electron_builder_app",
+  "version": "0.0.1"
 }
 
 ```

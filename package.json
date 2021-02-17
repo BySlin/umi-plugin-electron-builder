@@ -5,10 +5,10 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "electron:dev": "cross-env APP_ROOT=src/fixtures/normal umi dev electron",
-    "electron:build:win": "cross-env APP_ROOT=src/fixtures/normal umi build electron --win",
-    "electron:build:mac": "cross-env APP_ROOT=src/fixtures/normal umi build electron --mac",
-    "electron:build:linux": "cross-env APP_ROOT=src/fixtures/normal umi build electron --linux",
+    "electron:dev": "cross-env APP_ROOT=src/renderer umi dev electron",
+    "electron:build:win": "cross-env APP_ROOT=src/renderer umi build electron --win",
+    "electron:build:mac": "cross-env APP_ROOT=src/renderer umi build electron --mac",
+    "electron:build:linux": "cross-env APP_ROOT=src/renderer umi build electron --linux",
     "build": "father-build",
     "rebuild-deps": "electron-builder install-app-deps"
   },

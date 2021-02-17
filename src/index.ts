@@ -49,10 +49,6 @@ export default function(api: IApi) {
     return fse.readJSONSync(path.join(process.cwd(), 'package.json'));
   }
 
-  function getCurrentPkg() {
-    return fse.readJSONSync(path.join(api.cwd, 'package.json'));
-  }
-
   const commonOpts: any = {
     cwd: api.cwd,
     cleanup: true,
@@ -93,34 +89,19 @@ export default function(api: IApi) {
     }
   }
 
-  //当前项目pkg
-  const currentPkg = getCurrentPkg();
-  let isUpdateRootPkg = false, isUpdateCurrentPkg = false;
-
-  if (currentPkg.name == null) {
-    currentPkg.name = 'electron_builder_app';
-    isUpdateCurrentPkg = true;
-  }
-  if (currentPkg.version == null) {
-    currentPkg.version = '0.0.1';
-    isUpdateCurrentPkg = true;
-  }
-  if (currentPkg.main !== 'main.js') {
-    currentPkg.main = 'main.js';
-    isUpdateCurrentPkg = true;
-  }
-
-  if (isUpdateCurrentPkg) {
-    //更新package.json
-    api.logger.info('update package.json');
-    fse.writeFileSync(
-      path.join(api.cwd, 'package.json'),
-      JSON.stringify(currentPkg, null, 2),
-    );
-  }
-
   //根项目pkg
   const rootPkg = getRootPkg();
+  let isUpdateRootPkg = false;
+
+  if (rootPkg.name == null) {
+    rootPkg.name = 'electron_builder_app';
+    isUpdateRootPkg = true;
+  }
+  if (rootPkg.version == null) {
+    rootPkg.version = '0.0.1';
+    isUpdateRootPkg = true;
+  }
+
   const installAppDeps = 'electron-builder install-app-deps';
   const scripts = ['rebuild-deps'];
 
@@ -254,7 +235,8 @@ export default function(api: IApi) {
       const absOutputDir = path.join(api.cwd, outputDir);
       const externalsPath = api.paths.absNodeModulesPath;
 
-      const buildPkg = merge(getRootPkg(), getCurrentPkg());
+      const buildPkg = getRootPkg();
+      buildPkg.main = 'main.js';
 
       delete buildPkg.scripts;
       delete buildPkg.devDependencies;
@@ -527,7 +509,7 @@ async function getMainConfig(api: IApi, production: boolean) {
 
   const mainConfig = await getMainConfiguration({
     configuration: {
-      projectDir: api.cwd,
+      projectDir: process.cwd(),
       main: {
         sourceDirectory: path.join(api.cwd, mainSrc),
       },
@@ -547,6 +529,12 @@ async function getMainConfig(api: IApi, production: boolean) {
         logProcess('Main', message, chalk.red);
       },
     },
+  });
+  mainConfig?.resolve?.extensions?.push('.ts');
+  mainConfig?.module?.rules.push({
+    test: /\.ts?$/,
+    use: 'ts-loader',
+    exclude: /node_modules/,
   });
   mainConfig?.plugins?.push(new ProgressBarPlugin());
   return mainConfig!!;

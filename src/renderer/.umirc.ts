@@ -1,8 +1,11 @@
-export default {
+import { defineConfig } from 'umi';
+
+export default defineConfig({
   routes: [{ path: '/', component: '@/pages/index' }],
-  plugins: [require.resolve('../../')],
+  plugins: [require.resolve('../')],
   electronBuilder: {
-    mainSrc: 'src/bg',
+    mainSrc: '../main',
+    outputDir: '../../dist_electron',
     externals: ['electron-updater'],
     builderOptions: {
       appId: 'com.test.test',
@@ -15,4 +18,4 @@ export default {
       ],
     },
   },
-};
+});
