@@ -41,20 +41,20 @@ export default function(api: IApi) {
   //根项目node_modules路径
   const nodeModulesPath = path.join(process.cwd(), 'node_modules');
 
-  //检测依赖是否安装
-  const relys = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
+  //必须安装的依赖
+  const requiredDependencies = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
   //需要安装的依赖
-  const requiredRelys = [];
-  for (let rely of relys) {
+  const installDependencies = [];
+  for (let dep of requiredDependencies) {
     //通过目录检查依赖是否安装
-    if (!fse.pathExistsSync(path.join(nodeModulesPath, rely))) {
-      requiredRelys.push(rely);
+    if (!fse.pathExistsSync(path.join(nodeModulesPath, dep))) {
+      installDependencies.push(dep);
     }
   }
 
   //安装需要的依赖
-  if (requiredRelys.length > 0) {
-    installRely(requiredRelys.join(' '));
+  if (installDependencies.length > 0) {
+    installRely(installDependencies.join(' '));
   }
 
   //依赖安装到根项目
