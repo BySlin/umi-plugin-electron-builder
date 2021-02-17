@@ -1,8 +1,7 @@
 import * as fse from 'fs-extra';
-import { readdir, remove } from 'fs-extra';
 import * as path from 'path';
 import { IApi, utils } from 'umi';
-import { getFreePort, orNullIfFileNotExist } from 'electron-webpack/out/util';
+import { getFreePort } from 'electron-webpack/out/util';
 import {
   DelayedFunction,
   getCommonEnv,
@@ -14,9 +13,7 @@ import { HmrServer } from 'electron-webpack/out/electron-main-hmr/HmrServer';
 import chalk from 'chalk';
 import webpack, { Compiler, Configuration } from 'webpack';
 import { spawn } from 'child_process';
-import { getElectronWebpackConfiguration, getPackageMetadata } from 'electron-webpack/out/config';
 import { getMainConfiguration } from 'electron-webpack/out/main';
-import * as BluebirdPromise from 'bluebird';
 
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { execa, yargs, lodash: { merge } } = utils;
@@ -41,14 +38,8 @@ interface ElectronBuilder {
 }
 
 export default function(api: IApi) {
+  //根项目node_modules路径
   const nodeModulesPath = path.join(process.cwd(), 'node_modules');
-
-  //依赖安装到根项目
-  let relyPkg = getRootPkg();
-
-  if (relyPkg.devDependencies == undefined) {
-    relyPkg.devDependencies = {};
-  }
 
   //检测依赖是否安装
   const relys = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
@@ -66,55 +57,56 @@ export default function(api: IApi) {
     installRely(requiredRelys.join(' '));
   }
 
+  //依赖安装到根项目
+  let rootPkg = getRootPkg();
+
   //将@types/node切换到electron对应的@types/node
   const electronPackageJson = fse.readJSONSync(path.join(nodeModulesPath, 'electron', 'package.json'));
-  if (electronPackageJson.dependencies['@types/node'] != api.pkg.devDependencies!['@types/node']) {
+  if (electronPackageJson.dependencies['@types/node'] != rootPkg.devDependencies!['@types/node']) {
     const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
     installRely(`@types/node@${electronTypesNodeVersion}`);
   }
 
   //根项目pkg
-  const rootPkg = getRootPkg();
+  rootPkg = getRootPkg();
   let isUpdateRootPkg = false;
 
+  //electron包名
   if (rootPkg.name == null) {
     rootPkg.name = 'electron_builder_app';
     isUpdateRootPkg = true;
   }
+  //版本号
   if (rootPkg.version == null) {
     rootPkg.version = '0.0.1';
     isUpdateRootPkg = true;
   }
 
-  const installAppDeps = 'electron-builder install-app-deps';
-  const scripts = ['rebuild-deps'];
-
-  for (let key of scripts) {
-    if (rootPkg.scripts[key] == null) {
-      rootPkg.scripts[key] = installAppDeps;
-      isUpdateRootPkg = true;
-    }
-    if (rootPkg.scripts[key].indexOf(installAppDeps) == -1) {
-      rootPkg.scripts[key] = `${relyPkg.scripts[key]} && ${installAppDeps}`;
-      isUpdateRootPkg = true;
-    }
+  //基于electron重新构建native模块
+  if (rootPkg.scripts['rebuild-deps'] == null) {
+    rootPkg.scripts['rebuild-deps'] = 'electron-builder install-app-deps';
+    isUpdateRootPkg = true;
   }
 
+  //以开发环境启动electron
   if (rootPkg.scripts['electron:dev'] == null) {
     rootPkg.scripts['electron:dev'] = 'umi dev electron';
     isUpdateRootPkg = true;
   }
 
+  //打包electron windows平台
   if (rootPkg.scripts['electron:build:win'] == null) {
     rootPkg.scripts['electron:build:win'] = 'umi build electron --win';
     isUpdateRootPkg = true;
   }
 
+  //打包electron mac平台
   if (rootPkg.scripts['electron:build:mac'] == null) {
     rootPkg.scripts['electron:build:mac'] = 'umi build electron --mac';
     isUpdateRootPkg = true;
   }
 
+  //打包electron linux平台
   if (rootPkg.scripts['electron:build:linux'] == null) {
     rootPkg.scripts['electron:build:linux'] = 'umi build electron --linux';
     isUpdateRootPkg = true;
@@ -223,7 +215,6 @@ export default function(api: IApi) {
 
       delete buildPkg.scripts;
       delete buildPkg.devDependencies;
-      delete buildPkg.electronWebpack;
       Object.keys(buildPkg.dependencies!).forEach((dependency) => {
         if (!externals.includes(dependency)) {
           delete buildPkg.dependencies![dependency];
@@ -296,7 +287,11 @@ export default function(api: IApi) {
 
   //获取根项目package.json
   function getRootPkg() {
-    return fse.readJSONSync(path.join(process.cwd(), 'package.json'));
+    const pkg = fse.readJSONSync(path.join(process.cwd(), 'package.json'));
+    if (pkg.devDependencies == undefined) {
+      pkg.devDependencies = {};
+    }
+    return pkg;
   }
 
   //检测主进程相关文件是否存在
@@ -343,22 +338,6 @@ export default function(api: IApi) {
   }
 }
 
-// do not remove main.js to allow IDE to keep breakpoints
-async function emptyMainOutput(api: IApi) {
-  const electronWebpackConfig = await getElectronWebpackConfiguration({
-    projectDir: api.cwd,
-    packageMetadata: getPackageMetadata(api.cwd),
-  });
-  const outDir = path.join(electronWebpackConfig.commonDistDirectory!!, 'main');
-  const files = await orNullIfFileNotExist(readdir(outDir));
-  if (files == null) {
-    return;
-  }
-
-  // @ts-ignore
-  await BluebirdPromise.map(files.filter(it => !it.startsWith('.') && it !== 'main.js'), it => remove(outDir + path.sep + it));
-}
-
 /**
  * 从dev启动electron
  * @param api
@@ -378,8 +357,7 @@ async function runInDevMode(api: IApi) {
       .then(it => {
         socketPath = it;
       }),
-    emptyMainOutput(api)
-      .then(() => startMainDevWatch(api, hmrServer)),
+    startMainDevWatch(api, hmrServer),
   ]);
 
   hmrServer.ipc.on('error', (error: Error) => {
