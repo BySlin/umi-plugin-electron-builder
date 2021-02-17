@@ -1,5 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
 import createProtocol from '../../../../src/createProtocol';
+import { testPrint } from '../common/out';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';
@@ -10,6 +11,8 @@ let mainWindow: BrowserWindow;
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
+
+testPrint();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
