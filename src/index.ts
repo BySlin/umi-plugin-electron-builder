@@ -41,24 +41,7 @@ interface ElectronBuilder {
 }
 
 export default function(api: IApi) {
-  //是否设置了APP_ROOT，非默认项目结构
-  const isSetAppRoot = process.env.APP_ROOT != null && process.env.APP_ROOT != '';
-  const nodeModulesPath = isSetAppRoot ? path.join(process.cwd(), 'node_modules') : api.paths.absNodeModulesPath!;
-
-  function getRootPkg() {
-    return fse.readJSONSync(path.join(process.cwd(), 'package.json'));
-  }
-
-  const commonOpts: any = {
-    cwd: api.cwd,
-    cleanup: true,
-    stdin: 'inherit',
-    stdout: 'inherit',
-    stderr: 'inherit',
-    env: {
-      FORCE_COLOR: 'true',
-    },
-  };
+  const nodeModulesPath = path.join(process.cwd(), 'node_modules');
 
   //依赖安装到根项目
   let relyPkg = getRootPkg();
@@ -234,7 +217,6 @@ export default function(api: IApi) {
         .electronBuilder as ElectronBuilder;
 
       const absOutputDir = path.join(api.cwd, outputDir);
-      const externalsPath = api.paths.absNodeModulesPath;
 
       const buildPkg = getRootPkg();
       buildPkg.main = 'main.js';
@@ -254,7 +236,7 @@ export default function(api: IApi) {
       ];
 
       for (const dep of buildDependencies) {
-        let depPackageJsonPath = path.join(externalsPath!, dep, 'package.json');
+        let depPackageJsonPath = path.join(nodeModulesPath, dep, 'package.json');
         if (fse.existsSync(depPackageJsonPath)) {
           buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
@@ -312,6 +294,11 @@ export default function(api: IApi) {
     }
   });
 
+  //获取根项目package.json
+  function getRootPkg() {
+    return fse.readJSONSync(path.join(process.cwd(), 'package.json'));
+  }
+
   //检测主进程相关文件是否存在
   function checkMainProcess() {
     const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
@@ -336,13 +323,22 @@ export default function(api: IApi) {
 
   //安装依赖
   function installRely(command: string) {
-    const cwd = isSetAppRoot ? process.cwd() : api.cwd;
+    const commandOpts: any = {
+      cwd: process.cwd(),
+      cleanup: true,
+      stdin: 'inherit',
+      stdout: 'inherit',
+      stderr: 'inherit',
+      env: {
+        FORCE_COLOR: 'true',
+      },
+    };
     if (isNpm()) {
-      execa.commandSync(`npm i ${command} --save-dev`, { ...commonOpts, cwd });
+      execa.commandSync(`npm i ${command} --save-dev`, commandOpts);
     } else if (isYarn()) {
-      execa.commandSync(`yarn add ${command} --dev`, { ...commonOpts, cwd });
+      execa.commandSync(`yarn add ${command} --dev`, commandOpts);
     } else {
-      execa.commandSync(`yarn add ${command} --dev`, { ...commonOpts, cwd });
+      execa.commandSync(`yarn add ${command} --dev`, commandOpts);
     }
   }
 }
