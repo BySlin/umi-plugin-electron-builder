@@ -1,6 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
 import createProtocol from '../../../../src/createProtocol';
-import { testPrint } from '../common/out';
+import { testPrint } from '@common/out';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';
