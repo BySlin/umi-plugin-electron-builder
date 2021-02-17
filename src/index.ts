@@ -112,8 +112,8 @@ export default function(api: IApi) {
     isUpdateRootPkg = true;
   }
 
+  //更新package.json
   if (isUpdateRootPkg) {
-    //更新package.json
     api.logger.info('update package.json');
     fse.writeFileSync(
       path.join(process.cwd(), 'package.json'),
@@ -306,13 +306,13 @@ export default function(api: IApi) {
 
   //检测是否使用npm
   function isNpm() {
-    const packageLockJsonPath = path.join(api.cwd, 'package-lock.json');
+    const packageLockJsonPath = path.join(process.cwd(), 'package-lock.json');
     return fse.pathExistsSync(packageLockJsonPath);
   }
 
   //检测是否使用yarn
   function isYarn() {
-    const yarnLockPath = path.join(api.cwd, 'yarn.lock');
+    const yarnLockPath = path.join(process.cwd(), 'yarn.lock');
     return fse.pathExistsSync(yarnLockPath);
   }
 
