@@ -208,7 +208,7 @@ export default function(api: IApi) {
       const { builderOptions, externals, outputDir } = api.config
         .electronBuilder as ElectronBuilder;
 
-      const absOutputDir = path.join(api.cwd, outputDir);
+      const absOutputDir = path.join(process.cwd(), outputDir);
 
       const buildPkg = getRootPkg();
       buildPkg.main = 'main.js';
@@ -297,7 +297,7 @@ export default function(api: IApi) {
   //检测主进程相关文件是否存在
   function checkMainProcess() {
     const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
-    const mainPath = path.join(api.cwd, mainSrc);
+    const mainPath = path.join(process.cwd(), mainSrc);
 
     if (!fse.pathExistsSync(mainPath)) {
       fse.copySync(path.join(__dirname, '..', 'template'), mainPath);
@@ -380,7 +380,7 @@ async function runInDevMode(api: IApi) {
 async function runInMainBuild(api: IApi) {
   const { outputDir, mainWebpackConfig } = api.config
     .electronBuilder as ElectronBuilder;
-  const absOutputDir = path.join(api.cwd, outputDir);
+  const absOutputDir = path.join(process.cwd(), outputDir);
 
   const mainConfig = await getMainConfig(api, true);
 
@@ -486,7 +486,7 @@ async function getMainConfig(api: IApi, production: boolean) {
     configuration: {
       projectDir: process.cwd(),
       main: {
-        sourceDirectory: path.join(api.cwd, mainSrc),
+        sourceDirectory: path.join(process.cwd(), mainSrc),
       },
     },
     production,
