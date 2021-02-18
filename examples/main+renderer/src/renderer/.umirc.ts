@@ -10,8 +10,6 @@ export default defineConfig({
     '@/common': resolve(__dirname, '../common'),
   },
   electronBuilder: {
-    mainSrc: '../main',
-    outputDir: '../../dist_electron',
     externals: ['electron-updater'],
     mainWebpackConfig(config: Configuration) {
       config.resolve!.alias = {
