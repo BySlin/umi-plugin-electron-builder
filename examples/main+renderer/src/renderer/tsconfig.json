@@ -10,18 +10,10 @@
     "baseUrl": "./",
     "strict": true,
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@@/*": [
-        "src/.umi/*"
-      ],
-      "@/common": [
-        "../common"
-      ],
-      "@/common/*": [
-        "../common/*"
-      ]
+      "@/*": ["src/*"],
+      "@@/*": ["src/.umi/*"],
+      "@/common": ["../common"],
+      "@/common/*": ["../common/*"]
     },
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,

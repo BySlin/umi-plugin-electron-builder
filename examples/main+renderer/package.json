@@ -1,12 +1,14 @@
 {
+  "name": "electron_builder_app",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "umi dev",
-    "build": "umi build",
-    "postinstall": "umi generate tmp",
-    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
-    "test": "umi-test",
-    "test:coverage": "umi-test --coverage",
+    "start": "cross-env APP_ROOT=src/renderer umi dev",
+    "build": "cross-env APP_ROOT=src/renderer umi build",
+    "postinstall": "cross-env APP_ROOT=src/renderer umi generate tmp",
+    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,less,md}\"",
+    "test": "cross-env APP_ROOT=src/renderer umi-test",
+    "test:coverage": "cross-env APP_ROOT=src/renderer umi-test --coverage",
     "electron:dev": "cross-env APP_ROOT=src/renderer umi dev electron",
     "electron:build:win": "cross-env APP_ROOT=src/renderer umi build electron --win",
     "electron:build:mac": "cross-env APP_ROOT=src/renderer umi build electron --mac",
@@ -45,7 +47,5 @@
     "react-dom": "17.x",
     "typescript": "^4.1.2",
     "yorkie": "^2.0.0"
-  },
-  "name": "electron_builder_app",
-  "version": "0.0.1"
+  }
 }
