@@ -4,6 +4,9 @@
 
 本插件参考[vue-cli-plugin-electron-builder](https://github.com/nklayman/vue-cli-plugin-electron-builder)
 
+## 更新日志
+[更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/master/CHANGELOG.md)
+
 ## Installation
 
 仅支持umi3
