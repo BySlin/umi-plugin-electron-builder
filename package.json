@@ -5,7 +5,17 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "father-build"
+    "build": "father-build",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write",
+      "yarn lint:fix"
+    ]
   },
   "files": [
     "lib",
@@ -21,11 +31,6 @@
   "authors": [
     "BySlin <by2292735470@gmail.com>"
   ],
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -e $GIT_PARAMS"
-    }
-  },
   "license": "MIT",
   "bugs": "https://github.com/BySlin/umi-plugin-electron-builder/issues",
   "homepage": "https://github.com/BySlin/umi-plugin-electron-builder/tree/master#readme",
@@ -48,12 +53,16 @@
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@types/bluebird": "^3.5.33",
+    "@umijs/fabric": "^2.5.6",
     "commitlint-config-gitmoji": "^2.2.1",
     "concurrently": "^6.0.0",
     "conventional-changelog-gitmoji-config": "^1.4.0",
     "cross-env": "^7.0.3",
+    "eslint": "^7.20.0",
     "father-build": "^1.19.1",
     "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
     "umi": "^3.3.7"
   }
 }

@@ -1,6 +1,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { IApi, utils } from 'umi';
+import type { IApi } from 'umi';
+import { utils } from 'umi';
 import { getFreePort } from 'electron-webpack/out/util';
 import {
   DelayedFunction,
@@ -11,108 +12,111 @@ import {
 } from 'electron-webpack/out/dev/devUtil';
 import { HmrServer } from 'electron-webpack/out/electron-main-hmr/HmrServer';
 import chalk from 'chalk';
-import webpack, { Compiler, Configuration } from 'webpack';
+import type { Compiler, Configuration } from 'webpack';
+import webpack from 'webpack';
 import { spawn } from 'child_process';
 import { getMainConfiguration } from 'electron-webpack/out/main';
 
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+
 const { execa, yargs, lodash: { merge } } = utils;
 const debug = require('debug')('electron-webpack');
+
 let socketPath: string | null = null;
 
 interface ElectronBuilder {
-  //主进程src目录
+  // 主进程src目录
   mainSrc: string;
-  //node模块
+  // node模块
   externals: string[];
-  //打包目录
+  // 打包目录
   outputDir: string;
-  //打包参数
+  // 打包参数
   builderOptions: any;
-  //路由模式
+  // 路由模式
   routerMode: 'hash' | 'memory'
-  //页面构建目标
+  // 页面构建目标
   rendererTarget: 'electron-renderer' | 'web';
-  //主进程webpack配置
+  // 主进程webpack配置
   mainWebpackConfig: (config: Configuration) => void;
 }
 
 export default function(api: IApi) {
-  //根项目node_modules路径
+  // 根项目node_modules路径
   const nodeModulesPath = path.join(process.cwd(), 'node_modules');
 
-  //必须安装的依赖
+  // 必须安装的依赖
   const requiredDependencies = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
-  //需要安装的依赖
+  // 需要安装的依赖
   const installDependencies = [];
-  for (let dep of requiredDependencies) {
-    //通过目录检查依赖是否安装
+  for (const dep of requiredDependencies) {
+    // 通过目录检查依赖是否安装
     if (!fse.pathExistsSync(path.join(nodeModulesPath, dep))) {
       installDependencies.push(dep);
     }
   }
 
-  //安装需要的依赖
+  // 安装需要的依赖
   if (installDependencies.length > 0) {
     installRely(installDependencies.join(' '));
   }
 
-  //依赖安装到根项目
+  // 依赖安装到根项目
   let rootPkg = getRootPkg();
 
-  //将@types/node切换到electron对应的@types/node
+  // 将@types/node切换到electron对应的@types/node
   const electronPackageJson = fse.readJSONSync(path.join(nodeModulesPath, 'electron', 'package.json'));
   if (electronPackageJson.dependencies['@types/node'] !== rootPkg.devDependencies!['@types/node']) {
     const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
     installRely(`@types/node@${electronTypesNodeVersion}`);
   }
 
-  //根项目pkg
+  // 根项目pkg
   rootPkg = getRootPkg();
   let isUpdateRootPkg = false;
 
-  //electron包名
+  // electron包名
   if (rootPkg.name == null) {
     rootPkg.name = 'electron_builder_app';
     isUpdateRootPkg = true;
   }
-  //版本号
+  // 版本号
   if (rootPkg.version == null) {
     rootPkg.version = '0.0.1';
     isUpdateRootPkg = true;
   }
 
-  //基于electron重新构建native模块
+  // 基于electron重新构建native模块
   if (rootPkg.scripts['rebuild-deps'] == null) {
     rootPkg.scripts['rebuild-deps'] = 'electron-builder install-app-deps';
     isUpdateRootPkg = true;
   }
 
-  //以开发环境启动electron
+  // 以开发环境启动electron
   if (rootPkg.scripts['electron:dev'] == null) {
     rootPkg.scripts['electron:dev'] = 'umi dev electron';
     isUpdateRootPkg = true;
   }
 
-  //打包electron windows平台
+  // 打包electron windows平台
   if (rootPkg.scripts['electron:build:win'] == null) {
     rootPkg.scripts['electron:build:win'] = 'umi build electron --win';
     isUpdateRootPkg = true;
   }
 
-  //打包electron mac平台
+  // 打包electron mac平台
   if (rootPkg.scripts['electron:build:mac'] == null) {
     rootPkg.scripts['electron:build:mac'] = 'umi build electron --mac';
     isUpdateRootPkg = true;
   }
 
-  //打包electron linux平台
+  // 打包electron linux平台
   if (rootPkg.scripts['electron:build:linux'] == null) {
     rootPkg.scripts['electron:build:linux'] = 'umi build electron --linux';
     isUpdateRootPkg = true;
   }
 
-  //更新package.json
+  // 更新package.json
   if (isUpdateRootPkg) {
     api.logger.info('update package.json');
     fse.writeFileSync(
@@ -160,7 +164,7 @@ export default function(api: IApi) {
       routerMode,
     } = config.electronBuilder as ElectronBuilder;
     config.outputPath = path.join(outputDir, 'bundled');
-    //Electron模式下路由更改为hash|memory
+    // Electron模式下路由更改为hash|memory
     config.history = {
       type: routerMode,
     };
@@ -179,7 +183,7 @@ export default function(api: IApi) {
     return config;
   });
 
-  //配置ElectronTarget
+  // 配置ElectronTarget
   api.chainWebpack((config) => {
     const {
       rendererTarget,
@@ -189,7 +193,7 @@ export default function(api: IApi) {
     return config;
   });
 
-  //start dev electron
+  // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
     checkMainProcess();
     if (isFirstCompile) {
@@ -201,7 +205,7 @@ export default function(api: IApi) {
     }
   });
 
-  //build electron
+  // build electron
   api.onBuildComplete(({ err }) => {
     checkMainProcess();
     if (err == null) {
@@ -227,7 +231,7 @@ export default function(api: IApi) {
       ];
 
       for (const dep of buildDependencies) {
-        let depPackageJsonPath = path.join(nodeModulesPath, dep, 'package.json');
+        const depPackageJsonPath = path.join(nodeModulesPath, dep, 'package.json');
         if (fse.existsSync(depPackageJsonPath)) {
           buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
@@ -260,10 +264,9 @@ export default function(api: IApi) {
       api.logger.info('build main process');
       runInMainBuild(api)
         .then(() => {
-          //打包electron
+          // 打包electron
           api.logger.info('build electron');
-          const configureBuildCommand = require('electron-builder/out/builder')
-            .configureBuildCommand;
+          const { configureBuildCommand } = require('electron-builder/out/builder');
           const builderArgs = yargs
             .command(['build', '*'], 'Build', configureBuildCommand)
             .parse(process.argv);
@@ -285,16 +288,16 @@ export default function(api: IApi) {
     }
   });
 
-  //获取根项目package.json
+  // 获取根项目package.json
   function getRootPkg() {
     const pkg = fse.readJSONSync(path.join(process.cwd(), 'package.json'));
-    if (pkg.devDependencies == undefined) {
+    if (pkg.devDependencies == null) {
       pkg.devDependencies = {};
     }
     return pkg;
   }
 
-  //检测主进程相关文件是否存在
+  // 检测主进程相关文件是否存在
   function checkMainProcess() {
     const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
     const mainPath = path.join(process.cwd(), mainSrc);
@@ -304,19 +307,19 @@ export default function(api: IApi) {
     }
   }
 
-  //检测是否使用npm
+  // 检测是否使用npm
   function isNpm() {
     const packageLockJsonPath = path.join(process.cwd(), 'package-lock.json');
     return fse.pathExistsSync(packageLockJsonPath);
   }
 
-  //检测是否使用yarn
+  // 检测是否使用yarn
   function isYarn() {
     const yarnLockPath = path.join(process.cwd(), 'yarn.lock');
     return fse.pathExistsSync(yarnLockPath);
   }
 
-  //安装依赖
+  // 安装依赖
   function installRely(command: string) {
     const commandOpts: any = {
       cwd: process.cwd(),
@@ -386,7 +389,7 @@ async function runInMainBuild(api: IApi) {
 
   mainConfig.output!.path = path.join(absOutputDir, 'bundled');
 
-  //自定义主进程配置
+  // 自定义主进程配置
   mainWebpackConfig(mainConfig);
 
   await new Promise<void>((resolve, reject) => {
@@ -413,10 +416,10 @@ async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
   } = api.config.electronBuilder as ElectronBuilder;
 
   const mainConfig = await getMainConfig(api, false);
-  //修改dev模式下主进程编译目录为src/.umi/main
+  // 修改dev模式下主进程编译目录为src/.umi/main
   mainConfig.output!.path = path.join(api.paths.absTmpPath!, 'main');
 
-  //自定义主进程配置
+  // 自定义主进程配置
   mainWebpackConfig(mainConfig);
 
   // @ts-ignore
@@ -514,7 +517,7 @@ async function getMainConfig(api: IApi, production: boolean) {
  * @param electronArgs
  * @param env
  */
-function startElectron(electronArgs: Array<string>, env: any) {
+function startElectron(electronArgs: string[], env: any) {
   const electronProcess = spawn(require('electron').toString(), electronArgs, {
     env: {
       ...env,
