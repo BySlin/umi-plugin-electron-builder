@@ -8,6 +8,8 @@
 
 * 适配main+renderer双目录结构，参考([main+renderer](https://github.com/BySlin/umi-plugin-electron-builder/tree/master/examples/main%2Brenderer))
 * 增加mainSrc配置，路径基于APP_ROOT
+* 去掉package.json中的electronWebpack配置
+* 增加mainWebpackConfig配置，配置主进程Webpack
 * 在非main+renderer双目录结构下与fastRefresh冲突，需关闭fastRefresh，原因待定
 
 ## <small>1.0.2 (2021-02-16)</small>
