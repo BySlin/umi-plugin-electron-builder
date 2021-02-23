@@ -6,8 +6,9 @@
 
 ## <small>1.0.15 (2021-02-17)</small>
 
-* 适配main+renderer双目录结构，参考([main+renderer](https://github.com/BySlin/umi-plugin-electron-builder/tree/master/examples/main%2Brenderer))
-* 增加非main+renderer目录结构，参考([demo](https://github.com/BySlin/umi-plugin-electron-builder/tree/master/examples/demo))
+* 适配main+renderer双目录结构
+* 增加main+renderer目录结构示例，参考([main+renderer](https://github.com/BySlin/umi-plugin-electron-builder/tree/master/examples/main%2Brenderer))
+* 增加非main+renderer目录结构示例，参考([demo](https://github.com/BySlin/umi-plugin-electron-builder/tree/master/examples/demo))
 * 增加mainSrc配置，路径基于APP_ROOT
 * 去掉package.json中的electronWebpack配置
 * 增加mainWebpackConfig配置，配置主进程Webpack
