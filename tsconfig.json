@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "removeComments": true,
+    "target": "es5",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "declaration": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "example",
+    "jest.config.js",
+    "**/*.spec.ts",
+    "fixtures",
+    "examples",
+    "**/lib",
+    "**/scripts"
+  ],
+  "include": [
+    "src/**/*"
+  ]
+}

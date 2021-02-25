@@ -8,29 +8,16 @@
 /package-lock.json
 
 # production
-dist
+/dist
 
 # misc
 .DS_Store
 
 # umi
-.umi
-**/src/.umi-production
-**/src/.umi-test
+/src/.umi
+/src/.umi-production
+/src/.umi-test
 /.env.local
 
 # dist_electron
 dist_electron
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw*
-node_modules
-*/yarn.lock
-/examples/main+renderer/src/renderer/yarn.lock
-lib/

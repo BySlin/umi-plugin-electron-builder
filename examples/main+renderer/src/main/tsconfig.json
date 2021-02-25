@@ -13,6 +13,12 @@
     "experimentalDecorators": true,
     "newLine": "lf",
     "noEmitOnError": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": "./",
+    "paths": {
+      "@": ["./"],
+      "@/common": ["../common"],
+      "@/common/*": ["../common/*"]
+    }
   }
 }
