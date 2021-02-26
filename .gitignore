@@ -32,5 +32,3 @@ dist_electron
 *.sw*
 node_modules
 */yarn.lock
-/examples/main+renderer/src/renderer/yarn.lock
-lib/

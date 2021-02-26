@@ -15,11 +15,11 @@ import chalk from 'chalk';
 import type { Compiler, Configuration } from 'webpack';
 import webpack from 'webpack';
 import { spawn } from 'child_process';
-import { getMainConfiguration } from 'electron-webpack/out/main';
+import { getMainWebpackConfig } from './webpack';
+import { getNodeModulesPath, getRootPkg } from './utils';
+import setup from './setup';
 
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-
-const { execa, yargs, lodash: { merge } } = utils;
+const { yargs, lodash: { merge } } = utils;
 const debug = require('debug')('electron-webpack');
 
 let socketPath: string | null = null;
@@ -42,90 +42,8 @@ interface ElectronBuilder {
 }
 
 export default function(api: IApi) {
-  // 根项目node_modules路径
-  const nodeModulesPath = path.join(process.cwd(), 'node_modules');
-
-  // 依赖安装到根项目
-  let rootPkg = getRootPkg();
-  // 必须安装的依赖
-  const requiredDependencies = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
-  // 需要安装的依赖
-  const installDependencies = [];
-  for (const dep of requiredDependencies) {
-    // 通过package.json检查依赖是否安装
-    if (rootPkg.devDependencies[dep] == null) {
-      installDependencies.push(dep);
-    }
-  }
-
-  // 安装需要的依赖
-  if (installDependencies.length > 0) {
-    installRely(installDependencies.join(' '));
-  }
-
-  // 依赖安装到根项目
-  rootPkg = getRootPkg();
-
-  // 将@types/node切换到electron对应的@types/node
-  const electronPackageJson = fse.readJSONSync(path.join(nodeModulesPath, 'electron', 'package.json'));
-  if (electronPackageJson.dependencies['@types/node'] !== rootPkg.devDependencies!['@types/node']) {
-    const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
-    installRely(`@types/node@${electronTypesNodeVersion}`);
-  }
-
-  // 根项目pkg
-  rootPkg = getRootPkg();
-  let isUpdateRootPkg = false;
-
-  // electron包名
-  if (rootPkg.name == null) {
-    rootPkg.name = 'electron_builder_app';
-    isUpdateRootPkg = true;
-  }
-  // 版本号
-  if (rootPkg.version == null) {
-    rootPkg.version = '0.0.1';
-    isUpdateRootPkg = true;
-  }
-
-  // 基于electron重新构建native模块
-  if (rootPkg.scripts['rebuild-deps'] == null) {
-    rootPkg.scripts['rebuild-deps'] = 'electron-builder install-app-deps';
-    isUpdateRootPkg = true;
-  }
-
-  // 以开发环境启动electron
-  if (rootPkg.scripts['electron:dev'] == null) {
-    rootPkg.scripts['electron:dev'] = 'umi dev electron';
-    isUpdateRootPkg = true;
-  }
-
-  // 打包electron windows平台
-  if (rootPkg.scripts['electron:build:win'] == null) {
-    rootPkg.scripts['electron:build:win'] = 'umi build electron --win';
-    isUpdateRootPkg = true;
-  }
-
-  // 打包electron mac平台
-  if (rootPkg.scripts['electron:build:mac'] == null) {
-    rootPkg.scripts['electron:build:mac'] = 'umi build electron --mac';
-    isUpdateRootPkg = true;
-  }
-
-  // 打包electron linux平台
-  if (rootPkg.scripts['electron:build:linux'] == null) {
-    rootPkg.scripts['electron:build:linux'] = 'umi build electron --linux';
-    isUpdateRootPkg = true;
-  }
-
-  // 更新package.json
-  if (isUpdateRootPkg) {
-    api.logger.info('update package.json');
-    fse.writeFileSync(
-      path.join(process.cwd(), 'package.json'),
-      JSON.stringify(rootPkg, null, 2),
-    );
-  }
+  // 检查环境并安装配置
+  setup(api);
 
   api.describe({
     key: 'electronBuilder',
@@ -197,7 +115,7 @@ export default function(api: IApi) {
 
   // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
-    checkMainProcess();
+    copyMainProcess();
     if (isFirstCompile) {
       api.logger.info('start dev electron');
       runInDevMode(api)
@@ -209,12 +127,12 @@ export default function(api: IApi) {
 
   // build electron
   api.onBuildComplete(({ err }) => {
-    checkMainProcess();
+    copyMainProcess();
     if (err == null) {
-      const { builderOptions, externals, outputDir } = api.config
+      const { builderOptions, externals } = api.config
         .electronBuilder as ElectronBuilder;
 
-      const absOutputDir = path.join(process.cwd(), outputDir);
+      const absOutputDir = getAbsOutputDir(api);
 
       const buildPkg = getRootPkg();
       buildPkg.main = 'main.js';
@@ -233,7 +151,7 @@ export default function(api: IApi) {
       ];
 
       for (const dep of buildDependencies) {
-        const depPackageJsonPath = path.join(nodeModulesPath, dep, 'package.json');
+        const depPackageJsonPath = path.join(getNodeModulesPath(), dep, 'package.json');
         if (fse.existsSync(depPackageJsonPath)) {
           buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
@@ -290,17 +208,11 @@ export default function(api: IApi) {
     }
   });
 
-  // 获取根项目package.json
-  function getRootPkg() {
-    const pkg = fse.readJSONSync(path.join(process.cwd(), 'package.json'));
-    if (pkg.devDependencies == null) {
-      pkg.devDependencies = {};
-    }
-    return pkg;
-  }
 
-  // 检测主进程相关文件是否存在
-  function checkMainProcess() {
+  /**
+   * 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
+   */
+  function copyMainProcess() {
     const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
     const mainPath = path.join(process.cwd(), mainSrc);
 
@@ -308,39 +220,16 @@ export default function(api: IApi) {
       fse.copySync(path.join(__dirname, '..', 'template'), mainPath);
     }
   }
+}
 
-  // 检测是否使用npm
-  function isNpm() {
-    const packageLockJsonPath = path.join(process.cwd(), 'package-lock.json');
-    return fse.pathExistsSync(packageLockJsonPath);
-  }
-
-  // 检测是否使用yarn
-  function isYarn() {
-    const yarnLockPath = path.join(process.cwd(), 'yarn.lock');
-    return fse.pathExistsSync(yarnLockPath);
-  }
-
-  // 安装依赖
-  function installRely(command: string) {
-    const commandOpts: any = {
-      cwd: process.cwd(),
-      cleanup: true,
-      stdin: 'inherit',
-      stdout: 'inherit',
-      stderr: 'inherit',
-      env: {
-        FORCE_COLOR: 'true',
-      },
-    };
-    if (isNpm()) {
-      execa.commandSync(`npm i ${command} --save-dev`, commandOpts);
-    } else if (isYarn()) {
-      execa.commandSync(`yarn add ${command} --dev`, commandOpts);
-    } else {
-      execa.commandSync(`yarn add ${command} --dev`, commandOpts);
-    }
-  }
+/**
+ * 获取打包目录
+ * @param api
+ */
+function getAbsOutputDir(api: IApi) {
+  const { outputDir } = api.config
+    .electronBuilder as ElectronBuilder;
+  return path.join(process.cwd(), outputDir);
 }
 
 /**
@@ -383,13 +272,12 @@ async function runInDevMode(api: IApi) {
  * @param api
  */
 async function runInMainBuild(api: IApi) {
-  const { outputDir, mainWebpackConfig } = api.config
+  const { mainWebpackConfig, mainSrc } = api.config
     .electronBuilder as ElectronBuilder;
-  const absOutputDir = path.join(process.cwd(), outputDir);
 
-  const mainConfig = await getMainConfig(api, true);
+  const mainConfig = await getMainWebpackConfig(mainSrc, true);
 
-  mainConfig.output!.path = path.join(absOutputDir, 'bundled');
+  mainConfig.output!.path = path.join(getAbsOutputDir(api), 'bundled');
 
   // 自定义主进程配置
   mainWebpackConfig(mainConfig);
@@ -415,9 +303,10 @@ async function runInMainBuild(api: IApi) {
 async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
   const {
     mainWebpackConfig,
+    mainSrc,
   } = api.config.electronBuilder as ElectronBuilder;
 
-  const mainConfig = await getMainConfig(api, false);
+  const mainConfig = await getMainWebpackConfig(mainSrc, false);
   // 修改dev模式下主进程编译目录为src/.umi/main
   mainConfig.output!.path = path.join(api.paths.absTmpPath!, 'main');
 
@@ -476,41 +365,6 @@ async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
       w.close(() => callback());
     });
   });
-}
-
-/**
- * 获取主进程配置
- * @param api
- * @param production
- */
-async function getMainConfig(api: IApi, production: boolean) {
-  const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
-
-  const mainConfig = await getMainConfiguration({
-    configuration: {
-      projectDir: process.cwd(),
-      main: {
-        sourceDirectory: path.join(process.cwd(), mainSrc),
-      },
-    },
-    production,
-    autoClean: false,
-    forkTsCheckerLogger: {
-      info: () => {
-        // ignore
-      },
-
-      warn: (message: string) => {
-        logProcess('Main', message, chalk.yellow);
-      },
-
-      error: (message: string) => {
-        logProcess('Main', message, chalk.red);
-      },
-    },
-  });
-  mainConfig?.plugins?.push(new ProgressBarPlugin());
-  return mainConfig!!;
 }
 
 /**

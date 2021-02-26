@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   routes: [{ path: '/', component: '@/pages/index' }],
-  plugins: [resolve(__dirname, '../../../../src')],
+  plugins: [resolve(__dirname, '../../../../lib')],
   alias: {
     '@/common': resolve(__dirname, '../common'),
   },
