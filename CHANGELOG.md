@@ -1,6 +1,10 @@
+## <small>1.0.18 (2021-02-26)</small>
+
+* 使用electron模式启动时，屏蔽fastRefresh，避免热更新报错
+
 ## <small>1.0.17 (2021-02-25)</small>
 
-* 修复非main+renderer启动报错问题
+* 修复启动报错问题
 
 ## <small>1.0.16 (2021-02-19)</small>
 
@@ -16,7 +20,7 @@
 * 增加mainSrc配置，路径基于APP_ROOT
 * 去掉package.json中的electronWebpack配置
 * 增加mainWebpackConfig配置，配置主进程Webpack
-* 在非main+renderer双目录结构下与fastRefresh冲突，需关闭fastRefresh，原因待定
+* 插件与fastRefresh冲突，需关闭fastRefresh，原因待定
 
 ## <small>1.0.2 (2021-02-16)</small>
 

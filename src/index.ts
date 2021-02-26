@@ -77,6 +77,9 @@ export default function(api: IApi) {
     return;
   }
 
+  // 在electron下屏蔽fastRefresh，插件与fastRefresh冲突，原因待定
+  api.skipPlugins(['./node_modules/umi/node_modules/@@/features/fastRefresh']);
+
   api.modifyConfig((config) => {
     const {
       outputDir,
