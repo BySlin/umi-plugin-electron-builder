@@ -2,14 +2,13 @@
 
 <a href="https://www.npmjs.com/package/umi-plugin-electron-builder"><img src="https://img.shields.io/npm/v/umi-plugin-electron-builder.svg?sanitize=true" alt="Version"></a>
 
-本插件参考[vue-cli-plugin-electron-builder](https://github.com/nklayman/vue-cli-plugin-electron-builder)
-
 ## 更新日志
+
 [更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/master/CHANGELOG.md)
 
 ## Installation
 
-仅支持umi3
+仅支持umi3，2.0.0基于Vite
 
 ```
 $ npm i umi-plugin-electron-builder --save-dev
@@ -91,11 +90,13 @@ import { defineConfig } from 'umi';
 export default defineConfig({
   electronBuilder: {            //可选参数
     mainSrc: 'src/main',        //默认主进程目录
+    preloadSrc: 'src/preload',  //默认preload目录，可选，不需要可删除
     routerMode: 'hash',         //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
     rendererTarget: 'electron-renderer', //构建目标electron-renderer或web
-    mainWebpackConfig(config: Configuration) { //主进程Webpack配置
+    viteConfig(config: InlineConfig, type: ViteConfigType) { //主进程Vite配置
+      //ViteConfigType分为main和preload可分别配置
     },
     builderOptions: {
       appId: 'com.test.test',
