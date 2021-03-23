@@ -49,6 +49,14 @@ $ yarn add umi-plugin-electron-builder --dev
 你可以手动将package.json中的electron修改至低版本，插件与electron版本无关
 
 ## Usage
+### 从1.x升级
+1、去掉electron-webpack，electron-webpack-ts依赖
+
+2、主进程文件src/main/main.ts变更为src/main/index.ts
+
+3、删除mainWebpackConfig，增加viteConfig，配置参考 https://vitejs.dev/config/
+
+4、src/main/tsconfig.json变为可选
 
 ### 开发
 
@@ -94,11 +102,12 @@ export default defineConfig({
     routerMode: 'hash',         //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
-    rendererTarget: 'electron-renderer', //构建目标electron-renderer或web
+    rendererTarget: 'electron-renderer', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
     viteConfig(config: InlineConfig, type: ViteConfigType) { //主进程Vite配置
+      //配置参考 https://vitejs.dev/config/
       //ViteConfigType分为main和preload可分别配置
     },
-    builderOptions: {
+    builderOptions: { //配置参考 https://www.electron.build/configuration/configuration
       appId: 'com.test.test',
       productName: '测试',
       publish: [
