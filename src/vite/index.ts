@@ -1,13 +1,14 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build, InlineConfig, normalizePath } from 'vite';
-import { IApi } from 'umi';
+import { IApi, utils } from 'umi';
 import { ElectronBuilder, ViteConfigType } from '../types';
 import externalPackages from './external-packages.config';
-import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc, logProcess, logProcessErrorOutput } from '../utils';
 import chalk from 'chalk';
+
+const { chokidar } = utils;
 
 const electronPath = require('electron');
 
