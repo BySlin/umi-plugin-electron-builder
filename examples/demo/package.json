@@ -42,6 +42,7 @@
     "prettier": "^2.2.1",
     "react": "17.x",
     "react-dom": "17.x",
+    "umi-plugin-electron-builder": "^2.0.0-beta",
     "yorkie": "^2.0.0"
   }
 }
