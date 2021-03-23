@@ -211,7 +211,6 @@ export default function(api: IApi) {
     }
   });
 
-
   /**
    * 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
    */
