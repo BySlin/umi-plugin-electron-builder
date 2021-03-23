@@ -1,4 +1,4 @@
-## <small>2.0.0.beta1(2021-03-23)</small>
+## <small>2.0.0(2021-03-23)</small>
 1、重构，不在基于Webpack，现在基于Vite
 
 2、去掉electron-webpack，electron-webpack-ts依赖
