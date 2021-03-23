@@ -1,6 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
-import createProtocol from '../../../../lib/createProtocol';
-import { testPrint } from '@/common/out';
+import createProtocol from '../../../../src/createProtocol';
+import path from 'path';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';
@@ -12,14 +12,13 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
 
-testPrint();
-
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.cjs'),
     },
   });
   if (isDevelopment) {

@@ -25,7 +25,7 @@ $ yarn add umi-plugin-electron-builder --dev
 
 默认安装最新版本的electron
 
-自动生成主进程文件src/main/main.ts
+自动生成主进程文件src/main/index.ts
 
 自动在package.json增加
 

@@ -1,6 +1,10 @@
 import path from 'path';
 import * as fse from 'fs-extra';
-import { utils } from 'umi';
+import { IApi, utils } from 'umi';
+import chalk from 'chalk';
+import { ChildProcess } from 'child_process';
+import { ElectronBuilder } from '../types';
+import { normalizePath } from 'vite';
 
 const { execa } = utils;
 
@@ -61,4 +65,107 @@ export function getRootPkg() {
  */
 export function getNodeModulesPath() {
   return path.join(process.cwd(), 'node_modules');
+}
+
+/**
+ * 获取主进程目录
+ * @param api
+ */
+export function getMainSrc(api: IApi) {
+  const { mainSrc } = api.config
+    .electronBuilder as ElectronBuilder;
+  return normalizePath(path.join(process.cwd(), mainSrc));
+}
+
+/**
+ * 获取preload目录
+ * @param api
+ */
+export function getPreloadSrc(api: IApi) {
+  const { preloadSrc } = api.config
+    .electronBuilder as ElectronBuilder;
+  return normalizePath(path.join(process.cwd(), preloadSrc));
+}
+
+/**
+ * 获取开发环境编译目录
+ * @param api
+ */
+export function getDevBuildDir(api: IApi) {
+  return normalizePath(path.join(api.paths.absTmpPath!, 'electron'));
+}
+
+/**
+ * 获取electron打包目录
+ * @param api
+ */
+export function getBuildDir(api: IApi) {
+  return normalizePath(path.join(getAbsOutputDir(api), 'bundled'));
+}
+
+/**
+ * 获取打包目录
+ * @param api
+ */
+export function getAbsOutputDir(api: IApi) {
+  const { outputDir } = api.config
+    .electronBuilder as ElectronBuilder;
+  return path.join(process.cwd(), outputDir);
+}
+
+export interface LineFilter {
+  filter(line: string): boolean
+}
+
+function filterText(s: string, lineFilter: LineFilter | null) {
+  const lines = s
+    .trim()
+    .split(/\r?\n/)
+    .filter(it => {
+      if (lineFilter != null && !lineFilter.filter(it)) {
+        return false;
+      }
+
+      // https://github.com/electron/electron/issues/4420
+      // this warning can be safely ignored
+      if (it.includes('Couldn\'t set selectedTextBackgroundColor from default ()')) {
+        return false;
+      }
+      if (it.includes('Use NSWindow\'s -titlebarAppearsTransparent=YES instead.')) {
+        return false;
+      }
+      return !it.includes('Warning: This is an experimental feature and could change at any time.')
+        && !it.includes('No type errors found')
+        && !it.includes('webpack: Compiled successfully.');
+    });
+
+  if (lines.length === 0) {
+    return null;
+  }
+  return '  ' + lines.join(`\n  `) + '\n';
+}
+
+export function logProcessErrorOutput(label: 'Electron' | 'Renderer' | 'Main', childProcess: ChildProcess) {
+  childProcess.stderr!!.on('data', data => {
+    logProcess(label, data.toString(), chalk.red);
+  });
+}
+
+export function logError(label: 'Electron' | 'Renderer' | 'Main', error: Error) {
+  logProcess(label, error.stack || error.toString(), chalk.red);
+}
+
+export function logProcess(label: 'Electron' | 'Renderer' | 'Main', data: string | Buffer, labelColor: any, lineFilter: LineFilter | null = null) {
+  const LABEL_LENGTH = 28;
+  const log = filterText(data.toString(), lineFilter);
+  if (log == null || log.length === 0 || log.trim().length === 0) {
+    return;
+  }
+
+  process.stdout.write(
+    labelColor.bold(`┏ ${label} ${'-'.repeat(LABEL_LENGTH - label.length - 1)}`) +
+    '\n\n' + log + '\n' +
+    labelColor.bold(`┗ ${'-'.repeat(LABEL_LENGTH)}`) +
+    '\n',
+  );
 }

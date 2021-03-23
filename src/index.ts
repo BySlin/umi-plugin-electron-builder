@@ -2,44 +2,12 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import type { IApi } from 'umi';
 import { utils } from 'umi';
-import { getFreePort } from 'electron-webpack/out/util';
-import {
-  DelayedFunction,
-  getCommonEnv,
-  logError,
-  logProcess,
-  logProcessErrorOutput,
-} from 'electron-webpack/out/dev/devUtil';
-import { HmrServer } from 'electron-webpack/out/electron-main-hmr/HmrServer';
-import chalk from 'chalk';
-import type { Compiler, Configuration } from 'webpack';
-import webpack from 'webpack';
-import { spawn } from 'child_process';
-import { getMainWebpackConfig } from './webpack';
-import { getNodeModulesPath, getRootPkg } from './utils';
+import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRootPkg } from './utils';
+import { runBuild, runDev } from './vite';
+import { ElectronBuilder } from './types';
 import setup from './setup';
 
 const { yargs, lodash: { merge } } = utils;
-const debug = require('debug')('electron-webpack');
-
-let socketPath: string | null = null;
-
-interface ElectronBuilder {
-  // 主进程src目录
-  mainSrc: string;
-  // node模块
-  externals: string[];
-  // 打包目录
-  outputDir: string;
-  // 打包参数
-  builderOptions: any;
-  // 路由模式
-  routerMode: 'hash' | 'memory'
-  // 页面构建目标
-  rendererTarget: 'electron-renderer' | 'web';
-  // 主进程webpack配置
-  mainWebpackConfig: (config: Configuration) => void;
-}
 
 export default function(api: IApi) {
   // 检查环境并安装配置
@@ -50,23 +18,25 @@ export default function(api: IApi) {
     config: {
       default: {
         mainSrc: 'src/main',
+        preloadSrc: 'src/preload',
         builderOptions: {},
         externals: [],
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'electron-renderer',
-        mainWebpackConfig: () => {
+        viteConfig: () => {
         },
       },
       schema(joi) {
         return joi.object({
           mainSrc: joi.string(),
+          preloadSrc: joi.string(),
           outputDir: joi.string(),
           externals: joi.array(),
           builderOptions: joi.object(),
           routerMode: joi.string(),
           rendererTarget: joi.string(),
-          mainWebpackConfig: joi.func(),
+          viteConfig: joi.func(),
         });
       },
     },
@@ -77,9 +47,6 @@ export default function(api: IApi) {
     return;
   }
 
-  // 在electron下屏蔽fastRefresh，插件与fastRefresh冲突，原因待定
-  api.skipPlugins(['./node_modules/umi/node_modules/@@/features/fastRefresh']);
-
   api.modifyConfig((config) => {
     const {
       outputDir,
@@ -87,6 +54,9 @@ export default function(api: IApi) {
       routerMode,
     } = config.electronBuilder as ElectronBuilder;
     config.outputPath = path.join(outputDir, 'bundled');
+    config.alias = config.alias || {};
+    config.alias['@/common'] = path.join(process.cwd(), 'src/common');
+
     // Electron模式下路由更改为hash|memory
     config.history = {
       type: routerMode,
@@ -121,7 +91,7 @@ export default function(api: IApi) {
     copyMainProcess();
     if (isFirstCompile) {
       api.logger.info('start dev electron');
-      runInDevMode(api)
+      runDev(api)
         .catch(error => {
           console.error(error);
         });
@@ -138,7 +108,7 @@ export default function(api: IApi) {
       const absOutputDir = getAbsOutputDir(api);
 
       const buildPkg = getRootPkg();
-      buildPkg.main = 'main.js';
+      buildPkg.main = 'main.cjs';
 
       delete buildPkg.scripts;
       delete buildPkg.devDependencies;
@@ -185,7 +155,7 @@ export default function(api: IApi) {
       };
 
       api.logger.info('build main process');
-      runInMainBuild(api)
+      runBuild(api)
         .then(() => {
           // 打包electron
           api.logger.info('build electron');
@@ -211,210 +181,18 @@ export default function(api: IApi) {
     }
   });
 
-
   /**
    * 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
    */
   function copyMainProcess() {
-    const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
-    const mainPath = path.join(process.cwd(), mainSrc);
+    const mainSrc = getMainSrc(api);
+    if (!fse.pathExistsSync(mainSrc)) {
+      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc);
+    }
 
-    if (!fse.pathExistsSync(mainPath)) {
-      fse.copySync(path.join(__dirname, '..', 'template'), mainPath);
+    const preloadSrc = getPreloadSrc(api);
+    if (!fse.pathExistsSync(preloadSrc)) {
+      fse.copySync(path.join(__dirname, '..', 'template', 'preload'), preloadSrc);
     }
   }
-}
-
-/**
- * 获取打包目录
- * @param api
- */
-function getAbsOutputDir(api: IApi) {
-  const { outputDir } = api.config
-    .electronBuilder as ElectronBuilder;
-  return path.join(process.cwd(), outputDir);
-}
-
-/**
- * 从dev启动electron
- * @param api
- */
-async function runInDevMode(api: IApi) {
-  const wdsHost = 'localhost';
-  const wdsPort = await getFreePort(wdsHost, 9080);
-  const env = {
-    ...getCommonEnv(),
-    ELECTRON_WEBPACK_WDS_HOST: wdsHost,
-    ELECTRON_WEBPACK_WDS_PORT: wdsPort,
-  };
-
-  const hmrServer = new HmrServer();
-  await Promise.all([
-    hmrServer.listen()
-      .then(it => {
-        socketPath = it;
-      }),
-    startMainDevWatch(api, hmrServer),
-  ]);
-
-  hmrServer.ipc.on('error', (error: Error) => {
-    logError('Main', error);
-  });
-
-  const electronArgs = process.env.ELECTRON_ARGS;
-  const args = electronArgs != null && electronArgs.length > 0 ? JSON.parse(electronArgs) : [`--inspect=${await getFreePort('127.0.0.1', 5858)}`];
-  args.push(path.join(api.paths.absTmpPath!, 'main/main.js'));
-  // Pass remaining arguments to the application. Remove 3 instead of 2, to remove the `dev` argument as well.
-  args.push(...process.argv.slice(3));
-  // we should start only when both start and main are started
-  startElectron(args, env);
-}
-
-/**
- * 打包主进程
- * @param api
- */
-async function runInMainBuild(api: IApi) {
-  const { mainWebpackConfig, mainSrc } = api.config
-    .electronBuilder as ElectronBuilder;
-
-  const mainConfig = await getMainWebpackConfig(mainSrc, true);
-
-  mainConfig.output!.path = path.join(getAbsOutputDir(api), 'bundled');
-
-  // 自定义主进程配置
-  mainWebpackConfig(mainConfig);
-
-  await new Promise<void>((resolve, reject) => {
-    const compiler: Compiler = webpack(mainConfig!!);
-
-    compiler.run((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
-/**
- * 启动主进程并监听主进程变化
- * @param api
- * @param hmrServer
- */
-async function startMainDevWatch(api: IApi, hmrServer: HmrServer) {
-  const {
-    mainWebpackConfig,
-    mainSrc,
-  } = api.config.electronBuilder as ElectronBuilder;
-
-  const mainConfig = await getMainWebpackConfig(mainSrc, false);
-  // 修改dev模式下主进程编译目录为src/.umi/main
-  mainConfig.output!.path = path.join(api.paths.absTmpPath!, 'main');
-
-  // 自定义主进程配置
-  mainWebpackConfig(mainConfig);
-
-  await new Promise<void>((resolve: (() => void) | null, reject: ((error: Error) => void) | null) => {
-    const compiler: Compiler = webpack(mainConfig);
-
-    const printCompilingMessage = new DelayedFunction(() => {
-      logProcess('Main', 'Compiling...', chalk.yellow);
-    });
-    compiler.hooks.compile.tap('electron-webpack-dev-runner', () => {
-      hmrServer.beforeCompile();
-      printCompilingMessage.schedule();
-    });
-
-    let watcher: Compiler.Watching | null = compiler.watch({}, (error, stats) => {
-      printCompilingMessage.cancel();
-
-      if (watcher == null) {
-        return;
-      }
-
-      if (error != null) {
-        if (reject == null) {
-          logError('Main', error);
-        } else {
-          reject(error);
-          reject = null;
-        }
-        return;
-      }
-
-      logProcess('Main', stats.toString({
-        colors: true,
-      }), chalk.yellow);
-
-      if (resolve != null) {
-        resolve();
-        resolve = null;
-        return;
-      }
-
-      hmrServer.built(stats);
-    });
-
-    require('async-exit-hook')((callback: () => void) => {
-      debug(`async-exit-hook: ${callback == null}`);
-      const w = watcher;
-      if (w == null) {
-        return;
-      }
-
-      watcher = null;
-      w.close(() => callback());
-    });
-  });
-}
-
-/**
- * 启动Electron
- * @param electronArgs
- * @param env
- */
-function startElectron(electronArgs: string[], env: any) {
-  const electronProcess = spawn(require('electron').toString(), electronArgs, {
-    env: {
-      ...env,
-      ELECTRON_HMR_SOCKET_PATH: socketPath,
-    },
-  });
-
-  // required on windows
-  require('async-exit-hook')(() => {
-    electronProcess.kill('SIGINT');
-  });
-
-  let queuedData: string | null = null;
-  electronProcess.stdout.on('data', data => {
-    data = data.toString();
-    // do not print the only line - doesn't make sense
-    if (data.trim() === '[HMR] Updated modules:') {
-      queuedData = data;
-      return;
-    }
-
-    if (queuedData != null) {
-      data = queuedData + data;
-      queuedData = null;
-    }
-
-    logProcess('Electron', data, chalk.blue);
-  });
-
-  logProcessErrorOutput('Electron', electronProcess);
-
-  electronProcess.on('close', exitCode => {
-    debug(`Electron exited with exit code ${exitCode}`);
-    if (exitCode === 100) {
-      setImmediate(() => {
-        startElectron(electronArgs, env);
-      });
-    } else {
-      (process as any).emit('message', 'shutdown');
-    }
-  });
 }

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
-import createProtocol from '../../../../lib/createProtocol';
+import createProtocol from 'umi-plugin-electron-builder/lib/createProtocol';
+import path from 'path';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';
@@ -16,7 +17,8 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.cjs'),
     },
   });
   if (isDevelopment) {

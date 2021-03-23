@@ -1,22 +1,12 @@
 import { defineConfig } from 'umi';
-import { Configuration } from 'webpack';
 import { resolve } from 'path';
 
 export default defineConfig({
   fastRefresh: {},
   routes: [{ path: '/', component: '@/pages/index' }],
   plugins: [resolve(__dirname, '../../../../lib')],
-  alias: {
-    '@/common': resolve(__dirname, '../common'),
-  },
   electronBuilder: {
-    externals: ['electron-updater'],
-    mainWebpackConfig(config: Configuration) {
-      config.resolve!.alias = {
-        '@/common': resolve(__dirname, '../common'),
-        '@': resolve(__dirname, '../main'),
-      };
-    },
+    rendererTarget: 'web',
     builderOptions: {
       appId: 'com.test.test',
       productName: '测试',

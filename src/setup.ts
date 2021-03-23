@@ -13,7 +13,7 @@ export default (api: IApi) => {
   // 依赖安装到根项目
   let rootPkg = getRootPkg();
   // 必须安装的依赖
-  const requiredDependencies = ['electron', 'electron-builder', 'electron-webpack', 'electron-webpack-ts'];
+  const requiredDependencies = ['electron', 'electron-builder'];
   // 需要安装的依赖
   const installDependencies = [];
   for (const dep of requiredDependencies) {
