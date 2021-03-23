@@ -11,7 +11,9 @@
 
 6、增加src/preload/index.ts（可选），src/preload/tsconfig.json（可选）
 
-7、默认配置alias
+7、修复与fastRefresh冲突
+
+8、默认配置alias
 
 * main下
 
