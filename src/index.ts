@@ -119,7 +119,6 @@ export default function(api: IApi) {
       });
 
       const buildDependencies = [
-        'source-map-support',
         'electron-devtools-installer',
       ];
 
