@@ -39,7 +39,6 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
   const { externals, viteConfig } = api.config
     .electronBuilder as ElectronBuilder;
 
-  console.log(path.join(process.cwd(), 'src/common'));
   if (type === 'main') {
     const mainConfig: InlineConfig = {
       mode,

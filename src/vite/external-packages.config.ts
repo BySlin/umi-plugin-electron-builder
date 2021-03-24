@@ -5,11 +5,11 @@
  Some that are designed for a node environment may not work correctly after optimization.
  Therefore, such dependencies should be marked as "external":
  they will not be optimized, will not be included in your bundle, and will be delivered as a separate node module.
-*/
+ */
 export const external = [
   'electron',
   'electron-updater',
-]
+];
 
 
 export const builtins = [
@@ -51,9 +51,14 @@ export const builtins = [
   'v8',
   'vm',
   'zlib',
-]
+];
+
+export const libExternal = [
+  'umi-request',
+];
 
 export default [
   ...builtins,
   ...external,
-]
+  ...libExternal,
+];
