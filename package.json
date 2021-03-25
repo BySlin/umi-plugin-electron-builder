@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "father-build",
-    "publish": "npm publish"
+    "publish": "npm publish --tag=next"
   },
   "files": [
     "lib",
