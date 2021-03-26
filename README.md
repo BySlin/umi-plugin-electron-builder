@@ -128,7 +128,7 @@ export default defineConfig({
 builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
 
 ### 已知问题
-esbuild 咱不支持 typescript decorator metadata
+esbuild 暂不支持 typescript decorator metadata
 
 Vite与typeorm冲突，typeorm在主进程无法使用，建议使用1.x版本 
 
