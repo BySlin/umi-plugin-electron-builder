@@ -11,13 +11,13 @@
 仅支持umi3，2.0.0基于Vite
 
 ```
-$ npm i umi-plugin-electron-builder --save-dev
+$ npm i umi-plugin-electron-builder@next --save-dev
 ```
 
 or
 
 ```
-$ yarn add umi-plugin-electron-builder --dev
+$ yarn add umi-plugin-electron-builder@next --dev
 ```
 
 安装之后会自动生成相关文件
@@ -123,7 +123,13 @@ export default defineConfig({
   ],
 });
 ```
-
 在Electron10以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时rendererTarget需要设置成web
 
 builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
+
+### 已知问题
+esbuild 咱不支持 typescript decorator metadata
+
+Vite与typeorm冲突，typeorm在主进程无法使用，建议使用1.x版本 
+
+相关Issue https://github.com/evanw/esbuild/issues/257
