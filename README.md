@@ -130,6 +130,6 @@ builderOptions[参考Electron Builder](https://www.electron.build/configuration/
 ### 已知问题
 esbuild 暂不支持 typescript decorator metadata
 
-Vite与typeorm冲突，typeorm在主进程无法使用，建议使用webpack 1.x版本 
+Vite与typeorm冲突，typeorm在主进程无法使用 
 
 相关Issue https://github.com/evanw/esbuild/issues/257
