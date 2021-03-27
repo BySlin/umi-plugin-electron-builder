@@ -89,7 +89,7 @@ export function getNodeModulesPath() {
 export function getMainSrc(api: IApi) {
   const { mainSrc } = api.config
     .electronBuilder as ElectronBuilder;
-  return normalizePath(path.join(process.cwd(), mainSrc));
+  return path.join(process.cwd(), mainSrc);
 }
 
 /**
@@ -99,7 +99,7 @@ export function getMainSrc(api: IApi) {
 export function getPreloadSrc(api: IApi) {
   const { preloadSrc } = api.config
     .electronBuilder as ElectronBuilder;
-  return normalizePath(path.join(process.cwd(), preloadSrc));
+  return path.join(process.cwd(), preloadSrc);
 }
 
 /**
@@ -107,7 +107,7 @@ export function getPreloadSrc(api: IApi) {
  * @param api
  */
 export function getDevBuildDir(api: IApi) {
-  return normalizePath(path.join(api.paths.absTmpPath!, 'electron'));
+  return path.join(api.paths.absTmpPath!, 'electron');
 }
 
 /**
@@ -115,7 +115,7 @@ export function getDevBuildDir(api: IApi) {
  * @param api
  */
 export function getBuildDir(api: IApi) {
-  return normalizePath(path.join(getAbsOutputDir(api), 'bundled'));
+  return path.join(getAbsOutputDir(api), 'bundled');
 }
 
 /**

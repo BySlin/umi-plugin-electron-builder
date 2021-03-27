@@ -3,7 +3,7 @@ import * as path from 'path';
 import type { IApi } from 'umi';
 import { utils } from 'umi';
 import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRootPkg } from './utils';
-import { runBuild, runDev } from './vite';
+import { runBuild, runDev } from './compile';
 import { ElectronBuilder } from './types';
 import setup from './setup';
 
@@ -27,7 +27,7 @@ export default function(api: IApi) {
         rendererTarget: 'web',
         viteConfig: () => {
         },
-        mainWebpackConfig: () => {
+        mainWebpackChain: () => {
         },
       },
       schema(joi) {
@@ -40,7 +40,7 @@ export default function(api: IApi) {
           routerMode: joi.string(),
           rendererTarget: joi.string(),
           viteConfig: joi.func(),
-          mainWebpackConfig: joi.func(),
+          mainWebpackChain: joi.func(),
         });
       },
     },

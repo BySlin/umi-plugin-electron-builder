@@ -1,7 +1,10 @@
 import { Configuration } from 'electron-builder';
 import { InlineConfig } from 'vite';
-export declare type ViteConfigType = 'main' | 'preload';
+import Config from 'webpack-chain';
+export declare type ConfigType = 'main' | 'preload';
+export declare type BuildType = 'vite' | 'webpack';
 export interface ElectronBuilder {
+    buildType: BuildType;
     mainSrc: string;
     preloadSrc: string;
     externals: string[];
@@ -9,5 +12,6 @@ export interface ElectronBuilder {
     builderOptions: Configuration;
     routerMode: 'hash' | 'memory';
     rendererTarget: 'electron-renderer' | 'web';
-    viteConfig: (config: InlineConfig, type: ViteConfigType) => void;
+    viteConfig: (config: InlineConfig, type: ConfigType) => void;
+    mainWebpackChain: (config: Config, type: ConfigType) => void;
 }

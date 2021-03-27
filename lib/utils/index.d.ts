@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { IApi } from 'umi';
 import { ChildProcess } from 'child_process';
+export declare function debounce(f: () => void, ms: number): () => void;
 export declare function installRely(pkgName: string): void;
 export declare function getRootPkg(): any;
 export declare function getNodeModulesPath(): string;

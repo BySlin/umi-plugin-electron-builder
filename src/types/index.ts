@@ -1,5 +1,6 @@
 import { Configuration } from 'electron-builder';
 import { InlineConfig } from 'vite';
+import Config from 'webpack-chain';
 
 export type ConfigType = 'main' | 'preload';
 
@@ -25,5 +26,5 @@ export interface ElectronBuilder {
   // 主进程vite配置
   viteConfig: (config: InlineConfig, type: ConfigType) => void;
   // 主进程webpack配置
-  mainWebpackConfig: () => void;
+  mainWebpackChain: (config: Config, type: ConfigType) => void;
 }
