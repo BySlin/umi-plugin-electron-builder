@@ -61,7 +61,7 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
         rollupOptions: {
           external: [...externalPackages, ...externals],
           output: {
-            entryFileNames: 'main.cjs',
+            entryFileNames: 'main.js',
           },
         },
         emptyOutDir: false,
@@ -91,7 +91,7 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
         rollupOptions: {
           external: [...externalPackages, ...externals],
           output: {
-            entryFileNames: 'preload.cjs',
+            entryFileNames: 'preload.js',
           },
         },
         emptyOutDir: false,
@@ -114,7 +114,7 @@ export const runDev = async (api: IApi) => {
       spawnProcess = null;
     }
 
-    spawnProcess = spawn(String(electronPath), [path.join(getDevBuildDir(api), 'main.cjs')]);
+    spawnProcess = spawn(String(electronPath), [path.join(getDevBuildDir(api), 'main.js')]);
     spawnProcess.stdout.on('data', d => logProcess('Electron', d.toString(), chalk.blue));
     logProcessErrorOutput('Electron', spawnProcess);
     spawnProcess.on('close', (code, signal) => {
@@ -179,7 +179,7 @@ export const runDev = async (api: IApi) => {
         return runMain();
       }
 
-      if (spawnProcess !== undefined && normalizedPath.includes('preload.cjs')) {
+      if (spawnProcess !== undefined && normalizedPath.includes('preload.js')) {
         return runPreload();
       }
     })
@@ -190,7 +190,7 @@ export const runDev = async (api: IApi) => {
         return buildMainDebounced();
       }
 
-      if (normalizedPath.includes('main.cjs')) {
+      if (normalizedPath.includes('main.js')) {
         return runMain();
       }
 
@@ -198,7 +198,7 @@ export const runDev = async (api: IApi) => {
         return buildPreloadDebounced();
       }
 
-      if (normalizedPath.includes('preload.cjs')) {
+      if (normalizedPath.includes('preload.js')) {
         return runPreload();
       }
     });
