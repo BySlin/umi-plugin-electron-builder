@@ -8,7 +8,7 @@
 
 ## Installation
 
-仅支持umi3，2.0.0基于Vite
+仅支持 umi3
 
 ```
 $ npm i umi-plugin-electron-builder@next --save-dev
@@ -22,41 +22,44 @@ $ yarn add umi-plugin-electron-builder@next --dev
 
 安装之后会自动生成相关文件
 
-默认安装最新版本的electron
+默认安装最新版本的 electron
 
-自动生成主进程文件src/main/index.ts
+自动生成主进程文件 src/main/index.ts
 
-自动在package.json增加
+自动在 package.json 增加
 
 ```json5
 {
-  "scripts": {
-    "rebuild-deps": "electron-builder install-app-deps",
-    "electron:dev": "umi dev electron",
-    "electron:build:win": "umi build electron --win",
-    "electron:build:mac": "umi build electron --mac",
-    "electron:build:linux": "umi build electron --linux"
+  scripts: {
+    'rebuild-deps': 'electron-builder install-app-deps',
+    'electron:dev': 'umi dev electron',
+    'electron:build:win': 'umi build electron --win',
+    'electron:build:mac': 'umi build electron --mac',
+    'electron:build:linux': 'umi build electron --linux',
   },
   //这里需要修改成你自己的应用名称
-  "name": "electron_builder_app",
-  "version": "0.0.1"
+  name: 'electron_builder_app',
+  version: '0.0.1',
 }
-
 ```
 
 ### Electron 版本降级
 
-你可以手动将package.json中的electron修改至低版本，插件与electron版本无关
+你可以手动将 package.json 中的 electron 修改至低版本，插件与 electron 版本无关
 
 ## Usage
-### 从1.x升级
-1、去掉electron-webpack，electron-webpack-ts依赖
 
-2、主进程文件src/main/main.ts变更为src/main/index.ts
+### 从 1.x 升级
 
-3、删除mainWebpackConfig，增加viteConfig，配置参考 https://vitejs.dev/config/
+1、去掉 electron-webpack，electron-webpack-ts 依赖
 
-4、src/main/tsconfig.json变为可选
+2、主进程文件 src/main/main.ts 变更为 src/main/index.ts
+
+3、删除 mainWebpackConfig，增加 viteConfig，配置参考 https://vitejs.dev/config/
+
+4、src/main/tsconfig.json 变为可选
+
+5、rendererTarget 的默认值设置 web（1.x 为 electron-renderer），在 Electron 中设置 nodeIntegration 为 true 时，rendererTarget 需要设置为 electron-renderer
 
 ### 开发
 
@@ -82,9 +85,9 @@ $ umi build electron --win --armv7l  //arm32位
 $ umi build electron --win --arm64   //arm64位
 ```
 
-### 使用node环境下运行的模块
+### 使用 node 环境下运行的模块
 
-例：使用serialport插件
+例：使用 serialport 插件
 
 ```
 $ npm i serialport @types/serialport -S
@@ -96,18 +99,28 @@ $ npm i serialport @types/serialport -S
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  electronBuilder: {            //可选参数
-    mainSrc: 'src/main',        //默认主进程目录
-    preloadSrc: 'src/preload',  //默认preload目录，可选，不需要可删除
-    routerMode: 'hash',         //路由 只能是hash或memory
+  electronBuilder: {
+    //可选参数
+    buildType: 'webpack', //webpack或vite，vite构建速度更快，但兼容性有问题
+    mainSrc: 'src/main', //默认主进程目录
+    preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
+    routerMode: 'hash', //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
-    externals: ['serialport'],  //不配置的无法使用
-    rendererTarget: 'electron-renderer', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
-    viteConfig(config: InlineConfig, type: ConfigType) { //主进程Vite配置
+    externals: ['serialport'], //不配置的无法使用
+    rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
+    viteConfig(config: InlineConfig, type: ConfigType) {
+      //主进程Vite配置
       //配置参考 https://vitejs.dev/config/
-      //ViteConfigType分为main和preload可分别配置
+      //ConfigType分为main和preload可分别配置
     },
-    builderOptions: { //配置参考 https://www.electron.build/configuration/configuration
+    //通过 webpack-chain 的 API 修改 webpack 配置。
+    mainWebpackChain(config: Config, type: ConfigType) {
+      //ConfigType分为main和preload可分别配置
+      // if (type === 'main') {}
+      // if (type === 'preload') {}
+    },
+    builderOptions: {
+      //配置参考 https://www.electron.build/configuration/configuration
       appId: 'com.test.test',
       productName: '测试',
       publish: [
@@ -116,20 +129,20 @@ export default defineConfig({
           url: 'http://localhost/test',
         },
       ],
-    }//electronBuilder参数
+    }, //electronBuilder参数
   },
-  routes: [
-    { path: '/', component: '@/pages/index' },
-  ],
+  routes: [{ path: '/', component: '@/pages/index' }],
 });
 ```
-在Electron10以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时rendererTarget需要设置成web
 
-builderOptions[参考Electron Builder](https://www.electron.build/configuration/configuration)
+在 Electron10 以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时 rendererTarget 需要设置成 web
+
+builderOptions[参考 Electron Builder](https://www.electron.build/configuration/configuration)
 
 ### 已知问题
+
 esbuild 暂不支持 typescript decorator metadata
 
-Vite与typeorm冲突，typeorm在主进程无法使用 
+Vite 与 typeorm 冲突，typeorm 在主进程无法使用
 
-相关Issue https://github.com/evanw/esbuild/issues/257
+相关 Issue https://github.com/evanw/esbuild/issues/257
