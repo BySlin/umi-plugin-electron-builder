@@ -42,6 +42,17 @@ export default function(api: IApi) {
     },
   });
 
+  //初始化模板
+  api.registerCommand({
+    name: 'electron',
+    fn({ args }) {
+      const arg = args._[0];
+      if (arg === 'init') {
+        copyMainProcess();
+      }
+    },
+  });
+
   const isElectron = api.args?._[0] === 'electron';
   if (!isElectron) {
     return;
@@ -176,17 +187,6 @@ export default function(api: IApi) {
           console.error(error);
         });
     }
-  });
-
-  //初始化模板
-  api.registerCommand({
-    name: 'electron',
-    fn({ args }) {
-      const arg = args._[0];
-      if (arg === 'init') {
-        copyMainProcess();
-      }
-    },
   });
 
   /**
