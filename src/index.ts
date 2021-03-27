@@ -108,7 +108,7 @@ export default function(api: IApi) {
       const absOutputDir = getAbsOutputDir(api);
 
       const buildPkg = getRootPkg();
-      buildPkg.main = 'main.cjs';
+      buildPkg.main = 'main.js';
 
       delete buildPkg.scripts;
       delete buildPkg.devDependencies;
