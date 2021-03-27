@@ -55,6 +55,7 @@ export const builtins = [
 
 export const libExternal = [
   'umi-request',
+  'webpack',
 ];
 
 export default [

@@ -21,7 +21,7 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
   const config = new Config();
   config.mode(mode);
   config.devtool(mode === 'development' ? 'inline-source-map' : false);
-  config.resolve.extensions.add('.ts').add('.js');
+  config.resolve.extensions.add('.ts').add('.js').add('.node');
   config.module.rule('ts').test(/\.tsx?$/).use('ts').loader('ts-loader');
 
   config
@@ -46,6 +46,8 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
 
     config.target('electron-main');
 
+    config.output.library('main').libraryTarget('commonjs2');
+
     mainWebpackChain(config, 'main');
   } else {
     config
@@ -59,6 +61,8 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
     config.output.filename('preload.js');
 
     config.target('web');
+
+    config.output.library('preload').libraryTarget('commonjs2');
 
     mainWebpackChain(config, 'preload');
   }
