@@ -39,6 +39,8 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
   const { externals, viteConfig } = api.config
     .electronBuilder as ElectronBuilder;
 
+  const external = [...externalPackages, ...externals];
+
   if (type === 'main') {
     const mainConfig: InlineConfig = {
       mode,
@@ -59,7 +61,7 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
           formats: ['cjs'],
         },
         rollupOptions: {
-          external: [...externalPackages, ...externals],
+          external,
           output: {
             entryFileNames: 'main.js',
           },
@@ -89,7 +91,7 @@ function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
           formats: ['cjs'],
         },
         rollupOptions: {
-          external: [...externalPackages, ...externals],
+          external,
           output: {
             entryFileNames: 'preload.js',
           },
