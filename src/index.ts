@@ -23,7 +23,7 @@ export default function(api: IApi) {
         externals: [],
         outputDir: 'dist_electron',
         routerMode: 'hash',
-        rendererTarget: 'electron-renderer',
+        rendererTarget: 'web',
         viteConfig: () => {
         },
       },
