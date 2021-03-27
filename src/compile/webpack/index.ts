@@ -20,6 +20,7 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
 
   const config = new Config();
   config.mode(mode);
+  config.node.set('__filename', false).set('__dirname', false);
   config.devtool(mode === 'development' ? 'inline-source-map' : false);
   config.resolve.extensions.add('.ts').add('.js').add('.node');
   config.module.rule('ts').exclude.add(/node_modules/);
@@ -60,7 +61,7 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
 
     config.output.filename('preload.js');
 
-    config.target('web');
+    config.target('electron-renderer');
 
     config.output.library('preload').libraryTarget('commonjs2');
 

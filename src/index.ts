@@ -32,6 +32,7 @@ export default function(api: IApi) {
       },
       schema(joi) {
         return joi.object({
+          buildType: joi.string(),
           mainSrc: joi.string(),
           preloadSrc: joi.string(),
           outputDir: joi.string(),
@@ -145,7 +146,7 @@ export default function(api: IApi) {
             'node_modules',
             dep,
             'package.json',
-          )).version;
+          ))?.version;
         }
       }
 
@@ -185,6 +186,7 @@ export default function(api: IApi) {
             }))
             .then(() => {
               api.logger.info('build electron success');
+              process.exit();
             });
         })
         .catch(error => {
