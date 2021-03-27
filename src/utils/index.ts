@@ -9,6 +9,21 @@ import { normalizePath } from 'vite';
 const { execa } = utils;
 
 /**
+ * 防抖动，避免方法重复执行
+ * @param f 方法
+ * @param ms 检测时间
+ */
+export function debounce(f: () => void, ms: number) {
+  let isCoolDown = false;
+  return () => {
+    if (isCoolDown) return;
+    f();
+    isCoolDown = true;
+    setTimeout(() => isCoolDown = false, ms);
+  };
+}
+
+/**
  * 检查是否使用npm
  */
 function isNpm() {
@@ -117,6 +132,9 @@ export interface LineFilter {
   filter(line: string): boolean
 }
 
+/**
+ * 过滤electron输出
+ */
 function filterText(s: string, lineFilter: LineFilter | null) {
   const lines = s
     .trim()

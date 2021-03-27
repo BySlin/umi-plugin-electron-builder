@@ -5,7 +5,15 @@ import { ElectronBuilder, ViteConfigType } from '../types';
 import externalPackages from './external-packages.config';
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc, logProcess, logProcessErrorOutput } from '../utils';
+import {
+  debounce,
+  getBuildDir,
+  getDevBuildDir,
+  getMainSrc,
+  getPreloadSrc,
+  logProcess,
+  logProcessErrorOutput,
+} from '../utils';
 import chalk from 'chalk';
 
 const { chokidar } = utils;
@@ -13,21 +21,6 @@ const { chokidar } = utils;
 const electronPath = require('electron');
 
 const TIMEOUT = 500;
-
-/**
- * 防抖动，避免方法重复执行
- * @param f 方法
- * @param ms 检测时间
- */
-function debounce(f: () => void, ms: number) {
-  let isCoolDown = false;
-  return () => {
-    if (isCoolDown) return;
-    f();
-    isCoolDown = true;
-    setTimeout(() => isCoolDown = false, ms);
-  };
-}
 
 /**
  * 获取vite配置
