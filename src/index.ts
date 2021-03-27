@@ -170,6 +170,7 @@ export default function(api: IApi) {
       api.logger.info('build main process');
       runBuild(api)
         .then(() => {
+          api.logger.info('build main process success');
           // 打包electron
           api.logger.info('build electron');
           const { configureBuildCommand } = require('electron-builder/out/builder');
