@@ -13,7 +13,7 @@ const { chokidar } = utils;
 
 const electronPath = require('electron');
 
-const TIMEOUT = 1000;
+const TIMEOUT = 500;
 
 /**
  * 以开发模式运行
