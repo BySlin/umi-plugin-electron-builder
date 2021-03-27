@@ -69,7 +69,7 @@ export default function(api: IApi) {
       externals,
       routerMode,
     } = config.electronBuilder as ElectronBuilder;
-    config.outputPath = path.join(outputDir, 'bundled');
+    config.outputPath = process.env.APP_ROOT ? path.join('../..', outputDir, 'bundled') : path.join(outputDir, 'bundled');
     config.alias = config.alias || {};
     config.alias['@/common'] = path.join(process.cwd(), 'src/common');
 

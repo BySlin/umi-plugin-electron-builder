@@ -4,7 +4,6 @@ import { IApi, utils } from 'umi';
 import chalk from 'chalk';
 import { ChildProcess } from 'child_process';
 import { ElectronBuilder } from '../types';
-import { normalizePath } from 'vite';
 
 const { execa } = utils;
 

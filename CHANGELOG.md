@@ -1,4 +1,4 @@
-## <small>2.0.0-beta(2021-03-27)</small>
+## <small>2.0.0(2021-03-27)</small>
 
 1、默认不在自动复制模板，需要执行 umi electron init 或 yarn electron:init 复制模板
 

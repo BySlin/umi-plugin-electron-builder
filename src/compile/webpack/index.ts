@@ -78,7 +78,7 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
 export const build = async (config: webpack.Configuration) => {
   return await new Promise<void>((resolve, reject) => {
     const compiler = webpack(config);
-    compiler.watch({}, (err, stats) => {
+    compiler.watch({}, (err) => {
       if (err) {
         reject(err);
       } else {

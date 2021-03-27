@@ -20,7 +20,7 @@ or
 $ yarn add umi-plugin-electron-builder@next --dev
 ```
 
-安装之后会自动生成相关文件
+安装之后执行 umi electron init，初始化主进程文件
 
 默认安装最新版本的 electron
 
@@ -32,6 +32,7 @@ $ yarn add umi-plugin-electron-builder@next --dev
 {
   scripts: {
     'rebuild-deps': 'electron-builder install-app-deps',
+    'electron:init': 'umi electron init',
     'electron:dev': 'umi dev electron',
     'electron:build:win': 'umi build electron --win',
     'electron:build:mac': 'umi build electron --mac',
