@@ -22,8 +22,8 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
   config.mode(mode);
   config.devtool(mode === 'development' ? 'inline-source-map' : false);
   config.resolve.extensions.add('.ts').add('.js').add('.node');
-  config.module.rule('ts').test(/\.tsx?$/).use('ts').loader('ts-loader');
-
+  config.module.rule('ts').exclude.add(/node_modules/);
+  config.module.rule('ts').test(/\.ts?$/).use('ts').loader('ts-loader');
   config
     .resolve
     .alias
