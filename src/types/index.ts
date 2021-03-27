@@ -1,9 +1,13 @@
 import { Configuration } from 'electron-builder';
 import { InlineConfig } from 'vite';
 
-export type ViteConfigType = 'main' | 'preload';
+export type ConfigType = 'main' | 'preload';
+
+export type BuildType = 'vite' | 'webpack';
 
 export interface ElectronBuilder {
+  // 使用Vite或Webpack编译主进程
+  buildType: BuildType;
   // 主进程src目录
   mainSrc: string;
   // preload src目录
@@ -18,6 +22,8 @@ export interface ElectronBuilder {
   routerMode: 'hash' | 'memory';
   // 页面构建目标
   rendererTarget: 'electron-renderer' | 'web';
-  // vite配置
-  viteConfig: (config: InlineConfig, type: ViteConfigType) => void;
+  // 主进程vite配置
+  viteConfig: (config: InlineConfig, type: ConfigType) => void;
+  // 主进程webpack配置
+  mainWebpackConfig: () => void;
 }

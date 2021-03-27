@@ -103,7 +103,7 @@ export default defineConfig({
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'],  //不配置的无法使用
     rendererTarget: 'electron-renderer', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
-    viteConfig(config: InlineConfig, type: ViteConfigType) { //主进程Vite配置
+    viteConfig(config: InlineConfig, type: ConfigType) { //主进程Vite配置
       //配置参考 https://vitejs.dev/config/
       //ViteConfigType分为main和preload可分别配置
     },

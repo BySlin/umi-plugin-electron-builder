@@ -17,6 +17,7 @@ export default function(api: IApi) {
     key: 'electronBuilder',
     config: {
       default: {
+        buildType: 'vite',
         mainSrc: 'src/main',
         preloadSrc: 'src/preload',
         builderOptions: {},
@@ -25,6 +26,8 @@ export default function(api: IApi) {
         routerMode: 'hash',
         rendererTarget: 'web',
         viteConfig: () => {
+        },
+        mainWebpackConfig: () => {
         },
       },
       schema(joi) {
@@ -37,6 +40,7 @@ export default function(api: IApi) {
           routerMode: joi.string(),
           rendererTarget: joi.string(),
           viteConfig: joi.func(),
+          mainWebpackConfig: joi.func(),
         });
       },
     },
@@ -189,9 +193,7 @@ export default function(api: IApi) {
     }
   });
 
-  /**
-   * 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
-   */
+  // 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
   function copyMainProcess() {
     const mainSrc = getMainSrc(api);
     if (!fse.pathExistsSync(mainSrc)) {

@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build, InlineConfig, normalizePath } from 'vite';
 import { IApi, utils } from 'umi';
-import { ElectronBuilder, ViteConfigType } from '../types';
+import { ElectronBuilder, ConfigType } from '../types';
 import externalPackages from './external-packages.config';
 import * as path from 'path';
 import * as fse from 'fs-extra';
@@ -27,7 +27,7 @@ const TIMEOUT = 500;
  * @param api
  * @param type
  */
-function getViteConfig(api: IApi, type: ViteConfigType): InlineConfig {
+function getViteConfig(api: IApi, type: ConfigType): InlineConfig {
   const mode = api.env || 'development';
   const { externals, viteConfig } = api.config
     .electronBuilder as ElectronBuilder;
