@@ -59,6 +59,12 @@ export default (api: IApi) => {
     isUpdateRootPkg = true;
   }
 
+  // 复制模板到主进程目录
+  if (rootPkg.scripts['electron:init'] == null) {
+    rootPkg.scripts['electron:init'] = 'umi electron init';
+    isUpdateRootPkg = true;
+  }
+
   // 以开发环境启动electron
   if (rootPkg.scripts['electron:dev'] == null) {
     rootPkg.scripts['electron:dev'] = 'umi dev electron';

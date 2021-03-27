@@ -76,7 +76,7 @@ export default function(api: IApi) {
     return config;
   });
 
-  // 配置ElectronTarget
+  // 配置页面Target ElectronTarget
   api.chainWebpack((config) => {
     const {
       rendererTarget,
@@ -88,7 +88,6 @@ export default function(api: IApi) {
 
   // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
-    copyMainProcess();
     if (isFirstCompile) {
       api.logger.info('start dev electron');
       runDev(api)
@@ -100,7 +99,6 @@ export default function(api: IApi) {
 
   // build electron
   api.onBuildComplete(({ err }) => {
-    copyMainProcess();
     if (err == null) {
       const { builderOptions, externals } = api.config
         .electronBuilder as ElectronBuilder;
@@ -180,18 +178,29 @@ export default function(api: IApi) {
     }
   });
 
+  //初始化模板
+  api.registerCommand({
+    name: 'electron',
+    fn({ args }) {
+      const arg = args._[0];
+      if (arg === 'init') {
+        copyMainProcess();
+      }
+    },
+  });
+
   /**
    * 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
    */
   function copyMainProcess() {
     const mainSrc = getMainSrc(api);
     if (!fse.pathExistsSync(mainSrc)) {
-      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc);
+      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc, { overwrite: true });
     }
 
     const preloadSrc = getPreloadSrc(api);
     if (!fse.pathExistsSync(preloadSrc)) {
-      fse.copySync(path.join(__dirname, '..', 'template', 'preload'), preloadSrc);
+      fse.copySync(path.join(__dirname, '..', 'template', 'preload'), preloadSrc, { overwrite: true });
     }
   }
 }
