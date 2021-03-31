@@ -11,13 +11,13 @@
 仅支持 umi3
 
 ```
-$ npm i umi-plugin-electron-builder@next --save-dev
+$ npm i umi-plugin-electron-builder --save-dev
 ```
 
 or
 
 ```
-$ yarn add umi-plugin-electron-builder@next --dev
+$ yarn add umi-plugin-electron-builder --dev
 ```
 
 安装之后执行 umi electron init，初始化主进程文件
