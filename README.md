@@ -20,11 +20,19 @@ or
 $ yarn add umi-plugin-electron-builder --dev
 ```
 
-安装之后执行 umi electron init，初始化主进程文件
+安装之后执行 umi electron init 生成主进程文件 src/main/index.ts
+
+```
+$ umi electron init
+```
+
+or
+
+```
+$ yarn electron:init
+```
 
 默认安装最新版本的 electron
-
-自动生成主进程文件 src/main/index.ts
 
 自动在 package.json 增加
 
