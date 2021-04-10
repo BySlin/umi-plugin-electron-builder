@@ -16,7 +16,7 @@
 
 5、删除 mainWebpackConfig
 
-6、增加 viteConfig，配置参考 https://vitejs.dev/config/，在buildType为vite时有效
+6、增加 viteConfig，在buildType为vite时有效，配置参考 https://vitejs.dev/config/
 
 7、增加 mainWebpackChain，在 buildType 为 webpack 时有效
 
