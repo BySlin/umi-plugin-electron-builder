@@ -64,7 +64,7 @@ $ yarn electron:init
 
 2、主进程文件 src/main/main.ts 变更为 src/main/index.ts
 
-3、删除 mainWebpackConfig，增加 viteConfig，配置参考 https://vitejs.dev/config/
+3、删除 mainWebpackConfig，增加mainWebpackChain，使用 webpack-chain 的 API 修改 webpack 配置
 
 4、src/main/tsconfig.json 变为可选
 
