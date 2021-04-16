@@ -2,7 +2,7 @@ import webpack from 'webpack';
 import Config from 'webpack-chain';
 import { IApi } from 'umi';
 import { ConfigType, ElectronBuilder } from '../../types';
-import externalPackages from '../external-packages.config';
+import externalPackages from '../../external-packages.config';
 import path from 'path';
 import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
 

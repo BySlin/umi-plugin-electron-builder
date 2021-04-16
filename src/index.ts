@@ -6,6 +6,8 @@ import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRoot
 import { runBuild, runDev } from './compile';
 import { ElectronBuilder } from './types';
 import setup from './setup';
+import externalPackages from './external-packages.config';
+
 
 const { yargs, lodash: { merge } } = utils;
 
@@ -127,7 +129,7 @@ export default function(api: IApi) {
       delete buildPkg.scripts;
       delete buildPkg.devDependencies;
       Object.keys(buildPkg.dependencies!).forEach((dependency) => {
-        if (!externals.includes(dependency)) {
+        if (!externals.includes(dependency) || !externalPackages.includes(dependency)) {
           delete buildPkg.dependencies![dependency];
         }
       });
