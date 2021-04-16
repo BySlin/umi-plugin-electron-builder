@@ -115,7 +115,7 @@ export default defineConfig({
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
     routerMode: 'hash', //路由 只能是hash或memory
     outputDir: 'dist_electron', //默认打包目录
-    externals: ['serialport'], //不配置的无法使用
+    externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
     viteConfig(config: InlineConfig, type: ConfigType) {
       //主进程Vite配置

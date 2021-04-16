@@ -1,3 +1,7 @@
+## <small>2.0.2(2021-04-16)</small>
+
+1、自动处理一些容易出错的配置，默认将electron-updater包含在打包的package.json中
+
 ## <small>2.0.2(2021-03-27)</small>
 
 1、兼容 Webpack5
