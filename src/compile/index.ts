@@ -30,7 +30,7 @@ export const runDev = async (api: IApi) => {
       spawnProcess = null;
     }
 
-    spawnProcess = spawn(String(electronPath), [path.join(getDevBuildDir(api), 'main.js')]);
+    spawnProcess = spawn(String(electronPath), ['--inspect=5858', path.join(getDevBuildDir(api), 'main.js')]);
     spawnProcess.stdout.on('data', d => logProcess('Electron', d.toString(), chalk.blue));
     logProcessErrorOutput('Electron', spawnProcess);
     spawnProcess.on('close', (code, signal) => {

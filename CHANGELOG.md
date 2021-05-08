@@ -1,3 +1,7 @@
+## <small>2.0.5(2021-05-08)</small>
+
+1、将主进程调试默认打开
+
 ## <small>2.0.4(2021-04-16)</small>
 
 1、自动处理一些容易出错的配置，默认将electron-updater包含在打包的package.json中
