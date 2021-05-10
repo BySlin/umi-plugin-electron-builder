@@ -76,7 +76,7 @@ $ yarn electron:init
 $ umi dev electron
 ```
 
-### 调试
+### 调试（VS Code）
 
 ```json5
 {
