@@ -76,6 +76,28 @@ $ yarn electron:init
 $ umi dev electron
 ```
 
+### 调试
+
+```json5
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "debug electron:dev",
+      "command": "yarn electron:dev",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMapPathOverrides": {
+        "webpack://main/./*": "${workspaceFolder}/src/main/*"
+      },
+      "resolveSourceMapLocations": ["${workspaceFolder}/src/.umi/electron/**"],
+      "autoAttachChildProcesses": true
+    }
+  ]
+}
+```
+
 ### 打包
 
 如报错请在对应系统上打包，路径不能有中文
