@@ -10,7 +10,7 @@
       "sourceMapPathOverrides": {
         "webpack://main/./*": "${workspaceFolder}/src/main/*"
       },
-      "resolveSourceMapLocations": ["${workspaceFolder}/src/.umi/electron/**"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/src/renderer/.umi/electron/**"],
       "autoAttachChildProcesses": true
     }
   ]
