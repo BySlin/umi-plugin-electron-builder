@@ -6,11 +6,16 @@
       "request": "launch",
       "name": "debug electron:dev",
       "command": "yarn electron:dev",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMapPathOverrides": {
         "webpack://main/./*": "${workspaceFolder}/src/main/*"
       },
-      "resolveSourceMapLocations": ["${workspaceFolder}/src/renderer/.umi/electron/**"],
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/src/.umi/electron/**",
+        "${workspaceFolder}/src/renderer/.umi/electron/**"
+      ],
       "autoAttachChildProcesses": true
     }
   ]
