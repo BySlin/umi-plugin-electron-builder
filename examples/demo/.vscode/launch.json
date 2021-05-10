@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "debug electron:dev",
+      "command": "yarn electron:dev",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMapPathOverrides": {
+        "webpack://main/./*": "${workspaceFolder}/src/main/*"
+      },
+      "resolveSourceMapLocations": ["${workspaceFolder}/src/.umi/electron/**"],
+      "autoAttachChildProcesses": true
+    }
+  ]
+}
