@@ -78,6 +78,7 @@ export default function(api: IApi) {
     config.history = config.history || {
       type: routerMode,
     };
+    config.history.type = routerMode;
 
     if (config.history.type === 'browser') {
       config.exportStatic = { dynamicRoot: true, htmlSuffix: true };
