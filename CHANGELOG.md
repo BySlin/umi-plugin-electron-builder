@@ -1,6 +1,6 @@
 ## <small>2.0.6(2021-05-18)</small>
 
-1、routeMode支持browser
+1、routerMode支持browser
 
 ## <small>2.0.5(2021-05-08)</small>
 
