@@ -10,7 +10,7 @@ export interface ElectronBuilder {
     externals: string[];
     outputDir: string;
     builderOptions: Configuration;
-    routerMode: 'hash' | 'memory';
+    routerMode: 'hash' | 'memory' | 'browser';
     rendererTarget: 'electron-renderer' | 'web';
     viteConfig: (config: InlineConfig, type: ConfigType) => void;
     mainWebpackChain: (config: Config, type: ConfigType) => void;

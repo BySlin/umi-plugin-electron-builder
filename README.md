@@ -70,7 +70,8 @@ $ yarn electron:init
 
 4、src/main/tsconfig.json 变为可选
 
-5、rendererTarget 的默认值设置 web（1.x 为 electron-renderer），在 Electron 中设置 nodeIntegration 为 true 时，rendererTarget 需要设置为 electron-renderer
+5、rendererTarget 的默认值设置 web（1.x 为 electron-renderer），在 Electron 中设置 nodeIntegration 为 true 时，rendererTarget 需要设置为
+electron-renderer
 
 ### 开发
 
@@ -142,7 +143,7 @@ export default defineConfig({
     buildType: 'webpack', //webpack或vite，vite构建速度更快，但兼容性有问题
     mainSrc: 'src/main', //默认主进程目录
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
-    routerMode: 'hash', //路由 只能是hash或memory
+    routerMode: 'hash', //路由 hash或memory或browser 仅electron下有效
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
@@ -173,7 +174,8 @@ export default defineConfig({
 });
 ```
 
-在 Electron10 以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时 rendererTarget 需要设置成 web
+在 Electron10 以上使用[contextIsolation](https://www.electronjs.org/docs/tutorial/context-isolation)时 rendererTarget 需要设置成
+web
 
 builderOptions[参考 Electron Builder](https://www.electron.build/configuration/configuration)
 

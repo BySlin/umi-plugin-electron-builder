@@ -75,10 +75,13 @@ export default function(api: IApi) {
     config.alias = config.alias || {};
     config.alias['@/common'] = path.join(process.cwd(), 'src/common');
 
-    // Electron模式下路由更改为hash|memory
-    config.history = {
+    config.history = config.history || {
       type: routerMode,
     };
+
+    if (config.history.type === 'browser') {
+      config.exportStatic = { dynamicRoot: true, htmlSuffix: true };
+    }
 
     const configExternals: any = {
       electron: `require('electron')`,

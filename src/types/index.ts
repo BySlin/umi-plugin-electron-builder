@@ -20,7 +20,7 @@ export interface ElectronBuilder {
   // 打包参数
   builderOptions: Configuration;
   // 路由模式
-  routerMode: 'hash' | 'memory';
+  routerMode: 'hash' | 'memory' | 'browser';
   // 页面构建目标
   rendererTarget: 'electron-renderer' | 'web';
   // 主进程vite配置
