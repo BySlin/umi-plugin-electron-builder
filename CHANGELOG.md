@@ -1,4 +1,4 @@
-## <small>2.0.6(2021-05-18)</small>
+## <small>2.0.7(2021-05-19)</small>
 
 1、routerMode支持browser
 
