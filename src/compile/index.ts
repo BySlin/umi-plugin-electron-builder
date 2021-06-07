@@ -1,6 +1,13 @@
 import { IApi, utils } from 'umi';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { debounce, getDevBuildDir, getMainSrc, getPreloadSrc, logProcess, logProcessErrorOutput } from '../utils';
+import {
+  debounce,
+  getDevBuildDir,
+  getMainSrc,
+  getPreloadSrc,
+  logProcess,
+  logProcessErrorOutput,
+} from '../utils';
 import path from 'path';
 import chalk from 'chalk';
 import { build as viteBuild } from 'vite';
@@ -20,8 +27,7 @@ const TIMEOUT = 500;
  * @param api
  */
 export const runDev = async (api: IApi) => {
-  const { buildType } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { buildType } = api.config.electronBuilder as ElectronBuilder;
 
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
   const runMain = debounce(() => {
@@ -30,8 +36,13 @@ export const runDev = async (api: IApi) => {
       spawnProcess = null;
     }
 
-    spawnProcess = spawn(String(electronPath), ['--inspect=5858', path.join(getDevBuildDir(api), 'main.js')]);
-    spawnProcess.stdout.on('data', d => logProcess('Electron', d.toString(), chalk.blue));
+    spawnProcess = spawn(String(electronPath), [
+      '--inspect=5858',
+      path.join(getDevBuildDir(api), 'main.js'),
+    ]);
+    spawnProcess.stdout.on('data', (d) =>
+      logProcess('Electron', d.toString(), chalk.blue),
+    );
     logProcessErrorOutput('Electron', spawnProcess);
     spawnProcess.on('close', (code, signal) => {
       if (signal != 'SIGINT') {
@@ -40,7 +51,6 @@ export const runDev = async (api: IApi) => {
     });
 
     return spawnProcess;
-
   }, TIMEOUT);
 
   const buildMain = () => {
@@ -68,35 +78,37 @@ export const runDev = async (api: IApi) => {
   const buildPreloadDebounced = debounce(buildPreload, TIMEOUT);
 
   const runPreload = debounce(() => {
-    api.getServer().sockets.forEach(socket => {
-      socket.write(JSON.stringify({
-        type: 'ok',
-        data: {
-          reload: true,
-        },
-      }));
+    api.getServer().sockets.forEach((socket) => {
+      socket.write(
+        JSON.stringify({
+          type: 'ok',
+          data: {
+            reload: true,
+          },
+        }),
+      );
     });
   }, TIMEOUT);
 
-  await Promise.all([
-    buildMain(),
-    buildPreload(),
-  ]);
+  await Promise.all([buildMain(), buildPreload()]);
 
-  const watcher = chokidar.watch([
-    `${getMainSrc(api)}/**`,
-    `${getPreloadSrc(api)}/**`,
-    `${getDevBuildDir(api)}/**`,
-  ], { ignoreInitial: true });
+  const watcher = chokidar.watch(
+    [
+      `${getMainSrc(api)}/**`,
+      `${getPreloadSrc(api)}/**`,
+      `${getDevBuildDir(api)}/**`,
+    ],
+    { ignoreInitial: true },
+  );
 
   watcher
-    .on('unlink', path => {
+    .on('unlink', (path) => {
       if (spawnProcess !== null && path.includes(getDevBuildDir(api))) {
         spawnProcess.kill('SIGINT');
         spawnProcess = null;
       }
     })
-    .on('add', path => {
+    .on('add', (path) => {
       if (path.includes(getDevBuildDir(api))) {
         return runMain();
       }
@@ -131,8 +143,7 @@ export const runDev = async (api: IApi) => {
  * @param api
  */
 export const runBuild = async (api: IApi) => {
-  const { buildType } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { buildType } = api.config.electronBuilder as ElectronBuilder;
   const preloadSrc = getPreloadSrc(api);
 
   if (buildType === 'webpack') {

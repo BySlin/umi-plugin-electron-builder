@@ -32,9 +32,15 @@ export default (api: IApi) => {
   rootPkg = getRootPkg();
 
   // 将@types/node切换到electron对应的@types/node
-  const electronPackageJson = fse.readJSONSync(path.join(nodeModulesPath, 'electron', 'package.json'));
-  if (electronPackageJson.dependencies['@types/node'] !== rootPkg.devDependencies!['@types/node']) {
-    const electronTypesNodeVersion = electronPackageJson.dependencies['@types/node'];
+  const electronPackageJson = fse.readJSONSync(
+    path.join(nodeModulesPath, 'electron', 'package.json'),
+  );
+  if (
+    electronPackageJson.dependencies['@types/node'] !==
+    rootPkg.devDependencies!['@types/node']
+  ) {
+    const electronTypesNodeVersion =
+      electronPackageJson.dependencies['@types/node'];
     installRely(`@types/node@${electronTypesNodeVersion}`);
   }
 
@@ -97,4 +103,4 @@ export default (api: IApi) => {
       JSON.stringify(rootPkg, null, 2),
     );
   }
-}
+};

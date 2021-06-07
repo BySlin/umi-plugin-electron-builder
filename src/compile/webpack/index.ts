@@ -4,15 +4,24 @@ import { IApi } from 'umi';
 import { ConfigType, ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import path from 'path';
-import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
+import {
+  getBuildDir,
+  getDevBuildDir,
+  getMainSrc,
+  getPreloadSrc,
+} from '../../utils';
 
 /**
  * 获取webpack配置
  * @param api
  * @param type
  */
-export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configuration {
-  const mode: 'none' | 'development' | 'production' = api.env === 'development' ? 'development' : 'production';
+export function getWebpackConfig(
+  api: IApi,
+  type: ConfigType,
+): webpack.Configuration {
+  const mode: 'none' | 'development' | 'production' =
+    api.env === 'development' ? 'development' : 'production';
   const { externals, mainWebpackChain } = api.config
     .electronBuilder as ElectronBuilder;
 
@@ -24,24 +33,21 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
   config.devtool(mode === 'development' ? 'inline-source-map' : false);
   config.resolve.extensions.add('.ts').add('.js').add('.node');
   config.module.rule('ts').exclude.add(/node_modules/);
-  config.module.rule('ts')
+  config.module
+    .rule('ts')
     .test(/\.ts?$/)
     .use('ts')
     .loader('ts-loader')
     .options({ transpileOnly: true });
-  config
-    .resolve
-    .alias
-    .set('@/common', path.join(process.cwd(), 'src/common'));
+  config.resolve.alias.set('@/common', path.join(process.cwd(), 'src/common'));
 
   config.externals(external);
-  config.output.path(mode === 'development' ? getDevBuildDir(api) : getBuildDir(api));
+  config.output.path(
+    mode === 'development' ? getDevBuildDir(api) : getBuildDir(api),
+  );
 
   if (type === 'main') {
-    config
-      .resolve
-      .alias
-      .set('@', getMainSrc(api));
+    config.resolve.alias.set('@', getMainSrc(api));
 
     config.context(getMainSrc(api));
 
@@ -55,10 +61,7 @@ export function getWebpackConfig(api: IApi, type: ConfigType): webpack.Configura
 
     mainWebpackChain(config, 'main');
   } else {
-    config
-      .resolve
-      .alias
-      .set('@', getPreloadSrc(api));
+    config.resolve.alias.set('@', getPreloadSrc(api));
     config.context(getPreloadSrc(api));
 
     config.entry('preload').add('./index.ts');

@@ -3,7 +3,12 @@ import { IApi } from 'umi';
 import { ConfigType, ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import * as path from 'path';
-import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
+import {
+  getBuildDir,
+  getDevBuildDir,
+  getMainSrc,
+  getPreloadSrc,
+} from '../../utils';
 
 /**
  * 获取vite配置

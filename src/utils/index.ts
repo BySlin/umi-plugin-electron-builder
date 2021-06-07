@@ -18,7 +18,7 @@ export function debounce(f: () => void, ms: number) {
     if (isCoolDown) return;
     f();
     isCoolDown = true;
-    setTimeout(() => isCoolDown = false, ms);
+    setTimeout(() => (isCoolDown = false), ms);
   };
 }
 
@@ -62,7 +62,6 @@ export function installRely(pkgName: string) {
   }
 }
 
-
 /**
  * 获取根项目package.json
  */
@@ -86,8 +85,7 @@ export function getNodeModulesPath() {
  * @param api
  */
 export function getMainSrc(api: IApi) {
-  const { mainSrc } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { mainSrc } = api.config.electronBuilder as ElectronBuilder;
   return path.join(process.cwd(), mainSrc);
 }
 
@@ -96,8 +94,7 @@ export function getMainSrc(api: IApi) {
  * @param api
  */
 export function getPreloadSrc(api: IApi) {
-  const { preloadSrc } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { preloadSrc } = api.config.electronBuilder as ElectronBuilder;
   return path.join(process.cwd(), preloadSrc);
 }
 
@@ -122,13 +119,12 @@ export function getBuildDir(api: IApi) {
  * @param api
  */
 export function getAbsOutputDir(api: IApi) {
-  const { outputDir } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { outputDir } = api.config.electronBuilder as ElectronBuilder;
   return path.join(process.cwd(), outputDir);
 }
 
 export interface LineFilter {
-  filter(line: string): boolean
+  filter(line: string): boolean;
 }
 
 /**
@@ -138,22 +134,30 @@ function filterText(s: string, lineFilter: LineFilter | null) {
   const lines = s
     .trim()
     .split(/\r?\n/)
-    .filter(it => {
+    .filter((it) => {
       if (lineFilter != null && !lineFilter.filter(it)) {
         return false;
       }
 
       // https://github.com/electron/electron/issues/4420
       // this warning can be safely ignored
-      if (it.includes('Couldn\'t set selectedTextBackgroundColor from default ()')) {
+      if (
+        it.includes("Couldn't set selectedTextBackgroundColor from default ()")
+      ) {
         return false;
       }
-      if (it.includes('Use NSWindow\'s -titlebarAppearsTransparent=YES instead.')) {
+      if (
+        it.includes("Use NSWindow's -titlebarAppearsTransparent=YES instead.")
+      ) {
         return false;
       }
-      return !it.includes('Warning: This is an experimental feature and could change at any time.')
-        && !it.includes('No type errors found')
-        && !it.includes('webpack: Compiled successfully.');
+      return (
+        !it.includes(
+          'Warning: This is an experimental feature and could change at any time.',
+        ) &&
+        !it.includes('No type errors found') &&
+        !it.includes('webpack: Compiled successfully.')
+      );
     });
 
   if (lines.length === 0) {
@@ -162,17 +166,28 @@ function filterText(s: string, lineFilter: LineFilter | null) {
   return '  ' + lines.join(`\n  `) + '\n';
 }
 
-export function logProcessErrorOutput(label: 'Electron' | 'Renderer' | 'Main', childProcess: ChildProcess) {
-  childProcess.stderr!!.on('data', data => {
+export function logProcessErrorOutput(
+  label: 'Electron' | 'Renderer' | 'Main',
+  childProcess: ChildProcess,
+) {
+  childProcess.stderr!!.on('data', (data) => {
     logProcess(label, data.toString(), chalk.red);
   });
 }
 
-export function logError(label: 'Electron' | 'Renderer' | 'Main', error: Error) {
+export function logError(
+  label: 'Electron' | 'Renderer' | 'Main',
+  error: Error,
+) {
   logProcess(label, error.stack || error.toString(), chalk.red);
 }
 
-export function logProcess(label: 'Electron' | 'Renderer' | 'Main', data: string | Buffer, labelColor: any, lineFilter: LineFilter | null = null) {
+export function logProcess(
+  label: 'Electron' | 'Renderer' | 'Main',
+  data: string | Buffer,
+  labelColor: any,
+  lineFilter: LineFilter | null = null,
+) {
   const LABEL_LENGTH = 28;
   const log = filterText(data.toString(), lineFilter);
   if (log == null || log.length === 0 || log.trim().length === 0) {
@@ -180,9 +195,13 @@ export function logProcess(label: 'Electron' | 'Renderer' | 'Main', data: string
   }
 
   process.stdout.write(
-    labelColor.bold(`┏ ${label} ${'-'.repeat(LABEL_LENGTH - label.length - 1)}`) +
-    '\n\n' + log + '\n' +
-    labelColor.bold(`┗ ${'-'.repeat(LABEL_LENGTH)}`) +
-    '\n',
+    labelColor.bold(
+      `┏ ${label} ${'-'.repeat(LABEL_LENGTH - label.length - 1)}`,
+    ) +
+      '\n\n' +
+      log +
+      '\n' +
+      labelColor.bold(`┗ ${'-'.repeat(LABEL_LENGTH)}`) +
+      '\n',
   );
 }

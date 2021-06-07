@@ -2,16 +2,24 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import type { IApi } from 'umi';
 import { utils } from 'umi';
-import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRootPkg } from './utils';
+import {
+  getAbsOutputDir,
+  getMainSrc,
+  getNodeModulesPath,
+  getPreloadSrc,
+  getRootPkg,
+} from './utils';
 import { runBuild, runDev } from './compile';
 import { ElectronBuilder } from './types';
 import setup from './setup';
 import externalPackages from './external-packages.config';
 
+const {
+  yargs,
+  lodash: { merge },
+} = utils;
 
-const { yargs, lodash: { merge } } = utils;
-
-export default function(api: IApi) {
+export default function (api: IApi) {
   // 检查环境并安装配置
   setup(api);
 
@@ -27,10 +35,8 @@ export default function(api: IApi) {
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'web',
-        viteConfig: () => {
-        },
-        mainWebpackChain: () => {
-        },
+        viteConfig: () => {},
+        mainWebpackChain: () => {},
       },
       schema(joi) {
         return joi.object({
@@ -66,12 +72,11 @@ export default function(api: IApi) {
   }
 
   api.modifyConfig((config) => {
-    const {
-      outputDir,
-      externals,
-      routerMode,
-    } = config.electronBuilder as ElectronBuilder;
-    config.outputPath = process.env.APP_ROOT ? path.join('../..', outputDir, 'bundled') : path.join(outputDir, 'bundled');
+    const { outputDir, externals, routerMode } =
+      config.electronBuilder as ElectronBuilder;
+    config.outputPath = process.env.APP_ROOT
+      ? path.join('../..', outputDir, 'bundled')
+      : path.join(outputDir, 'bundled');
     config.alias = config.alias || {};
     config.alias['@/common'] = path.join(process.cwd(), 'src/common');
 
@@ -100,9 +105,7 @@ export default function(api: IApi) {
 
   // 配置页面Target ElectronTarget
   api.chainWebpack((config) => {
-    const {
-      rendererTarget,
-    } = api.config.electronBuilder as ElectronBuilder;
+    const { rendererTarget } = api.config.electronBuilder as ElectronBuilder;
 
     config.target(rendererTarget);
     return config;
@@ -112,10 +115,9 @@ export default function(api: IApi) {
   api.onDevCompileDone(({ isFirstCompile }) => {
     if (isFirstCompile) {
       api.logger.info('start dev electron');
-      runDev(api)
-        .catch(error => {
-          console.error(error);
-        });
+      runDev(api).catch((error) => {
+        console.error(error);
+      });
     }
   });
 
@@ -135,7 +137,10 @@ export default function(api: IApi) {
 
       //删除不需要的依赖
       Object.keys(buildPkg.dependencies!).forEach((dependency) => {
-        if (!externals.includes(dependency) || !externalPackages.includes(dependency)) {
+        if (
+          !externals.includes(dependency) ||
+          !externalPackages.includes(dependency)
+        ) {
           delete buildPkg.dependencies![dependency];
         }
       });
@@ -151,12 +156,14 @@ export default function(api: IApi) {
         }
       });
 
-      const buildDependencies = [
-        'electron-devtools-installer',
-      ];
+      const buildDependencies = ['electron-devtools-installer'];
 
       for (const dep of buildDependencies) {
-        const depPackageJsonPath = path.join(getNodeModulesPath(), dep, 'package.json');
+        const depPackageJsonPath = path.join(
+          getNodeModulesPath(),
+          dep,
+          'package.json',
+        );
         if (fse.existsSync(depPackageJsonPath)) {
           buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
         } else {
@@ -192,24 +199,25 @@ export default function(api: IApi) {
           api.logger.info('build main process success');
           // 打包electron
           api.logger.info('build electron');
-          const { configureBuildCommand } = require('electron-builder/out/builder');
+          const {
+            configureBuildCommand,
+          } = require('electron-builder/out/builder');
           const builderArgs = yargs
             .command(['build', '*'], 'Build', configureBuildCommand)
             .parse(process.argv);
           require('electron-builder')
-            .build(merge({
-              config: merge(
-                defaultBuildConfig,
-                builderOptions,
-              ),
-              ...builderArgs,
-            }))
+            .build(
+              merge({
+                config: merge(defaultBuildConfig, builderOptions),
+                ...builderArgs,
+              }),
+            )
             .then(() => {
               api.logger.info('build electron success');
               process.exit();
             });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     }
@@ -219,12 +227,18 @@ export default function(api: IApi) {
   function copyMainProcess() {
     const mainSrc = getMainSrc(api);
     if (!fse.pathExistsSync(mainSrc)) {
-      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc, { overwrite: true });
+      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc, {
+        overwrite: true,
+      });
     }
 
     const preloadSrc = getPreloadSrc(api);
     if (!fse.pathExistsSync(preloadSrc)) {
-      fse.copySync(path.join(__dirname, '..', 'template', 'preload'), preloadSrc, { overwrite: true });
+      fse.copySync(
+        path.join(__dirname, '..', 'template', 'preload'),
+        preloadSrc,
+        { overwrite: true },
+      );
     }
   }
 }

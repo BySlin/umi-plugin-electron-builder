@@ -6,11 +6,7 @@
  Therefore, such dependencies should be marked as "external":
  they will not be optimized, will not be included in your bundle, and will be delivered as a separate node module.
  */
-export const external = [
-  'electron',
-  'electron-updater',
-];
-
+export const external = ['electron', 'electron-updater'];
 
 export const builtins = [
   'assert',
@@ -53,12 +49,6 @@ export const builtins = [
   'zlib',
 ];
 
-export const libExternal = [
-  'webpack',
-];
+export const libExternal = ['webpack'];
 
-export default [
-  ...builtins,
-  ...external,
-  ...libExternal,
-];
+export default [...builtins, ...external, ...libExternal];
