@@ -1,3 +1,7 @@
+## <small>2.0.7(2021-06-07)</small>
+
+1、修复macos修改主进程代码会直接退出的bug
+
 ## <small>2.0.7(2021-05-19)</small>
 
 1、routerMode支持browser
