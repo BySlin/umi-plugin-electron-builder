@@ -32,7 +32,7 @@ export const runDev = async (api: IApi) => {
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
   const runMain = debounce(() => {
     if (spawnProcess !== null) {
-      spawnProcess.kill('SIGINT');
+      spawnProcess.kill('SIGKILL');
       spawnProcess = null;
     }
 
@@ -45,7 +45,7 @@ export const runDev = async (api: IApi) => {
     );
     logProcessErrorOutput('Electron', spawnProcess);
     spawnProcess.on('close', (code, signal) => {
-      if (signal != 'SIGINT') {
+      if (signal != 'SIGKILL') {
         process.exit(-1);
       }
     });
