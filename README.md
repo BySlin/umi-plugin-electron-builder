@@ -4,7 +4,7 @@
 
 ## 更新日志
 
-[更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/master/CHANGELOG.md)
+[更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/main/CHANGELOG.md)
 
 [1.x更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/1.x/CHANGELOG.md)
 
