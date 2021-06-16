@@ -143,6 +143,7 @@ export default defineConfig({
     preloadEntry: {
       //默认值 key为preload文件名 值为preload输出文件名
       //输出文件名不能为main.js会和主进程文件名冲突
+      //文件名为preload目录下多文件名
       //使用时输出文件会和主进程在同一目录下 preload: path.join(__dirname, 'preload.js')
       'index.ts': 'preload.js',
     },

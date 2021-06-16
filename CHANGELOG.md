@@ -1,3 +1,7 @@
+## <small>2.1.0(2021-06-16)</small>
+
+1、增加preloadEntry配置，支持多preload
+
 ## <small>2.0.8(2021-06-07)</small>
 
 1、修复macos修改主进程代码会直接退出的bug
