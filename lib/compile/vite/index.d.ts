@@ -1,4 +1,4 @@
 import { InlineConfig } from 'vite';
 import { IApi } from 'umi';
-import { ConfigType } from '../../types';
-export declare function getViteConfig(api: IApi, type: ConfigType): InlineConfig;
+export declare function getMainViteConfig(api: IApi): InlineConfig;
+export declare function getPreloadViteConfig(api: IApi, inputFileName: string, outputFileName: string): InlineConfig;

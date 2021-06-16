@@ -37,6 +37,9 @@ export default function (api: IApi) {
         rendererTarget: 'web',
         viteConfig: () => {},
         mainWebpackChain: () => {},
+        preloadEntry: {
+          'index.ts': 'preload.js',
+        },
       },
       schema(joi) {
         return joi.object({
@@ -50,6 +53,7 @@ export default function (api: IApi) {
           rendererTarget: joi.string(),
           viteConfig: joi.func(),
           mainWebpackChain: joi.func(),
+          preloadEntry: joi.object(),
         });
       },
     },

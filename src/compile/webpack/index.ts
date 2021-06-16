@@ -1,7 +1,7 @@
 import webpack from 'webpack';
 import Config from 'webpack-chain';
 import { IApi } from 'umi';
-import { ConfigType, ElectronBuilder } from '../../types';
+import { ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import path from 'path';
 import {
@@ -11,22 +11,12 @@ import {
   getPreloadSrc,
 } from '../../utils';
 
-/**
- * 获取webpack配置
- * @param api
- * @param type
- */
-export function getWebpackConfig(
-  api: IApi,
-  type: ConfigType,
-): webpack.Configuration {
+function getBaseWebpackConfig(api: IApi): Config {
   const mode: 'none' | 'development' | 'production' =
     api.env === 'development' ? 'development' : 'production';
-  const { externals, mainWebpackChain } = api.config
-    .electronBuilder as ElectronBuilder;
+  const { externals } = api.config.electronBuilder as ElectronBuilder;
 
   const external = [...externalPackages, ...externals];
-
   const config = new Config();
   config.mode(mode);
   config.node.set('__filename', false).set('__dirname', false);
@@ -45,36 +35,46 @@ export function getWebpackConfig(
   config.output.path(
     mode === 'development' ? getDevBuildDir(api) : getBuildDir(api),
   );
+  return config;
+}
 
-  if (type === 'main') {
-    config.resolve.alias.set('@', getMainSrc(api));
+/**
+ * 获取主进程webpack配置
+ * @param api
+ */
+export function getMainWebpackConfig(api: IApi) {
+  const { mainWebpackChain } = api.config.electronBuilder as ElectronBuilder;
+  const config = getBaseWebpackConfig(api);
+  config.resolve.alias.set('@', getMainSrc(api));
+  config.context(getMainSrc(api));
+  config.entry('main').add('./index.ts');
+  config.output.filename('main.js');
+  config.target('electron-main');
+  config.output.library('main').libraryTarget('commonjs2');
+  mainWebpackChain(config, 'main');
+  return config.toConfig();
+}
 
-    config.context(getMainSrc(api));
-
-    config.entry('main').add('./index.ts');
-
-    config.output.filename('main.js');
-
-    config.target('electron-main');
-
-    config.output.library('main').libraryTarget('commonjs2');
-
-    mainWebpackChain(config, 'main');
-  } else {
-    config.resolve.alias.set('@', getPreloadSrc(api));
-    config.context(getPreloadSrc(api));
-
-    config.entry('preload').add('./index.ts');
-
-    config.output.filename('preload.js');
-
-    config.target('electron-renderer');
-
-    config.output.library('preload').libraryTarget('commonjs2');
-
-    mainWebpackChain(config, 'preload');
-  }
-
+/**
+ * 获取preload webpack配置
+ * @param api
+ * @param inputFileName
+ * @param outputFileName
+ */
+export function getPreloadWebpackConfig(
+  api: IApi,
+  inputFileName: string,
+  outputFileName: string,
+): webpack.Configuration {
+  const { mainWebpackChain } = api.config.electronBuilder as ElectronBuilder;
+  const config = getBaseWebpackConfig(api);
+  config.resolve.alias.set('@', getPreloadSrc(api));
+  config.context(getPreloadSrc(api));
+  config.entry('preload').add(`./${inputFileName}`);
+  config.output.filename(outputFileName);
+  config.target('electron-renderer');
+  config.output.library('preload').libraryTarget('commonjs2');
+  mainWebpackChain(config, 'preload');
   return config.toConfig();
 }
 

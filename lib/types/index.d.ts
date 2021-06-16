@@ -14,4 +14,7 @@ export interface ElectronBuilder {
     rendererTarget: 'electron-renderer' | 'web';
     viteConfig: (config: InlineConfig, type: ConfigType) => void;
     mainWebpackChain: (config: Config, type: ConfigType) => void;
+    preloadEntry: {
+        [key: string]: string;
+    };
 }

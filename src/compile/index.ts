@@ -11,16 +11,67 @@ import {
 import path from 'path';
 import chalk from 'chalk';
 import { build as viteBuild } from 'vite';
-import { build as webpackBuild, getWebpackConfig } from './webpack';
+import {
+  build as webpackBuild,
+  getMainWebpackConfig,
+  getPreloadWebpackConfig,
+} from './webpack';
 import * as fse from 'fs-extra';
 import { ElectronBuilder } from '../types';
-import { getViteConfig } from './vite';
+import { getMainViteConfig, getPreloadViteConfig } from './vite';
 
 const { chokidar } = utils;
 
 const electronPath = require('electron');
 
 const TIMEOUT = 500;
+
+const buildMain = (api: IApi) => {
+  const { buildType } = api.config.electronBuilder as ElectronBuilder;
+
+  if (buildType === 'webpack') {
+    return webpackBuild(getMainWebpackConfig(api));
+  } else {
+    return viteBuild(getMainViteConfig(api));
+  }
+};
+
+const buildPreload = (api: IApi): Promise<any> => {
+  const { preloadEntry, buildType } = api.config
+    .electronBuilder as ElectronBuilder;
+
+  //preload目录存在才编译
+  if (fse.pathExistsSync(getPreloadSrc(api))) {
+    const tasks: Promise<any>[] = [];
+    if (buildType === 'webpack') {
+      for (let inputFileName in preloadEntry) {
+        tasks.push(
+          webpackBuild(
+            getPreloadWebpackConfig(
+              api,
+              inputFileName,
+              preloadEntry[inputFileName],
+            ),
+          ),
+        );
+      }
+    } else {
+      for (let inputFileName in preloadEntry) {
+        tasks.push(
+          viteBuild(
+            getPreloadViteConfig(
+              api,
+              inputFileName,
+              preloadEntry[inputFileName],
+            ),
+          ),
+        );
+      }
+    }
+    return Promise.all(tasks);
+  }
+  return Promise.resolve();
+};
 
 /**
  * 以开发模式运行
@@ -53,29 +104,9 @@ export const runDev = async (api: IApi) => {
     return spawnProcess;
   }, TIMEOUT);
 
-  const buildMain = () => {
-    if (buildType === 'webpack') {
-      return webpackBuild(getWebpackConfig(api, 'main'));
-    } else {
-      return viteBuild(getViteConfig(api, 'main'));
-    }
-  };
+  const buildMainDebounced = debounce(() => buildMain(api), TIMEOUT);
 
-  const buildMainDebounced = debounce(buildMain, TIMEOUT);
-
-  const buildPreload = (): Promise<any> => {
-    //preload目录存在才编译
-    if (fse.pathExistsSync(getPreloadSrc(api))) {
-      if (buildType === 'webpack') {
-        return webpackBuild(getWebpackConfig(api, 'preload'));
-      } else {
-        return viteBuild(getViteConfig(api, 'preload'));
-      }
-    }
-    return Promise.resolve();
-  };
-
-  const buildPreloadDebounced = debounce(buildPreload, TIMEOUT);
+  const buildPreloadDebounced = debounce(() => buildPreload(api), TIMEOUT);
 
   const runPreload = debounce(() => {
     api.getServer().sockets.forEach((socket) => {
@@ -90,7 +121,7 @@ export const runDev = async (api: IApi) => {
     });
   }, TIMEOUT);
 
-  await Promise.all([buildMain(), buildPreload()]);
+  await Promise.all([buildMain(api), buildPreload(api)]);
 
   const watcher = chokidar.watch(
     [
@@ -143,18 +174,6 @@ export const runDev = async (api: IApi) => {
  * @param api
  */
 export const runBuild = async (api: IApi) => {
-  const { buildType } = api.config.electronBuilder as ElectronBuilder;
-  const preloadSrc = getPreloadSrc(api);
-
-  if (buildType === 'webpack') {
-    await webpackBuild(getWebpackConfig(api, 'main'));
-    if (fse.pathExistsSync(preloadSrc)) {
-      await webpackBuild(getWebpackConfig(api, 'preload'));
-    }
-  } else {
-    await viteBuild(getViteConfig(api, 'main'));
-    if (fse.pathExistsSync(preloadSrc)) {
-      await viteBuild(getViteConfig(api, 'preload'));
-    }
-  }
+  await buildMain(api);
+  await buildPreload(api);
 };

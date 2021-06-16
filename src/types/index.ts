@@ -27,4 +27,6 @@ export interface ElectronBuilder {
   viteConfig: (config: InlineConfig, type: ConfigType) => void;
   // 主进程webpack配置
   mainWebpackChain: (config: Config, type: ConfigType) => void;
+  // preload配置 key为输入文件名，值为输出文件名
+  preloadEntry: { [key: string]: string };
 }
