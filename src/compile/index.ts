@@ -78,8 +78,6 @@ const buildPreload = (api: IApi): Promise<any> => {
  * @param api
  */
 export const runDev = async (api: IApi) => {
-  const { buildType } = api.config.electronBuilder as ElectronBuilder;
-
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
   const runMain = debounce(() => {
     if (spawnProcess !== null) {
