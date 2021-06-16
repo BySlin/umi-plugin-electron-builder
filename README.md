@@ -2,13 +2,10 @@
 
 <a href="https://www.npmjs.com/package/umi-plugin-electron-builder"><img src="https://img.shields.io/npm/v/umi-plugin-electron-builder.svg?sanitize=true" alt="Version"></a>
 
-## 更新日志
 
 [更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/main/CHANGELOG.md)
 
-[1.x更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/1.x/CHANGELOG.md)
-
-## Installation
+## 安装
 
 仅支持 umi3
 
@@ -57,21 +54,6 @@ $ yarn electron:init
 ### Electron 版本降级
 
 你可以手动将 package.json 中的 electron 修改至低版本，插件与 electron 版本无关
-
-## Usage
-
-### 从 1.x 升级
-
-1、去掉 electron-webpack，electron-webpack-ts 依赖
-
-2、主进程文件 src/main/main.ts 变更为 src/main/index.ts
-
-3、删除 mainWebpackConfig，增加mainWebpackChain，使用 webpack-chain 的 API 修改 webpack 配置
-
-4、src/main/tsconfig.json 变为可选
-
-5、rendererTarget 的默认值设置 web（1.x 为 electron-renderer），在 Electron 中设置 nodeIntegration 为 true 时，rendererTarget 需要设置为
-electron-renderer
 
 ### 开发
 
@@ -132,7 +114,7 @@ $ umi build electron --win --arm64   //arm64位
 $ npm i serialport @types/serialport -S
 ```
 
-.umirc.ts
+### 配置 .umirc.ts
 
 ```javascript
 import { defineConfig } from 'umi';
@@ -157,6 +139,12 @@ export default defineConfig({
       //ConfigType分为main和preload可分别配置
       // if (type === 'main') {}
       // if (type === 'preload') {}
+    },
+    preloadEntry: {
+      //默认值 key为preload文件名 值为preload输出文件名
+      //输出文件名不能为main.js会和主进程文件名冲突
+      //使用时输出文件会和主进程在同一目录下 preload: path.join(__dirname, 'preload.js')
+      'index.ts': 'preload.js',
     },
     builderOptions: {
       //配置参考 https://www.electron.build/configuration/configuration
