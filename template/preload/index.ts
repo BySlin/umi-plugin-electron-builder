@@ -7,4 +7,3 @@ const api: any = {
 };
 
 contextBridge.exposeInMainWorld(apiKey, api);
-
