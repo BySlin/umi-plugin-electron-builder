@@ -34,7 +34,7 @@
     "umi": "^3.5.15"
   },
   "devDependencies": {
-    "@types/node": "^16.4.13",
+    "@types/node": "^14.6.2",
     "@types/react": "^17.0.16",
     "@types/react-dom": "^17.0.9",
     "@umijs/test": "^3.5.15",
@@ -44,7 +44,7 @@
     "prettier": "^2.3.2",
     "react": "17.x",
     "react-dom": "17.x",
-    "umi-plugin-electron-builder": "^2.1.1",
+    "umi-plugin-electron-builder": "^2.1.2",
     "yorkie": "^2.0.0"
   }
 }
