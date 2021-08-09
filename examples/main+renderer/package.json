@@ -28,23 +28,23 @@
     ]
   },
   "dependencies": {
-    "@ant-design/pro-layout": "^6.19.3",
+    "@ant-design/pro-layout": "^6.24.0",
     "@umijs/preset-react": "1.x",
     "cross-env": "^7.0.3",
-    "umi": "^3.4.25"
+    "umi": "^3.5.15"
   },
   "devDependencies": {
-    "@types/node": "^14.6.2",
-    "@types/react": "^17.0.9",
-    "@types/react-dom": "^17.0.6",
-    "@umijs/test": "^3.4.25",
-    "electron": "^13.1.1",
-    "electron-builder": "^22.10.5",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.1",
+    "@types/node": "^16.4.13",
+    "@types/react": "^17.0.16",
+    "@types/react-dom": "^17.0.9",
+    "@umijs/test": "^3.5.15",
+    "electron": "^13.1.8",
+    "electron-builder": "^22.11.7",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.3.2",
     "react": "17.x",
     "react-dom": "17.x",
-    "umi-plugin-electron-builder": "^2.0.8",
+    "umi-plugin-electron-builder": "^2.1.1",
     "yorkie": "^2.0.0"
   }
 }
