@@ -35,6 +35,11 @@ function getBaseWebpackConfig(api: IApi): Config {
   config.output.path(
     mode === 'development' ? getDevBuildDir(api) : getBuildDir(api),
   );
+  config.optimization
+    .minimize(true)
+    .set('emitOnErrors', true)
+    .minimizer('terser')
+    .use(require('terser-webpack-plugin'));
   return config;
 }
 

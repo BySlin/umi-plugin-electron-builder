@@ -1,3 +1,7 @@
+## <small>2.1.1(2021-08-09)</small>
+
+1、修复与Webpack5,msfu的兼容性
+
 ## <small>2.1.0(2021-06-16)</small>
 
 1、增加preloadEntry配置，支持多preload
