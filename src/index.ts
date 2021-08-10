@@ -27,7 +27,7 @@ export default function (api: IApi) {
     key: 'electronBuilder',
     config: {
       default: {
-        buildType: 'webpack',
+        buildType: 'vite',
         mainSrc: 'src/main',
         preloadSrc: 'src/preload',
         builderOptions: {},

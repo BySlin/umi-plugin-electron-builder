@@ -1,3 +1,7 @@
+## <small>2.1.2(2021-08-10)</small>
+
+1、buildType默认设置为vite
+
 ## <small>2.1.2(2021-08-09)</small>
 
 1、修复与Webpack5,msfu的兼容性
