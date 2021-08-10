@@ -1,4 +1,4 @@
-## <small>2.1.2(2021-08-10)</small>
+## <small>2.1.4(2021-08-10)</small>
 
 1、buildType默认设置为vite
 
