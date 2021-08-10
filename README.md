@@ -10,22 +10,10 @@
 仅支持 umi3
 
 ```
-$ npm i umi-plugin-electron-builder --save-dev
-```
-
-or
-
-```
 $ yarn add umi-plugin-electron-builder --dev
 ```
 
 安装之后执行 umi electron init 生成主进程文件 src/main/index.ts
-
-```
-$ umi electron init
-```
-
-or
 
 ```
 $ yarn electron:init
