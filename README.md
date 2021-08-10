@@ -110,7 +110,7 @@ import { defineConfig } from 'umi';
 export default defineConfig({
   electronBuilder: {
     //可选参数
-    buildType: 'webpack', //webpack或vite，vite构建速度更快，但兼容性有问题
+    buildType: 'vite', //webpack或vite，当编译出现问题，可尝试切换为webpack
     mainSrc: 'src/main', //默认主进程目录
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
     routerMode: 'hash', //路由 hash或memory或browser 仅electron下有效
