@@ -99,7 +99,7 @@ $ umi build electron --win --arm64   //arm64位
 例：使用 serialport 插件
 
 ```
-$ npm i serialport @types/serialport -S
+$ yarn add serialport @types/serialport
 ```
 
 ### 配置 .umirc.ts
