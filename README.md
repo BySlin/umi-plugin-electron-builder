@@ -46,7 +46,7 @@ $ yarn electron:init
 ### 开发
 
 ```
-$ umi dev electron
+$ yarn electron:dev
 ```
 
 ### 调试主进程（VS Code）
