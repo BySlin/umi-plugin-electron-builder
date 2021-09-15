@@ -4,6 +4,7 @@ import {
   debounce,
   getDevBuildDir,
   getMainSrc,
+  getNodeModulesPath,
   getPreloadSrc,
   logProcess,
   logProcessErrorOutput,
@@ -21,8 +22,6 @@ import { ElectronBuilder } from '../types';
 import { getMainViteConfig, getPreloadViteConfig } from './vite';
 
 const { chokidar } = utils;
-
-const electronPath = require('electron');
 
 const TIMEOUT = 500;
 
@@ -78,6 +77,13 @@ const buildPreload = (api: IApi): Promise<any> => {
  * @param api
  */
 export const runDev = async (api: IApi) => {
+  const electronPath = path.join(
+    getNodeModulesPath(),
+    'electron',
+    'dist',
+    'electron.exe',
+  );
+
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
   const runMain = debounce(() => {
     if (spawnProcess !== null) {
