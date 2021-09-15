@@ -1,3 +1,7 @@
+## <small>2.1.5(2021-09-15)</small>
+
+1、修复electron降级版本无法覆盖的bug
+
 ## <small>2.1.4(2021-08-10)</small>
 
 1、buildType默认设置为vite

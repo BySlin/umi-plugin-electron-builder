@@ -54,11 +54,11 @@ export function installRely(pkgName: string) {
     },
   };
   if (isNpm()) {
-    execa.commandSync(`npm i ${pkgName} --save-dev`, commandOpts);
+    execa.commandSync(`npm i ${pkgName}`, commandOpts);
   } else if (isYarn()) {
-    execa.commandSync(`yarn add ${pkgName} --dev`, commandOpts);
+    execa.commandSync(`yarn add ${pkgName}`, commandOpts);
   } else {
-    execa.commandSync(`yarn add ${pkgName} --dev`, commandOpts);
+    execa.commandSync(`yarn add ${pkgName}`, commandOpts);
   }
 }
 
