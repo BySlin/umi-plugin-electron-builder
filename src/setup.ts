@@ -18,7 +18,7 @@ export default (api: IApi) => {
   const installDependencies = [];
   for (const dep of requiredDependencies) {
     // 通过package.json检查依赖是否安装
-    if (rootPkg.devDependencies[dep] == null) {
+    if (rootPkg.dependencies[dep] == null) {
       installDependencies.push(dep);
     }
   }
@@ -37,7 +37,7 @@ export default (api: IApi) => {
   );
   if (
     electronPackageJson.dependencies['@types/node'] !==
-    rootPkg.devDependencies!['@types/node']
+    rootPkg.dependencies!['@types/node']
   ) {
     const electronTypesNodeVersion =
       electronPackageJson.dependencies['@types/node'];
