@@ -136,7 +136,7 @@ export default defineConfig({
       // if (type === 'main') {}
       // if (type === 'preload') {}
     },
-    //2.1.8新增
+    //2.1.8新增 开启自定义主进程日志时，你需要自己过滤electron无用日志
     logProcess(text: string, type: LogType) {
       // if (type === 'normal') {
       //   logProcess('Main', log, chalk.blue);
