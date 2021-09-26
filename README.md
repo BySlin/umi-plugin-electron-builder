@@ -136,13 +136,13 @@ export default defineConfig({
       // if (type === 'main') {}
       // if (type === 'preload') {}
     },
-    //2.1.8新增 开启自定义主进程日志时，你需要自己过滤electron无用日志
+    //2.1.9新增 开启自定义主进程日志时
     logProcess(log: string, type: LogType) {
-      // if (type === 'normal') {
-      //   logProcess('Main', log, chalk.blue);
-      // } else if (type === 'error') {
-      //   logProcess('Main', log, chalk.red);
-      // }
+      if (type === 'normal') {
+        console.log(log);
+      } else if (type === 'error') {
+        console.error(log);
+      }
     },
     builderOptions: {
       //配置参考 https://www.electron.build/configuration/configuration

@@ -2,7 +2,6 @@ import path from 'path';
 import * as fse from 'fs-extra';
 import { IApi, utils } from 'umi';
 import chalk from 'chalk';
-import { ChildProcess } from 'child_process';
 import { ElectronBuilder } from '../types';
 
 const { execa } = utils;
@@ -123,22 +122,14 @@ export function getAbsOutputDir(api: IApi) {
   return path.join(process.cwd(), outputDir);
 }
 
-export interface LineFilter {
-  filter(line: string): boolean;
-}
-
 /**
  * 过滤electron输出
  */
-function filterText(s: string, lineFilter: LineFilter | null) {
+export function filterText(s: string) {
   const lines = s
     .trim()
     .split(/\r?\n/)
     .filter((it) => {
-      if (lineFilter != null && !lineFilter.filter(it)) {
-        return false;
-      }
-
       // https://github.com/electron/electron/issues/4420
       // this warning can be safely ignored
       if (
@@ -149,6 +140,9 @@ function filterText(s: string, lineFilter: LineFilter | null) {
       if (
         it.includes("Use NSWindow's -titlebarAppearsTransparent=YES instead.")
       ) {
+        return false;
+      }
+      if (it.includes('Debugger listening on')) {
         return false;
       }
       return (
@@ -166,15 +160,6 @@ function filterText(s: string, lineFilter: LineFilter | null) {
   return '  ' + lines.join(`\n  `) + '\n';
 }
 
-export function logProcessErrorOutput(
-  label: 'Electron' | 'Renderer' | 'Main',
-  childProcess: ChildProcess,
-) {
-  childProcess.stderr!!.on('data', (data) => {
-    logProcess(label, data.toString(), chalk.red);
-  });
-}
-
 export function logError(
   label: 'Electron' | 'Renderer' | 'Main',
   error: Error,
@@ -184,12 +169,10 @@ export function logError(
 
 export function logProcess(
   label: 'Electron' | 'Renderer' | 'Main',
-  data: string | Buffer,
+  log: string,
   labelColor: any,
-  lineFilter: LineFilter | null = null,
 ) {
   const LABEL_LENGTH = 28;
-  const log = filterText(data.toString(), lineFilter);
   if (log == null || log.length === 0 || log.trim().length === 0) {
     return;
   }

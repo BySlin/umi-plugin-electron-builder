@@ -2,6 +2,7 @@ import { IApi, utils } from 'umi';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import {
   debounce,
+  filterText,
   getDevBuildDir,
   getMainSrc,
   getNodeModulesPath,
@@ -94,11 +95,18 @@ export const runDev = async (api: IApi) => {
       '--inspect=5858',
       path.join(getDevBuildDir(api), 'main.js'),
     ]);
-    spawnProcess.stdout.on('data', (d) => logProcess(d.toString(), 'normal'));
-    spawnProcess.stderr.on('data', (data) => {
-      logProcess(data.toString(), 'error');
+    spawnProcess.stdout.on('data', (data) => {
+      const log = filterText(data.toString());
+      if (log) {
+        logProcess(log, 'normal');
+      }
     });
-
+    spawnProcess.stderr.on('data', (data) => {
+      const log = filterText(data.toString());
+      if (log) {
+        logProcess(log, 'error');
+      }
+    });
     spawnProcess.on('close', (code, signal) => {
       if (signal != 'SIGKILL') {
         process.exit(-1);
