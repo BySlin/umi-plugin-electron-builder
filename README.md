@@ -2,7 +2,6 @@
 
 <a href="https://www.npmjs.com/package/umi-plugin-electron-builder"><img src="https://img.shields.io/npm/v/umi-plugin-electron-builder.svg?sanitize=true" alt="Version"></a>
 
-
 [更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/main/CHANGELOG.md)
 
 ## 安装
@@ -117,6 +116,15 @@ export default defineConfig({
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
+    //2.1.0新增
+    preloadEntry: {
+      //默认值 key为preload文件名 值为preload输出文件名
+      //输出文件名不能为main.js会和主进程文件名冲突
+      //文件名为preload目录下多文件名
+      //多级目录时key为xxxx/xxxx.ts
+      //使用时输出文件会和主进程在同一目录下 preload: path.join(__dirname, 'preload.js')
+      'index.ts': 'preload.js',
+    },
     viteConfig(config: InlineConfig, type: ConfigType) {
       //主进程Vite配置
       //配置参考 https://vitejs.dev/config/
@@ -128,13 +136,13 @@ export default defineConfig({
       // if (type === 'main') {}
       // if (type === 'preload') {}
     },
-    preloadEntry: {
-      //默认值 key为preload文件名 值为preload输出文件名
-      //输出文件名不能为main.js会和主进程文件名冲突
-      //文件名为preload目录下多文件名
-      //多级目录时key为xxxx/xxxx.ts
-      //使用时输出文件会和主进程在同一目录下 preload: path.join(__dirname, 'preload.js')
-      'index.ts': 'preload.js',
+    //2.1.8新增
+    logProcess(text: string, type: LogType) {
+      // if (type === 'normal') {
+      //   logProcess('Main', log, chalk.blue);
+      // } else if (type === 'error') {
+      //   logProcess('Main', log, chalk.red);
+      // }
     },
     builderOptions: {
       //配置参考 https://www.electron.build/configuration/configuration

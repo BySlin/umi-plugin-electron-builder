@@ -8,11 +8,13 @@ import {
   getNodeModulesPath,
   getPreloadSrc,
   getRootPkg,
+  logProcess,
 } from './utils';
 import { runBuild, runDev } from './compile';
-import { ElectronBuilder } from './types';
+import { ElectronBuilder, LogType } from './types';
 import setup from './setup';
 import externalPackages from './external-packages.config';
+import chalk from 'chalk';
 
 const {
   yargs,
@@ -35,10 +37,17 @@ export default function (api: IApi) {
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'web',
-        viteConfig: () => {},
-        mainWebpackChain: () => {},
         preloadEntry: {
           'index.ts': 'preload.js',
+        },
+        viteConfig: () => {},
+        mainWebpackChain: () => {},
+        logProcess: (log: string, type: LogType) => {
+          if (type === 'normal') {
+            logProcess('Main', log, chalk.blue);
+          } else if (type === 'error') {
+            logProcess('Main', log, chalk.red);
+          }
         },
       },
       schema(joi) {
@@ -51,9 +60,10 @@ export default function (api: IApi) {
           builderOptions: joi.object(),
           routerMode: joi.string(),
           rendererTarget: joi.string(),
+          preloadEntry: joi.object(),
           viteConfig: joi.func(),
           mainWebpackChain: joi.func(),
-          preloadEntry: joi.object(),
+          logProcess: joi.func(),
         });
       },
     },

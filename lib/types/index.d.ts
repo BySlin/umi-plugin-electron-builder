@@ -3,6 +3,9 @@ import { InlineConfig } from 'vite';
 import Config from 'webpack-chain';
 export declare type ConfigType = 'main' | 'preload';
 export declare type BuildType = 'vite' | 'webpack';
+export declare type LogType = 'normal' | 'error';
+export declare type RouterMode = 'hash' | 'memory' | 'browser';
+export declare type RendererTarget = 'electron-renderer' | 'web';
 export interface ElectronBuilder {
     buildType: BuildType;
     mainSrc: string;
@@ -10,11 +13,12 @@ export interface ElectronBuilder {
     externals: string[];
     outputDir: string;
     builderOptions: Configuration;
-    routerMode: 'hash' | 'memory' | 'browser';
-    rendererTarget: 'electron-renderer' | 'web';
-    viteConfig: (config: InlineConfig, type: ConfigType) => void;
-    mainWebpackChain: (config: Config, type: ConfigType) => void;
+    routerMode: RouterMode;
+    rendererTarget: RendererTarget;
     preloadEntry: {
         [key: string]: string;
     };
+    viteConfig: (config: InlineConfig, type: ConfigType) => void;
+    mainWebpackChain: (config: Config, type: ConfigType) => void;
+    logProcess: (log: string, type: LogType) => void;
 }

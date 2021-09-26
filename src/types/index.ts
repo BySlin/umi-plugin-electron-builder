@@ -6,6 +6,12 @@ export type ConfigType = 'main' | 'preload';
 
 export type BuildType = 'vite' | 'webpack';
 
+export type LogType = 'normal' | 'error';
+
+export type RouterMode = 'hash' | 'memory' | 'browser';
+
+export type RendererTarget = 'electron-renderer' | 'web';
+
 export interface ElectronBuilder {
   // 使用Vite或Webpack编译主进程
   buildType: BuildType;
@@ -20,13 +26,15 @@ export interface ElectronBuilder {
   // 打包参数
   builderOptions: Configuration;
   // 路由模式
-  routerMode: 'hash' | 'memory' | 'browser';
+  routerMode: RouterMode;
   // 页面构建目标
-  rendererTarget: 'electron-renderer' | 'web';
+  rendererTarget: RendererTarget;
+  // preload配置 key为输入文件名，值为输出文件名
+  preloadEntry: { [key: string]: string };
   // 主进程vite配置
   viteConfig: (config: InlineConfig, type: ConfigType) => void;
   // 主进程webpack配置
   mainWebpackChain: (config: Config, type: ConfigType) => void;
-  // preload配置 key为输入文件名，值为输出文件名
-  preloadEntry: { [key: string]: string };
+  //自定义主进程输出
+  logProcess: (log: string, type: LogType) => void;
 }

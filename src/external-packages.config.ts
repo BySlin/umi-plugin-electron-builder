@@ -49,6 +49,6 @@ export const builtins = [
   'zlib',
 ];
 
-export const libExternal = ['webpack'];
+export const libExternal = ['webpack', 'glob'];
 
 export default [...builtins, ...external, ...libExternal];

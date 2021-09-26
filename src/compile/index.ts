@@ -6,11 +6,8 @@ import {
   getMainSrc,
   getNodeModulesPath,
   getPreloadSrc,
-  logProcess,
-  logProcessErrorOutput,
 } from '../utils';
 import path from 'path';
-import chalk from 'chalk';
 import { build as viteBuild } from 'vite';
 import {
   build as webpackBuild,
@@ -77,6 +74,8 @@ const buildPreload = (api: IApi): Promise<any> => {
  * @param api
  */
 export const runDev = async (api: IApi) => {
+  const { logProcess } = api.config.electronBuilder as ElectronBuilder;
+
   const electronPath = path.join(
     getNodeModulesPath(),
     'electron',
@@ -95,10 +94,11 @@ export const runDev = async (api: IApi) => {
       '--inspect=5858',
       path.join(getDevBuildDir(api), 'main.js'),
     ]);
-    spawnProcess.stdout.on('data', (d) =>
-      logProcess('Electron', d.toString(), chalk.blue),
-    );
-    logProcessErrorOutput('Electron', spawnProcess);
+    spawnProcess.stdout.on('data', (d) => logProcess(d.toString(), 'normal'));
+    spawnProcess.stderr.on('data', (data) => {
+      logProcess(data.toString(), 'error');
+    });
+
     spawnProcess.on('close', (code, signal) => {
       if (signal != 'SIGKILL') {
         process.exit(-1);
