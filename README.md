@@ -136,7 +136,7 @@ export default defineConfig({
       // if (type === 'main') {}
       // if (type === 'preload') {}
     },
-    //2.1.9新增 开启自定义主进程日志时
+    //2.1.10新增 开启自定义主进程日志时
     logProcess(log: string, type: LogType) {
       if (type === 'normal') {
         console.log(log);
