@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -30,23 +30,23 @@
   },
   "dependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
-    "@types/fs-extra": "^9.0.12",
+    "@types/fs-extra": "^9.0.13",
     "cross-env": "^7.0.3",
-    "electron": "^14.0.1",
-    "electron-builder": "^22.11.7",
+    "electron": "^15.3.0",
+    "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
     "fs-extra": "^10.0.0",
     "terser-webpack-plugin": "^5.2.4",
     "ts-loader": "^8.3.0",
-    "typescript": "^4.4.3",
-    "vite": "^2.5.7",
-    "webpack": "^5.52.1",
+    "typescript": "^4.4.4",
+    "vite": "^2.6.10",
+    "webpack": "^5.59.1",
     "webpack-chain": "^6.5.1"
   },
   "devDependencies": {
     "@types/terser-webpack-plugin": "^5.2.0",
-    "father-build": "^1.20.0",
-    "prettier": "^2.4.0",
-    "umi": "^3.5.18"
+    "father-build": "^1.20.1",
+    "prettier": "^2.4.1",
+    "umi": "^3.5.20"
   }
 }

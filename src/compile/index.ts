@@ -77,12 +77,7 @@ const buildPreload = (api: IApi): Promise<any> => {
 export const runDev = async (api: IApi) => {
   const { logProcess } = api.config.electronBuilder as ElectronBuilder;
 
-  const electronPath = path.join(
-    getNodeModulesPath(),
-    'electron',
-    'dist',
-    'electron.exe',
-  );
+  const electronPath = require(path.join(getNodeModulesPath(), 'electron'));
 
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
   const runMain = debounce(() => {
