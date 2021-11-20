@@ -112,7 +112,7 @@ export default defineConfig({
     buildType: 'vite', //webpack或vite，当编译出现问题，可尝试切换为webpack
     mainSrc: 'src/main', //默认主进程目录
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
-    routerMode: 'hash', //路由 hash或memory或browser 仅electron下有效
+    routerMode: 'hash', //路由 hash或memory或browser,仅electron下有效，推荐使用hash
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
