@@ -77,7 +77,7 @@ $ yarn electron:dev
 
 ### 打包
 
-如报错请在对应系统上打包，路径不能有中文
+打包路径不能有中文，electron-builder不能跨平台打包
 
 ```
 //windows
