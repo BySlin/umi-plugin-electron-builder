@@ -75,7 +75,8 @@ const buildPreload = (api: IApi): Promise<any> => {
  * @param api
  */
 export const runDev = async (api: IApi) => {
-  const { logProcess } = api.config.electronBuilder as ElectronBuilder;
+  const { logProcess, debugPort } = api.config
+    .electronBuilder as ElectronBuilder;
 
   const electronPath = require(path.join(getNodeModulesPath(), 'electron'));
 
@@ -87,7 +88,7 @@ export const runDev = async (api: IApi) => {
     }
 
     spawnProcess = spawn(String(electronPath), [
-      '--inspect=5858',
+      `--inspect=${debugPort}`,
       path.join(getDevBuildDir(api), 'main.js'),
     ]);
     spawnProcess.stdout.on('data', (data) => {

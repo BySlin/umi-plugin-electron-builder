@@ -15,6 +15,7 @@ export interface ElectronBuilder {
     builderOptions: Configuration;
     routerMode: RouterMode;
     rendererTarget: RendererTarget;
+    debugPort: number;
     preloadEntry: {
         [key: string]: string;
     };

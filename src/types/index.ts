@@ -29,6 +29,8 @@ export interface ElectronBuilder {
   routerMode: RouterMode;
   // 页面构建目标
   rendererTarget: RendererTarget;
+  // 调试端口
+  debugPort: number;
   // preload配置 key为输入文件名，值为输出文件名
   preloadEntry: { [key: string]: string };
   // 主进程vite配置

@@ -37,6 +37,7 @@ export default function (api: IApi) {
         outputDir: 'dist_electron',
         routerMode: 'hash',
         rendererTarget: 'web',
+        debugPort: 5858,
         preloadEntry: {
           'index.ts': 'preload.js',
         },
@@ -60,6 +61,7 @@ export default function (api: IApi) {
           builderOptions: joi.object(),
           routerMode: joi.string(),
           rendererTarget: joi.string(),
+          debugPort: joi.number(),
           preloadEntry: joi.object(),
           viteConfig: joi.func(),
           mainWebpackChain: joi.func(),
