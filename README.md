@@ -116,6 +116,7 @@ export default defineConfig({
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
+    debugPort: 5858, //主进程调试端口，2.1.12新增
     //2.1.0新增
     preloadEntry: {
       //默认值 key为preload文件名 值为preload输出文件名
