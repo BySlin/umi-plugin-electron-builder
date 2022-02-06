@@ -110,6 +110,8 @@ export default defineConfig({
   electronBuilder: {
     //可选参数
     buildType: 'vite', //webpack或vite，当编译出现问题，可尝试切换为webpack
+    //并行构建，默认关闭，如开启出现问题，请关闭此功能
+    parallelBuild: false, //并行构建，开启时主进程和渲染进程同时编译，2.1.14新增
     mainSrc: 'src/main', //默认主进程目录
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
     routerMode: 'hash', //路由 hash或memory或browser,仅electron下有效，推荐使用hash

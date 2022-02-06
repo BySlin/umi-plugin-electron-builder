@@ -8,4 +8,7 @@ export default defineConfig({
   routes: [{ path: '/', component: '@/pages/index' }],
   mfsu: {},
   webpack5: {},
+  electronBuilder: {
+    parallelBuild: true,
+  },
 });

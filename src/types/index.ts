@@ -15,6 +15,8 @@ export type RendererTarget = 'electron-renderer' | 'web';
 export interface ElectronBuilder {
   // 使用Vite或Webpack编译主进程
   buildType: BuildType;
+  // 并行构建
+  parallelBuild: boolean;
   // 主进程src目录
   mainSrc: string;
   // preload src目录

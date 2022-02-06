@@ -8,6 +8,7 @@ export declare type RouterMode = 'hash' | 'memory' | 'browser';
 export declare type RendererTarget = 'electron-renderer' | 'web';
 export interface ElectronBuilder {
     buildType: BuildType;
+    parallelBuild: boolean;
     mainSrc: string;
     preloadSrc: string;
     externals: string[];

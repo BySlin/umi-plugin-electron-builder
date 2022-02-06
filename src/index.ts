@@ -30,6 +30,7 @@ export default function (api: IApi) {
     config: {
       default: {
         buildType: 'vite',
+        parallelBuild: false,
         mainSrc: 'src/main',
         preloadSrc: 'src/preload',
         builderOptions: {},
@@ -54,6 +55,7 @@ export default function (api: IApi) {
       schema(joi) {
         return joi.object({
           buildType: joi.string(),
+          parallelBuild: joi.boolean(),
           mainSrc: joi.string(),
           preloadSrc: joi.string(),
           outputDir: joi.string(),
@@ -128,8 +130,20 @@ export default function (api: IApi) {
   });
 
   // start dev electron
+  api.onStart(() => {
+    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
+    if (parallelBuild) {
+      api.logger.info('start dev electron');
+      runDev(api).catch((error) => {
+        console.error(error);
+      });
+    }
+  });
+
+  // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
-    if (isFirstCompile) {
+    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
+    if (isFirstCompile && !parallelBuild) {
       api.logger.info('start dev electron');
       runDev(api).catch((error) => {
         console.error(error);

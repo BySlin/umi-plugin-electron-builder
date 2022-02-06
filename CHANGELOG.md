@@ -1,3 +1,7 @@
+## <small>2.1.14(2022-02-06)</small>
+
+1、增加parallelBuild配置，并行构建功能
+
 ## <small>2.1.13(2022-01-22)</small>
 
 1、更新electron依赖
