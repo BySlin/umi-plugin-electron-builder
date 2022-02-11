@@ -1,20 +1,9 @@
 import { IApi, utils } from 'umi';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import {
-  debounce,
-  filterText,
-  getDevBuildDir,
-  getMainSrc,
-  getNodeModulesPath,
-  getPreloadSrc,
-} from '../utils';
+import { debounce, filterText, getDevBuildDir, getMainSrc, getNodeModulesPath, getPreloadSrc } from '../utils';
 import path from 'path';
 import { build as viteBuild } from 'vite';
-import {
-  build as webpackBuild,
-  getMainWebpackConfig,
-  getPreloadWebpackConfig,
-} from './webpack';
+import { build as webpackBuild, getMainWebpackConfig, getPreloadWebpackConfig } from './webpack';
 import * as fse from 'fs-extra';
 import { ElectronBuilder } from '../types';
 import { getMainViteConfig, getPreloadViteConfig } from './vite';
@@ -182,6 +171,8 @@ export const runDev = async (api: IApi) => {
  * @param api
  */
 export const runBuild = async (api: IApi) => {
+  api.logger.info('build main process');
   await buildMain(api);
   await buildPreload(api);
+  api.logger.info('build main process success');
 };
