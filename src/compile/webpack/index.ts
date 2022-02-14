@@ -1,11 +1,12 @@
 import webpack from 'webpack';
 import Config from 'webpack-chain';
-import WebpackBar from 'webpackbar';
 import { IApi } from 'umi';
 import { ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import path from 'path';
 import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
+
+const WebpackBar = require('@umijs/deps/compiled/webpackbar');
 
 function getBaseWebpackConfig(api: IApi): Config {
   const mode: 'none' | 'development' | 'production' =
@@ -84,7 +85,7 @@ export function getPreloadWebpackConfig(
   config.output.library('preload').libraryTarget('commonjs2');
   config.plugin('webpackBar').use(new WebpackBar({
     name: 'electron-preload',
-    color: '#006d75',
+    color: '#eb2f96',
   }));
 
   mainWebpackChain(config, 'preload');

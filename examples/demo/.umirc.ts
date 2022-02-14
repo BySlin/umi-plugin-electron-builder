@@ -9,6 +9,7 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   electronBuilder: {
+    buildType: 'webpack',
     parallelBuild: true,
   },
 });
