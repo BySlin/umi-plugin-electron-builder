@@ -1,15 +1,11 @@
 import webpack from 'webpack';
 import Config from 'webpack-chain';
+import WebpackBar from 'webpackbar';
 import { IApi } from 'umi';
 import { ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import path from 'path';
-import {
-  getBuildDir,
-  getDevBuildDir,
-  getMainSrc,
-  getPreloadSrc,
-} from '../../utils';
+import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
 
 function getBaseWebpackConfig(api: IApi): Config {
   const mode: 'none' | 'development' | 'production' =
@@ -58,6 +54,11 @@ export function getMainWebpackConfig(api: IApi) {
   config.output.filename('main.js');
   config.target('electron-main');
   config.output.library('main').libraryTarget('commonjs2');
+  config.plugin('webpackBar').use(new WebpackBar({
+    name: 'electron-main',
+    color: '#1890ff',
+  }));
+
   mainWebpackChain(config, 'main');
   return config.toConfig();
 }
@@ -81,6 +82,11 @@ export function getPreloadWebpackConfig(
   config.output.filename(outputFileName);
   config.target('electron-renderer');
   config.output.library('preload').libraryTarget('commonjs2');
+  config.plugin('webpackBar').use(new WebpackBar({
+    name: 'electron-preload',
+    color: '#006d75',
+  }));
+
   mainWebpackChain(config, 'preload');
   return config.toConfig();
 }

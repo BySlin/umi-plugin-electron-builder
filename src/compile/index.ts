@@ -8,9 +8,11 @@ import * as fse from 'fs-extra';
 import { ElectronBuilder } from '../types';
 import { getMainViteConfig, getPreloadViteConfig } from './vite';
 
+
 const { chokidar } = utils;
 
 const TIMEOUT = 500;
+
 
 const buildMain = (api: IApi) => {
   const { buildType } = api.config.electronBuilder as ElectronBuilder;
@@ -64,12 +66,11 @@ const buildPreload = (api: IApi): Promise<any> => {
  * @param api
  */
 export const runDev = async (api: IApi) => {
-  const { logProcess, debugPort } = api.config
+  const { logProcess, debugPort, parallelBuild } = api.config
     .electronBuilder as ElectronBuilder;
-
   const electronPath = require(path.join(getNodeModulesPath(), 'electron'));
-
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
+
   const runMain = debounce(() => {
     if (spawnProcess !== null) {
       spawnProcess.kill('SIGKILL');
@@ -118,7 +119,10 @@ export const runDev = async (api: IApi) => {
     });
   }, TIMEOUT);
 
-  await Promise.all([buildMain(api), buildPreload(api)]);
+  // 启动electron前编译主进程
+  if (!parallelBuild) {
+    await Promise.all([buildMain(api), buildPreload(api)]);
+  }
 
   const watcher = chokidar.watch(
     [
@@ -171,8 +175,6 @@ export const runDev = async (api: IApi) => {
  * @param api
  */
 export const runBuild = async (api: IApi) => {
-  api.logger.info('build main process');
   await buildMain(api);
   await buildPreload(api);
-  api.logger.info('build main process success');
 };

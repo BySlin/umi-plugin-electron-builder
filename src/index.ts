@@ -128,26 +128,15 @@ export default function(api: IApi) {
   api.onStart(() => {
     const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
     if (parallelBuild) {
-      const index = process.argv.findIndex(arg => arg === 'electron');
-      const buildType = process.argv[index - 1];
-      if (buildType === 'dev') {
-        api.logger.info('start dev electron');
-        runDev(api).catch((error) => {
-          console.error(error);
-        });
-      } else if (buildType === 'build') {
-        runBuild(api).catch((error) => {
-          console.error(error);
-        });
-      }
+      runBuild(api).catch((error) => {
+        console.error(error);
+      });
     }
   });
 
   // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
-    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
-    if (isFirstCompile && !parallelBuild) {
-      api.logger.info('start dev electron');
+    if (isFirstCompile) {
       runDev(api).catch((error) => {
         console.error(error);
       });
@@ -163,11 +152,11 @@ export default function(api: IApi) {
       if (parallelBuild) {
         buildDist();
       } else {
-        runBuild(api).then(() => {
-          buildDist();
-        }).catch((error) => {
-          console.error(error);
-        });
+        runBuild(api)
+          .then(buildDist)
+          .catch((error) => {
+            console.error(error);
+          });
       }
     }
   });
