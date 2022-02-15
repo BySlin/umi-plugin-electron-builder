@@ -55,10 +55,15 @@ export function getMainWebpackConfig(api: IApi) {
   config.output.filename('main.js');
   config.target('electron-main');
   config.output.library('main').libraryTarget('commonjs2');
-  config.plugin('webpackBar').use(new WebpackBar({
-    name: 'electron-main',
-    color: '#1890ff',
-  }));
+
+  if (process.env.PROGRESS !== 'none') {
+    config
+      .plugin('progress')
+      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
+        name: 'electron-main',
+        color: '#1890ff',
+      }]);
+  }
 
   mainWebpackChain(config, 'main');
   return config.toConfig();
@@ -83,10 +88,15 @@ export function getPreloadWebpackConfig(
   config.output.filename(outputFileName);
   config.target('electron-renderer');
   config.output.library('preload').libraryTarget('commonjs2');
-  config.plugin('webpackBar').use(new WebpackBar({
-    name: 'electron-preload',
-    color: '#eb2f96',
-  }));
+
+  if (process.env.PROGRESS !== 'none') {
+    config
+      .plugin('progress')
+      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
+        name: 'electron-preload',
+        color: '#eb2f96',
+      }]);
+  }
 
   mainWebpackChain(config, 'preload');
   return config.toConfig();

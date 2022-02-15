@@ -119,8 +119,15 @@ export default function(api: IApi) {
   // 配置页面Target ElectronTarget
   api.chainWebpack((config) => {
     const { rendererTarget } = api.config.electronBuilder as ElectronBuilder;
-
     config.target(rendererTarget);
+
+    if (process.env.PROGRESS !== 'none') {
+      config
+        .plugin('progress')
+        .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
+          name: 'electron-renderer',
+        }]);
+    }
     return config;
   });
 
