@@ -1,12 +1,18 @@
 # umi-plugin-electron-builder
 
+本插件提供基于umijs的electron的开发及打包，无需修改项目结构，支持混合项目结构和main+renderer项目结构，仅支持 umijs3
+
+混合项目结构示例 <a href="https://github.com/BySlin/umi-plugin-electron-builder/tree/main/examples/demo">点此访问</a>
+
+main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-electron-builder/tree/main/examples/main%2Brenderer">点此访问</a>
+
+使用混合项目结构时，插件可自动生成项目文件，使用main+renderer项目结构时，请参考示例修改目录结构
+
 <a href="https://www.npmjs.com/package/umi-plugin-electron-builder"><img src="https://img.shields.io/npm/v/umi-plugin-electron-builder.svg?sanitize=true" alt="Version"></a>
 
 [更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/main/CHANGELOG.md)
 
 ## 安装
-
-仅支持 umi3
 
 ```
 $ yarn add umi-plugin-electron-builder --dev
