@@ -28,20 +28,20 @@
     ]
   },
   "dependencies": {
-    "@ant-design/pro-layout": "^6.24.0",
+    "@ant-design/pro-layout": "^6.38.9",
     "@umijs/preset-react": "1.x",
     "cross-env": "^7.0.3",
-    "umi": "^3.5.15"
+    "umi": "^3.5.26"
   },
   "devDependencies": {
-    "@types/node": "^14.6.2",
-    "@types/react": "^17.0.16",
-    "@types/react-dom": "^17.0.9",
-    "@umijs/test": "^3.5.15",
-    "electron": "^13.1.8",
-    "electron-builder": "^22.11.7",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.3.2",
+    "@types/node": "^16.11.26",
+    "@types/react": "17.x",
+    "@types/react-dom": "17.x",
+    "@umijs/test": "^3.5.26",
+    "electron": "^19.0.4",
+    "electron-builder": "^23.0.3",
+    "lint-staged": "^13.0.2",
+    "prettier": "^2.7.1",
     "react": "17.x",
     "react-dom": "17.x",
     "umi-plugin-electron-builder": "^2.1.18",
