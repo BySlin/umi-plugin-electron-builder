@@ -6,7 +6,7 @@ specifiers:
   '@types/terser-webpack-plugin': ^5.2.0
   '@types/yargs': ^17.0.10
   '@umijs/utils': ^4.0.0
-  chalk: ^5.0.1
+  chalk: ^4.1.2
   cross-env: ^7.0.3
   electron: latest
   electron-builder: ^23.1.0
@@ -28,7 +28,7 @@ dependencies:
   '@types/fs-extra': 9.0.13
   '@types/yargs': 17.0.10
   '@umijs/utils': 4.0.2
-  chalk: 5.0.1
+  chalk: 4.1.2
   cross-env: 7.0.3
   electron-builder: 23.1.0
   electron-devtools-installer: 3.2.0
@@ -4425,11 +4425,6 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
-
-  /chalk/5.0.1:
-    resolution: {integrity: sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-    dev: false
 
   /chokidar/3.5.3:
     resolution: {integrity: sha512-Dr3sfKRP6oTcjf2JmUmFJfeVMvXBdegxB0iVQ5eb2V10uFJUCAS8OByZdVAyVb8xXNz3GjjTgj9kLWsZTqE6kw==}

@@ -16,13 +16,30 @@ main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-el
 
 ## 安装
 
-```
+```shell
 $ pnpm i umi-plugin-electron-builder --save-dev
 ```
 
-安装之后执行 umi electron init 生成主进程文件 src/main/index.ts
+umi4需要手动启用插件
 
+```typescript
+import { defineConfig } from "umi";
+
+export default defineConfig({
+  npmClient: "pnpm",
+  plugins: [require.resolve("umi-plugin-electron-builder")],
+});
 ```
+
+配置完成之后，执行
+
+```shell
+$ pnpm postinstall
+```
+
+执行以下指令，生成主进程文件 src/main/index.ts
+
+```shell
 $ pnpm electron:init
 ```
 
