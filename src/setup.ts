@@ -1,13 +1,21 @@
-import path from 'path';
-import { getNodeModulesPath, getRootPkg, installRely } from './utils';
 import * as fse from 'fs-extra';
+import path from 'path';
 import type { IApi } from 'umi';
+import {
+  getNodeModulesPath,
+  getRootPkg,
+  installRely,
+  setNpmClient,
+} from './utils';
 
 /**
  * 检查环境是否满足运行，不满足则自动配置环境
  * @param api
  */
 export default (api: IApi) => {
+  //设置npm客户端
+  setNpmClient(api.userConfig.npmClient);
+
   // 根项目node_modules路径
   const nodeModulesPath = getNodeModulesPath();
   // 依赖安装到根项目

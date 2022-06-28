@@ -1,52 +1,56 @@
-import * as fse from 'fs-extra';
-import * as path from 'path';
-import type { IApi } from 'umi';
-import { utils } from 'umi';
-import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRootPkg, logProcess } from './utils';
-import { runBuild, runDev } from './compile';
-import { ElectronBuilder, LogType } from './types';
-import setup from './setup';
-import externalPackages from './external-packages.config';
+import { lodash } from '@umijs/utils';
 import chalk from 'chalk';
+import * as fse from 'fs-extra';
 
-const {
-  yargs,
-  lodash: { merge },
-} = utils;
+import * as path from 'path';
+import { IApi } from 'umi';
+import yargs from 'yargs';
+import { runBuild, runDev } from './compile';
+import externalPackages from './external-packages.config';
+import setup from './setup';
+import { ElectronBuilder, LogType } from './types';
+import {
+  getAbsOutputDir,
+  getMainSrc,
+  getNodeModulesPath,
+  getPreloadSrc,
+  getRootPkg,
+  logProcess,
+} from './utils';
 
-export default function(api: IApi) {
+const defaultConfig = {
+  buildType: 'vite',
+  parallelBuild: false,
+  mainSrc: 'src/main',
+  preloadSrc: 'src/preload',
+  builderOptions: {},
+  externals: [],
+  outputDir: 'dist_electron',
+  routerMode: 'hash',
+  rendererTarget: 'web',
+  debugPort: 5858,
+  preloadEntry: {
+    'index.ts': 'preload.js',
+  },
+  viteConfig: () => {},
+  mainWebpackChain: () => {},
+  logProcess: (log: string, type: LogType) => {
+    if (type === 'normal') {
+      logProcess('Main', log, chalk.blue);
+    } else if (type === 'error') {
+      logProcess('Main', log, chalk.red);
+    }
+  },
+};
+
+export default function (api: IApi) {
   // 检查环境并安装配置
   setup(api);
 
   api.describe({
     key: 'electronBuilder',
     config: {
-      default: {
-        buildType: 'vite',
-        parallelBuild: false,
-        mainSrc: 'src/main',
-        preloadSrc: 'src/preload',
-        builderOptions: {},
-        externals: [],
-        outputDir: 'dist_electron',
-        routerMode: 'hash',
-        rendererTarget: 'web',
-        debugPort: 5858,
-        preloadEntry: {
-          'index.ts': 'preload.js',
-        },
-        viteConfig: () => {
-        },
-        mainWebpackChain: () => {
-        },
-        logProcess: (log: string, type: LogType) => {
-          if (type === 'normal') {
-            logProcess('Main', log, chalk.blue);
-          } else if (type === 'error') {
-            logProcess('Main', log, chalk.red);
-          }
-        },
-      },
+      default: defaultConfig,
       schema(joi) {
         return joi.object({
           buildType: joi.string(),
@@ -84,7 +88,11 @@ export default function(api: IApi) {
     return;
   }
 
-  api.modifyConfig((config) => {
+  api.modifyConfig((oldConfig) => {
+    // console.log(oldConfig);
+    const config = lodash.merge({ electronBuilder: defaultConfig }, oldConfig);
+    // console.log(config);
+
     const { outputDir, externals, routerMode } =
       config.electronBuilder as ElectronBuilder;
     config.outputPath = process.env.APP_ROOT
@@ -122,11 +130,13 @@ export default function(api: IApi) {
     config.target(rendererTarget);
 
     if (process.env.PROGRESS !== 'none') {
-      config
-        .plugin('progress')
-        .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
-          name: 'electron-renderer',
-        }]);
+      // config
+      //   .plugin('progress')
+      //   .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
+      //     {
+      //       name: 'electron-renderer',
+      //     },
+      //   ]);
     }
     return config;
   });
@@ -152,8 +162,7 @@ export default function(api: IApi) {
 
   // build electron
   api.onBuildComplete(({ err }) => {
-    const { parallelBuild } = api.config
-      .electronBuilder as ElectronBuilder;
+    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
 
     if (err == null) {
       if (parallelBuild) {
@@ -242,16 +251,14 @@ export default function(api: IApi) {
 
     // 打包electron
     api.logger.info('build electron');
-    const {
-      configureBuildCommand,
-    } = require('electron-builder/out/builder');
+    const { configureBuildCommand } = require('electron-builder/out/builder');
     const builderArgs = yargs
       .command(['build', '*'], 'Build', configureBuildCommand)
       .parse(process.argv);
     require('electron-builder')
       .build(
-        merge({
-          config: merge(defaultBuildConfig, builderOptions),
+        lodash.merge({
+          config: lodash.merge(defaultBuildConfig, builderOptions),
           ...builderArgs,
         }),
       )

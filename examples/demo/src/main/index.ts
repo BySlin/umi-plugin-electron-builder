@@ -1,6 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
-import createProtocol from 'umi-plugin-electron-builder/lib/createProtocol';
 import path from 'path';
+import createProtocol from './createProtocol';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';

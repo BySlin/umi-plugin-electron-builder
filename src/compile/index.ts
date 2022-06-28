@@ -1,18 +1,26 @@
-import { IApi, utils } from 'umi';
+import { chokidar } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { debounce, filterText, getDevBuildDir, getMainSrc, getNodeModulesPath, getPreloadSrc } from '../utils';
-import path from 'path';
-import { build as viteBuild } from 'vite';
-import { build as webpackBuild, getMainWebpackConfig, getPreloadWebpackConfig } from './webpack';
 import * as fse from 'fs-extra';
+import path from 'path';
+import { IApi } from 'umi';
+import { build as viteBuild } from 'vite';
 import { ElectronBuilder } from '../types';
+import {
+  debounce,
+  filterText,
+  getDevBuildDir,
+  getMainSrc,
+  getNodeModulesPath,
+  getPreloadSrc,
+} from '../utils';
 import { getMainViteConfig, getPreloadViteConfig } from './vite';
-
-
-const { chokidar } = utils;
+import {
+  build as webpackBuild,
+  getMainWebpackConfig,
+  getPreloadWebpackConfig,
+} from './webpack';
 
 const TIMEOUT = 500;
-
 
 const buildMain = (api: IApi) => {
   const { buildType } = api.config.electronBuilder as ElectronBuilder;
@@ -107,16 +115,16 @@ export const runDev = async (api: IApi) => {
   const buildPreloadDebounced = debounce(() => buildPreload(api), TIMEOUT);
 
   const runPreload = debounce(() => {
-    api.getServer().sockets.forEach((socket) => {
-      socket.write(
-        JSON.stringify({
-          type: 'ok',
-          data: {
-            reload: true,
-          },
-        }),
-      );
-    });
+    // api.getServer().sockets.forEach((socket) => {
+    //   socket.write(
+    //     JSON.stringify({
+    //       type: 'ok',
+    //       data: {
+    //         reload: true,
+    //       },
+    //     }),
+    //   );
+    // });
   }, TIMEOUT);
 
   // 启动electron前编译主进程

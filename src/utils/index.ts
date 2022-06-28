@@ -1,10 +1,21 @@
-import path from 'path';
-import * as fse from 'fs-extra';
-import { IApi, utils } from 'umi';
+import { execa } from '@umijs/utils';
 import chalk from 'chalk';
+import * as fse from 'fs-extra';
+import path from 'path';
+import { IApi } from 'umi';
 import { ElectronBuilder } from '../types';
 
-const { execa } = utils;
+let npmClient = 'pnpm';
+
+/**
+ * 设置npm客户端
+ * @param _npmClient
+ */
+export function setNpmClient(_npmClient: string) {
+  if (_npmClient != null && _npmClient != '') {
+    npmClient = _npmClient;
+  }
+}
 
 /**
  * 防抖动，避免方法重复执行
@@ -22,22 +33,6 @@ export function debounce(f: () => void, ms: number) {
 }
 
 /**
- * 检查是否使用npm
- */
-function isNpm() {
-  const packageLockJsonPath = path.join(process.cwd(), 'package-lock.json');
-  return fse.pathExistsSync(packageLockJsonPath);
-}
-
-/**
- * 检查是否使用yarn
- */
-function isYarn() {
-  const yarnLockPath = path.join(process.cwd(), 'yarn.lock');
-  return fse.pathExistsSync(yarnLockPath);
-}
-
-/**
  * 安装依赖
  * @param pkgName 依赖名
  */
@@ -52,12 +47,19 @@ export function installRely(pkgName: string) {
       FORCE_COLOR: 'true',
     },
   };
-  if (isNpm()) {
-    execa.commandSync(`npm i ${pkgName} --save-dev`, commandOpts);
-  } else if (isYarn()) {
-    execa.commandSync(`yarn add ${pkgName} --dev`, commandOpts);
-  } else {
-    execa.commandSync(`yarn add ${pkgName} --dev`, commandOpts);
+  switch (npmClient) {
+    case 'pnpm':
+      execa.execaCommandSync(`pnpm i ${pkgName} --save-dev`, commandOpts);
+      break;
+    case 'npm':
+      execa.execaCommandSync(`npm i ${pkgName} --save-dev`, commandOpts);
+      break;
+    case 'yarn':
+      execa.execaCommandSync(`yarn add ${pkgName} --dev`, commandOpts);
+      break;
+    default:
+      execa.execaCommandSync(`pnpm i ${pkgName} --save-dev`, commandOpts);
+      break;
   }
 }
 
