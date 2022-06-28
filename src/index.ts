@@ -213,25 +213,25 @@ export default function (api: IApi) {
       }
     });
 
-    const buildDependencies = ['electron-devtools-installer'];
-
-    for (const dep of buildDependencies) {
-      const depPackageJsonPath = path.join(
-        getNodeModulesPath(),
-        dep,
-        'package.json',
-      );
-      if (fse.existsSync(depPackageJsonPath)) {
-        buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
-      } else {
-        buildPkg.dependencies![dep] = require(path.join(
-          process.cwd(),
-          'node_modules',
-          dep,
-          'package.json',
-        ))?.version;
-      }
-    }
+    // const buildDependencies = ['electron-devtools-installer'];
+    //
+    // for (const dep of buildDependencies) {
+    //   const depPackageJsonPath = path.join(
+    //     getNodeModulesPath(),
+    //     dep,
+    //     'package.json',
+    //   );
+    //   if (fse.existsSync(depPackageJsonPath)) {
+    //     buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
+    //   } else {
+    //     buildPkg.dependencies![dep] = require(path.join(
+    //       process.cwd(),
+    //       'node_modules',
+    //       dep,
+    //       'package.json',
+    //     ))?.version;
+    //   }
+    // }
 
     // Prevent electron-builder from installing app deps
     fse.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
