@@ -12,6 +12,8 @@ main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-el
 
 [更新日志](https://github.com/BySlin/umi-plugin-electron-builder/blob/main/CHANGELOG.md)
 
+[umi3请使用2.x版本插件，点此访问](https://github.com/BySlin/umi-plugin-electron-builder/tree/2.x)
+
 ## 安装
 
 ```
@@ -117,14 +119,14 @@ export default defineConfig({
     //可选参数
     buildType: 'vite', //webpack或vite，当编译出现问题，可尝试切换为webpack
     //并行构建，默认关闭，如开启出现问题，请关闭此功能
-    parallelBuild: false, //并行构建，开启时主进程和渲染进程同时编译，2.1.14新增
+    parallelBuild: false, //并行构建，开启时主进程和渲染进程同时编译
     mainSrc: 'src/main', //默认主进程目录
     preloadSrc: 'src/preload', //默认preload目录，可选，不需要可删除
-    routerMode: 'hash', //路由 hash或memory或browser,仅electron下有效，推荐使用hash
+    routerMode: 'hash', //路由 hash或memory,仅electron下有效，推荐使用hash
     outputDir: 'dist_electron', //默认打包目录
     externals: ['serialport'], //node原生模块配置，打包之后找不到包也需要配置在这里
     rendererTarget: 'web', //构建目标electron-renderer或web，使用上下文隔离时，必须设置为web
-    debugPort: 5858, //主进程调试端口，2.1.12新增
+    debugPort: 5858, //主进程调试端口
     //2.1.0新增
     preloadEntry: {
       //默认值 key为preload文件名 值为preload输出文件名

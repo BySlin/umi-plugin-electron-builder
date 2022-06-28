@@ -106,9 +106,10 @@ export default function (api: IApi) {
     };
     config.history.type = routerMode;
 
-    if (config.history.type === 'browser') {
-      config.exportStatic = { dynamicRoot: true, htmlSuffix: true };
-    }
+    //umi4没有此功能
+    // if (config.history.type === 'browser') {
+    //   config.exportStatic = { dynamicRoot: true, htmlSuffix: true };
+    // }
 
     const configExternals: any = {
       electron: `require('electron')`,
