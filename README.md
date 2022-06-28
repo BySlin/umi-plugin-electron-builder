@@ -15,7 +15,7 @@ main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-el
 ## 安装
 
 ```
-$ yarn add umi-plugin-electron-builder --dev
+$ yarn add umi-plugin-electron-builder@2 --dev
 ```
 
 安装之后执行 umi electron init 生成主进程文件 src/main/index.ts
