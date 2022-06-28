@@ -1,4 +1,5 @@
 import { IApi } from 'umi';
+export declare function setNpmClient(_npmClient: string): void;
 export declare function debounce(f: () => void, ms: number): () => void;
 export declare function installRely(pkgName: string): void;
 export declare function getRootPkg(): any;

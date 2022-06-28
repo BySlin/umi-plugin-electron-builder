@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "4.0.0.beta1",
+  "version": "4.0.0-beta1",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,7 @@
     "umi"
   ],
   "authors": [
-    "BySlin <by2292735470@gmail.com>"
+    "BySlin <2292735470@qq.com>"
   ],
   "license": "MIT",
   "bugs": "https://github.com/BySlin/umi-plugin-electron-builder/issues",
@@ -31,7 +31,9 @@
   "dependencies": {
     "@types/electron-devtools-installer": "^2.2.2",
     "@types/fs-extra": "^9.0.13",
+    "@types/yargs": "^17.0.10",
     "@umijs/utils": "^4.0.0",
+    "chalk": "^5.0.1",
     "cross-env": "^7.0.3",
     "electron-builder": "^23.1.0",
     "electron-devtools-installer": "^3.2.0",
