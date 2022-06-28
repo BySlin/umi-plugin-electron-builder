@@ -5,7 +5,6 @@
     "build": "umi build",
     "postinstall": "umi setup",
     "start": "npm run dev",
-    "listPlugin": "umi plugin list",
     "rebuild-deps": "electron-builder install-app-deps",
     "electron:init": "umi electron init",
     "electron:dev": "umi dev electron",

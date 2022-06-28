@@ -1,6 +1,6 @@
 # umi-plugin-electron-builder
 
-本插件提供基于umijs的electron的开发及打包，无需修改项目结构，支持混合项目结构和main+renderer项目结构，仅支持 umijs3
+本插件提供基于umijs的electron的开发及打包，无需修改项目结构，支持混合项目结构和main+renderer项目结构，仅支持 umijs4
 
 混合项目结构示例 <a href="https://github.com/BySlin/umi-plugin-electron-builder/tree/main/examples/demo">点此访问</a>
 
@@ -15,13 +15,13 @@ main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-el
 ## 安装
 
 ```
-$ yarn add umi-plugin-electron-builder --dev
+$ pnpm i umi-plugin-electron-builder --save-dev
 ```
 
 安装之后执行 umi electron init 生成主进程文件 src/main/index.ts
 
 ```
-$ yarn electron:init
+$ pnpm electron:init
 ```
 
 默认安装最新版本的 electron
@@ -51,7 +51,7 @@ $ yarn electron:init
 ### 开发
 
 ```
-$ yarn electron:dev
+$ pnpm electron:dev
 ```
 
 ### 调试主进程（VS Code）
@@ -104,7 +104,7 @@ $ umi build electron --win --arm64   //arm64位
 例：使用 serialport 插件
 
 ```
-$ yarn add serialport @types/serialport
+$ pnpm i serialport @types/serialport
 ```
 
 ### 配置 .umirc.ts
