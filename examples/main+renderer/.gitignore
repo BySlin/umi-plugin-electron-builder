@@ -10,3 +10,5 @@
 /dist
 /.mfsu
 pnpm-lock.yaml
+/src/renderer/.umi
+/src/renderer/.umi-production
