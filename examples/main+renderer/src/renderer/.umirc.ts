@@ -1,8 +1,8 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  fastRefresh: {},
-  routes: [{ path: '/', component: '@/pages/index' }],
+  npmClient: 'pnpm',
+  plugins: [require.resolve('umi-plugin-electron-builder')],
   electronBuilder: {
     rendererTarget: 'web',
     builderOptions: {

@@ -1,14 +1,15 @@
-import React from 'react';
-import { testPrint } from '@/common/out';
+import yayJpg from '../assets/yay.jpg';
 
-const App = (props: any) => {
-  testPrint();
-
+export default function HomePage() {
   return (
     <div>
-      <h1>Page Index</h1>
+      <h2>Yay! Welcome to umi!</h2>
+      <p>
+        <img src={yayJpg} width="388" />
+      </p>
+      <p>
+        To get started, edit <code>pages/index.tsx</code> and save to reload.
+      </p>
     </div>
   );
-};
-
-export default App;
+}
