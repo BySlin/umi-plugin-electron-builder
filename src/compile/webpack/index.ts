@@ -1,7 +1,7 @@
 import path from 'path';
 import { IApi } from 'umi';
-import webpack from 'webpack';
-import Config from 'webpack-chain';
+import webpack from '@umijs/bundler-webpack/compiled/webpack';
+import Config from '@umijs/bundler-webpack/compiled/webpack-5-chain';
 import externalPackages from '../../external-packages.config';
 import { ElectronBuilder } from '../../types';
 import {

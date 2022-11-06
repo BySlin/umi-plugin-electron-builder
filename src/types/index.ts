@@ -1,6 +1,6 @@
 import { Configuration } from 'electron-builder';
 import { InlineConfig } from 'vite';
-import Config from 'webpack-chain';
+import Config from '@umijs/bundler-webpack/compiled/webpack-5-chain';
 
 export type ConfigType = 'main' | 'preload';
 
