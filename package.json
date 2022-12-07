@@ -29,28 +29,26 @@
     "access": "public"
   },
   "dependencies": {
-    "@types/electron-devtools-installer": "^2.2.2",
-    "@types/fs-extra": "^9.0.13",
-    "@types/yargs": "^17.0.13",
-    "@umijs/utils": "^4.0.29",
+    "@umijs/utils": "^4.0.34",
     "chalk": "^4.1.2",
     "cross-env": "^7.0.3",
     "electron-builder": "^23.6.0",
-    "electron-devtools-installer": "^3.2.0",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.1.0",
     "terser-webpack-plugin": "^5.3.6",
-    "ts-loader": "^9.4.1",
-    "typescript": "^4.8.4",
-    "vite": "^3.2.2",
-    "webpack": "^5.74.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.3",
+    "vite": "^3.2.5",
+    "webpack": "^5.75.0",
     "webpack-chain": "^6.5.1",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/yargs": "^17.0.16",
     "@types/terser-webpack-plugin": "^5.2.0",
     "electron": "latest",
     "father": "^4.1.0",
-    "prettier": "^2.7.1",
-    "umi": "^4.0.29"
+    "prettier": "^2.8.0",
+    "umi": "^4.0.34"
   }
 }
