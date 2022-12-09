@@ -45,7 +45,7 @@ $ pnpm electron:init
 
 默认安装最新版本的 electron
 
-自动在 package.json 增加
+自动在 package.json 增加以下配置，使用@umijs/max时，请将以下命令中的umi修改为max
 
 ```json5
 {
