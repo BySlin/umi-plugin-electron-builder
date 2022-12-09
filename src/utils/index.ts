@@ -1,6 +1,4 @@
-import { execa } from '@umijs/utils';
-import chalk from 'chalk';
-import * as fse from 'fs-extra';
+import { chalk, execa, fsExtra } from '@umijs/utils';
 import path from 'path';
 import { IApi } from 'umi';
 import { ElectronBuilder } from '../types';
@@ -67,7 +65,7 @@ export function installRely(pkgName: string) {
  * 获取根项目package.json
  */
 export function getRootPkg() {
-  const pkg = fse.readJSONSync(path.join(process.cwd(), 'package.json'));
+  const pkg = fsExtra.readJSONSync(path.join(process.cwd(), 'package.json'));
   if (pkg.devDependencies == null) {
     pkg.devDependencies = {};
   }

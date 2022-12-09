@@ -1,6 +1,4 @@
-import { lodash } from '@umijs/utils';
-import chalk from 'chalk';
-import * as fse from 'fs-extra';
+import { chalk, fsExtra, lodash } from '@umijs/utils';
 
 import * as path from 'path';
 import { IApi } from 'umi';
@@ -213,30 +211,30 @@ export default function (api: IApi) {
       }
     });
 
-    // const buildDependencies = ['electron-devtools-installer'];
-    //
-    // for (const dep of buildDependencies) {
-    //   const depPackageJsonPath = path.join(
-    //     getNodeModulesPath(),
-    //     dep,
-    //     'package.json',
-    //   );
-    //   if (fse.existsSync(depPackageJsonPath)) {
-    //     buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
-    //   } else {
-    //     buildPkg.dependencies![dep] = require(path.join(
-    //       process.cwd(),
-    //       'node_modules',
-    //       dep,
-    //       'package.json',
-    //     ))?.version;
-    //   }
-    // }
+    //处理内置依赖
+    const buildDependencies: string[] = [];
+    for (const dep of buildDependencies) {
+      const depPackageJsonPath = path.join(
+        getNodeModulesPath(),
+        dep,
+        'package.json',
+      );
+      if (fsExtra.existsSync(depPackageJsonPath)) {
+        buildPkg.dependencies![dep] = require(depPackageJsonPath).version;
+      } else {
+        buildPkg.dependencies![dep] = require(path.join(
+          process.cwd(),
+          'node_modules',
+          dep,
+          'package.json',
+        ))?.version;
+      }
+    }
 
     // Prevent electron-builder from installing app deps
-    fse.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
+    fsExtra.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
 
-    fse.writeFileSync(
+    fsExtra.writeFileSync(
       `${absOutputDir}/bundled/package.json`,
       JSON.stringify(buildPkg, null, 2),
     );
@@ -272,15 +270,19 @@ export default function (api: IApi) {
   // 检测主进程相关文件是否存在,不存在则复制模板到主进程目录
   function copyMainProcess() {
     const mainSrc = getMainSrc(api);
-    if (!fse.pathExistsSync(mainSrc)) {
-      fse.copySync(path.join(__dirname, '..', 'template', 'main'), mainSrc, {
-        overwrite: true,
-      });
+    if (!fsExtra.pathExistsSync(mainSrc)) {
+      fsExtra.copySync(
+        path.join(__dirname, '..', 'template', 'main'),
+        mainSrc,
+        {
+          overwrite: true,
+        },
+      );
     }
 
     const preloadSrc = getPreloadSrc(api);
-    if (!fse.pathExistsSync(preloadSrc)) {
-      fse.copySync(
+    if (!fsExtra.pathExistsSync(preloadSrc)) {
+      fsExtra.copySync(
         path.join(__dirname, '..', 'template', 'preload'),
         preloadSrc,
         { overwrite: true },

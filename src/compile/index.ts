@@ -1,6 +1,5 @@
-import { chokidar } from '@umijs/utils';
+import { chokidar, fsExtra } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import * as fse from 'fs-extra';
 import path from 'path';
 import { IApi } from 'umi';
 import { build as viteBuild } from 'vite';
@@ -37,7 +36,7 @@ const buildPreload = (api: IApi): Promise<any> => {
     .electronBuilder as ElectronBuilder;
 
   //preload目录存在才编译
-  if (fse.pathExistsSync(getPreloadSrc(api))) {
+  if (fsExtra.pathExistsSync(getPreloadSrc(api))) {
     const tasks: Promise<any>[] = [];
     if (buildType === 'webpack') {
       for (let inputFileName in preloadEntry) {

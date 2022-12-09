@@ -1,4 +1,4 @@
-import * as fse from 'fs-extra';
+import { fsExtra } from '@umijs/utils';
 import path from 'path';
 import type { IApi } from 'umi';
 import {
@@ -40,7 +40,7 @@ export default (api: IApi) => {
   rootPkg = getRootPkg();
 
   // 将@types/node切换到electron对应的@types/node
-  const electronPackageJson = fse.readJSONSync(
+  const electronPackageJson = fsExtra.readJSONSync(
     path.join(nodeModulesPath, 'electron', 'package.json'),
   );
   if (
@@ -106,7 +106,7 @@ export default (api: IApi) => {
   // 更新package.json
   if (isUpdateRootPkg) {
     api.logger.info('update package.json');
-    fse.writeFileSync(
+    fsExtra.writeFileSync(
       path.join(process.cwd(), 'package.json'),
       JSON.stringify(rootPkg, null, 2),
     );

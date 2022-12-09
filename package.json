@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "4.0.0-beta6",
+  "version": "4.0.0-beta7",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,26 +29,19 @@
     "access": "public"
   },
   "dependencies": {
-    "@umijs/utils": "^4.0.34",
-    "chalk": "^4.1.2",
-    "cross-env": "^7.0.3",
-    "electron-builder": "^23.6.0",
-    "fs-extra": "^11.1.0",
-    "terser-webpack-plugin": "^5.3.6",
+    "@umijs/bundler-webpack": "^4.0.36",
+    "@umijs/utils": "^4.0.36",
     "ts-loader": "^9.4.2",
-    "typescript": "^4.9.3",
-    "vite": "^3.2.5",
-    "webpack": "^5.75.0",
-    "webpack-chain": "^6.5.1",
+    "vite": "^4.0.0",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.13",
-    "@types/yargs": "^17.0.16",
-    "@types/terser-webpack-plugin": "^5.2.0",
+    "@types/yargs": "^17.0.17",
     "electron": "latest",
-    "father": "^4.1.0",
-    "prettier": "^2.8.0",
-    "umi": "^4.0.34"
+    "electron-builder": "latest",
+    "father": "^4.1.1",
+    "prettier": "^2.8.1",
+    "typescript": "^4.9.4",
+    "umi": "^4.0.36"
   }
 }

@@ -37,13 +37,13 @@ function getBaseWebpackConfig(api: IApi): Config {
   config.output.path(
     mode === 'development' ? getDevBuildDir(api) : getBuildDir(api),
   );
-  if (api.config.mfsu != undefined || api.config.webpack5 != undefined) {
-    config.optimization
-      .minimize(true)
-      .set('emitOnErrors', true)
-      .minimizer('terser')
-      .use(require('terser-webpack-plugin'));
-  }
+
+  // config.optimization
+  //   .minimize(true)
+  //   .set('emitOnErrors', true)
+  //   .minimizer('terser')
+  //   .use(require('@umijs/bundler-webpack/compiled/terser-webpack-plugin'));
+
   return config;
 }
 
