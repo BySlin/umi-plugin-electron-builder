@@ -1,12 +1,14 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "4.0.0-beta7",
+  "version": "4.0.0-beta8",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "dev": "father dev",
     "build": "father build",
-    "publish": "npm publish --tag=next"
+    "build:deps": "father prebundle",
+    "prepublishOnly": "father doctor && npm run build"
   },
   "files": [
     "lib",
@@ -29,19 +31,21 @@
     "access": "public"
   },
   "dependencies": {
-    "@umijs/bundler-webpack": "^4.0.36",
-    "@umijs/utils": "^4.0.36",
-    "ts-loader": "^9.4.2",
-    "vite": "^4.0.0",
-    "yargs": "^17.6.2"
+    "@umijs/bundler-webpack": "latest",
+    "@umijs/utils": "latest",
+    "ts-loader": "latest",
+    "vite": "latest",
+    "yargs": "latest"
+  },
+  "peerDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
   },
   "devDependencies": {
-    "@types/yargs": "^17.0.17",
-    "electron": "latest",
-    "electron-builder": "latest",
-    "father": "^4.1.1",
-    "prettier": "^2.8.1",
-    "typescript": "^4.9.4",
-    "umi": "^4.0.36"
+    "@types/yargs": "latest",
+    "father": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "umi": "latest"
   }
 }
