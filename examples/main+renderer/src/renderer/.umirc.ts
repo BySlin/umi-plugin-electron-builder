@@ -2,7 +2,7 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   npmClient: 'pnpm',
-  plugins: [require.resolve('umi-plugin-electron-builder')],
+  plugins: ['umi-plugin-electron-builder'],
   electronBuilder: {
     rendererTarget: 'web',
     builderOptions: {
