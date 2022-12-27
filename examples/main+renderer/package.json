@@ -31,20 +31,20 @@
     "@ant-design/pro-layout": "^6.38.9",
     "@umijs/preset-react": "1.x",
     "cross-env": "^7.0.3",
-    "umi": "^3.5.26"
+    "umi": "^3.5.36"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
     "@types/react": "17.x",
     "@types/react-dom": "17.x",
-    "@umijs/test": "^3.5.26",
-    "electron": "^19.0.4",
-    "electron-builder": "^23.0.3",
+    "@umijs/test": "^3.5.36",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
     "lint-staged": "^13.0.2",
     "prettier": "^2.7.1",
     "react": "17.x",
     "react-dom": "17.x",
-    "umi-plugin-electron-builder": "^2.1.18",
+    "umi-plugin-electron-builder": "^2.2.0",
     "yorkie": "^2.0.0"
   }
 }

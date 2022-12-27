@@ -1,10 +1,6 @@
 import { app, BrowserWindow, protocol } from 'electron';
-import createProtocol from 'umi-plugin-electron-builder/lib/createProtocol';
-import { testPrint } from '@/common/out';
-import path from 'path';
-// import installExtension, {
-//   REACT_DEVELOPER_TOOLS,
-// } from 'electron-devtools-installer';
+import * as path from 'path';
+import createProtocol from './createProtocol';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 let mainWindow: BrowserWindow;
@@ -12,8 +8,6 @@ let mainWindow: BrowserWindow;
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
-
-testPrint();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -33,9 +27,6 @@ function createWindow() {
 }
 
 app.on('ready', async () => {
-  // if (isDevelopment) {
-  //   await installExtension(REACT_DEVELOPER_TOOLS);
-  // }
   createWindow();
 });
 
