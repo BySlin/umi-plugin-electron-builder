@@ -1,5 +1,7 @@
-export default [
-    {
-        cjs: 'babel',
-    },
-]
+import { defineConfig } from 'father';
+
+export default defineConfig({
+  cjs: {
+    output: 'lib',
+  },
+});

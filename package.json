@@ -1,12 +1,14 @@
 {
   "name": "umi-plugin-electron-builder",
-  "version": "2.1.18",
+  "version": "2.1.19",
   "description": "Umi plugin for electron-builder",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "father-build",
-    "publish": "npm publish --tag=next"
+    "dev": "father dev",
+    "build": "father build",
+    "build:deps": "father prebundle",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "lib",
@@ -20,7 +22,7 @@
     "umi"
   ],
   "authors": [
-    "BySlin <by2292735470@gmail.com>"
+    "BySlin <2292735470@qq.com>"
   ],
   "license": "MIT",
   "bugs": "https://github.com/BySlin/umi-plugin-electron-builder/issues",
@@ -29,24 +31,21 @@
     "access": "public"
   },
   "dependencies": {
-    "@types/electron-devtools-installer": "^2.2.1",
-    "@types/fs-extra": "^9.0.13",
-    "cross-env": "^7.0.3",
-    "electron-builder": "^22.14.13",
-    "electron-devtools-installer": "^3.2.0",
-    "fs-extra": "^10.0.0",
-    "terser-webpack-plugin": "^5.3.1",
-    "ts-loader": "8.3.0",
-    "typescript": "^4.5.5",
-    "vite": "^2.8.0",
-    "webpack": "^5.68.0",
-    "webpack-chain": "^6.5.1"
+    "@umijs/bundler-webpack": "latest-3",
+    "@umijs/deps": "latest",
+    "@umijs/utils": "latest-3",
+    "electron": "latest",
+    "electron-builder": "latest",
+    "ts-loader": "latest",
+    "vite": "latest",
+    "yargs": "latest"
   },
   "devDependencies": {
-    "@types/terser-webpack-plugin": "^5.2.0",
-    "electron": "latest",
-    "father-build": "^1.21.1",
-    "prettier": "^2.5.1",
-    "umi": "^3.5.20"
+    "@types/fs-extra": "latest",
+    "@types/yargs": "latest",
+    "father": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "umi": "latest-3"
   }
 }

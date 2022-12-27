@@ -1,10 +1,9 @@
 import path from 'path';
 import * as fse from 'fs-extra';
 import { IApi, utils } from 'umi';
-import chalk from 'chalk';
 import { ElectronBuilder } from '../types';
 
-const { execa } = utils;
+const { execa, chalk } = utils;
 
 /**
  * 防抖动，避免方法重复执行

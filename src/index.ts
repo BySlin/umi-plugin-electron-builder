@@ -2,19 +2,26 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import type { IApi } from 'umi';
 import { utils } from 'umi';
-import { getAbsOutputDir, getMainSrc, getNodeModulesPath, getPreloadSrc, getRootPkg, logProcess } from './utils';
+import {
+  getAbsOutputDir,
+  getMainSrc,
+  getNodeModulesPath,
+  getPreloadSrc,
+  getRootPkg,
+  logProcess,
+} from './utils';
 import { runBuild, runDev } from './compile';
 import { ElectronBuilder, LogType } from './types';
 import setup from './setup';
 import externalPackages from './external-packages.config';
-import chalk from 'chalk';
 
 const {
   yargs,
+  chalk,
   lodash: { merge },
 } = utils;
 
-export default function(api: IApi) {
+export default function (api: IApi) {
   // 检查环境并安装配置
   setup(api);
 
@@ -35,10 +42,8 @@ export default function(api: IApi) {
         preloadEntry: {
           'index.ts': 'preload.js',
         },
-        viteConfig: () => {
-        },
-        mainWebpackChain: () => {
-        },
+        viteConfig: () => {},
+        mainWebpackChain: () => {},
         logProcess: (log: string, type: LogType) => {
           if (type === 'normal') {
             logProcess('Main', log, chalk.blue);
@@ -124,9 +129,11 @@ export default function(api: IApi) {
     if (process.env.PROGRESS !== 'none') {
       config
         .plugin('progress')
-        .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
-          name: 'electron-renderer',
-        }]);
+        .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
+          {
+            name: 'electron-renderer',
+          },
+        ]);
     }
     return config;
   });
@@ -152,8 +159,7 @@ export default function(api: IApi) {
 
   // build electron
   api.onBuildComplete(({ err }) => {
-    const { parallelBuild } = api.config
-      .electronBuilder as ElectronBuilder;
+    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
 
     if (err == null) {
       if (parallelBuild) {
@@ -203,8 +209,8 @@ export default function(api: IApi) {
       }
     });
 
-    const buildDependencies = ['electron-devtools-installer'];
-
+    //处理内置依赖
+    const buildDependencies: string[] = [];
     for (const dep of buildDependencies) {
       const depPackageJsonPath = path.join(
         getNodeModulesPath(),
@@ -242,9 +248,7 @@ export default function(api: IApi) {
 
     // 打包electron
     api.logger.info('build electron');
-    const {
-      configureBuildCommand,
-    } = require('electron-builder/out/builder');
+    const { configureBuildCommand } = require('electron-builder/out/builder');
     const builderArgs = yargs
       .command(['build', '*'], 'Build', configureBuildCommand)
       .parse(process.argv);

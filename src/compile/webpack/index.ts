@@ -1,12 +1,15 @@
-import webpack from 'webpack';
-import Config from 'webpack-chain';
 import { IApi } from 'umi';
+import webpack from '@umijs/deps/compiled/webpack';
+import Config from '@umijs/deps/compiled/webpack-chain';
 import { ElectronBuilder } from '../../types';
 import externalPackages from '../../external-packages.config';
 import path from 'path';
-import { getBuildDir, getDevBuildDir, getMainSrc, getPreloadSrc } from '../../utils';
-
-const WebpackBar = require('@umijs/deps/compiled/webpackbar');
+import {
+  getBuildDir,
+  getDevBuildDir,
+  getMainSrc,
+  getPreloadSrc,
+} from '../../utils';
 
 function getBaseWebpackConfig(api: IApi): Config {
   const mode: 'none' | 'development' | 'production' =
@@ -37,7 +40,9 @@ function getBaseWebpackConfig(api: IApi): Config {
       .minimize(true)
       .set('emitOnErrors', true)
       .minimizer('terser')
-      .use(require('terser-webpack-plugin'));
+      .use(
+        require('@umijs/bundler-webpack/lib/webpack/plugins/terser-webpack-plugin'),
+      );
   }
   return config;
 }
@@ -59,10 +64,12 @@ export function getMainWebpackConfig(api: IApi) {
   if (process.env.PROGRESS !== 'none') {
     config
       .plugin('progress')
-      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
-        name: 'electron-main',
-        color: '#1890ff',
-      }]);
+      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
+        {
+          name: 'electron-main',
+          color: '#1890ff',
+        },
+      ]);
   }
 
   mainWebpackChain(config, 'main');
@@ -92,10 +99,12 @@ export function getPreloadWebpackConfig(
   if (process.env.PROGRESS !== 'none') {
     config
       .plugin('progress')
-      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
-        name: 'electron-preload',
-        color: '#eb2f96',
-      }]);
+      .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
+        {
+          name: 'electron-preload',
+          color: '#eb2f96',
+        },
+      ]);
   }
 
   mainWebpackChain(config, 'preload');
