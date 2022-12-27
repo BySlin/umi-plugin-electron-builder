@@ -11,8 +11,6 @@ import {
   getPreloadSrc,
 } from '../../utils';
 
-// const WebpackBar = require('@umijs/deps/compiled/webpackbar');
-
 function getBaseWebpackConfig(api: IApi): Config {
   const mode: 'none' | 'development' | 'production' =
     api.env === 'development' ? 'development' : 'production';
@@ -61,14 +59,15 @@ export function getMainWebpackConfig(api: IApi) {
   config.target('electron-main');
   config.output.library('main').libraryTarget('commonjs2');
 
-  if (process.env.PROGRESS !== 'none') {
-    // config
-    //   .plugin('progress')
-    //   .use(require.resolve('@umijs/deps/compiled/webpackbar'), [{
-    //     name: 'electron-main',
-    //     color: '#1890ff',
-    //   }]);
-  }
+  //umijs4已移除进度条
+  // if (process.env.PROGRESS !== 'none') {
+  // config
+  //   .plugin('progress')
+  //   .use(require('@umijs/deps/compiled/webpackbar'), [{
+  //     name: 'electron-main',
+  //     color: '#1890ff',
+  //   }]);
+  // }
 
   mainWebpackChain(config, 'main');
   return config.toConfig();
@@ -94,16 +93,17 @@ export function getPreloadWebpackConfig(
   config.target('electron-renderer');
   config.output.library('preload').libraryTarget('commonjs2');
 
-  if (process.env.PROGRESS !== 'none') {
-    // config
-    //   .plugin('progress')
-    //   .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
-    //     {
-    //       name: 'electron-preload',
-    //       color: '#eb2f96',
-    //     },
-    //   ]);
-  }
+  //umijs4已移除进度条
+  // if (process.env.PROGRESS !== 'none') {
+  // config
+  //   .plugin('progress')
+  //   .use(require.resolve('@umijs/deps/compiled/webpackbar'), [
+  //     {
+  //       name: 'electron-preload',
+  //       color: '#eb2f96',
+  //     },
+  //   ]);
+  // }
 
   mainWebpackChain(config, 'preload');
   return config.toConfig();
