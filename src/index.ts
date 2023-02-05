@@ -9,6 +9,8 @@ import setup from './setup';
 import { ElectronBuilder, LogType } from './types';
 import {
   getAbsOutputDir,
+  getBuildDir,
+  getBundledDir,
   getMainSrc,
   getNodeModulesPath,
   getPreloadSrc,
@@ -230,6 +232,11 @@ export default function (api: IApi) {
         ))?.version;
       }
     }
+
+    const buildDir = getBuildDir(api);
+
+    fsExtra.copySync(buildDir, getBundledDir(api), { overwrite: true });
+    fsExtra.rmSync(buildDir, { force: true });
 
     // Prevent electron-builder from installing app deps
     fsExtra.ensureDirSync(`${absOutputDir}/bundled/node_modules`);

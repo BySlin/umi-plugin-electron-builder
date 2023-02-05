@@ -110,6 +110,14 @@ export function getDevBuildDir(api: IApi) {
  * @param api
  */
 export function getBuildDir(api: IApi) {
+  return path.join(getAbsOutputDir(api), 'electron');
+}
+
+/**
+ * 获取electron打包目录
+ * @param api
+ */
+export function getBundledDir(api: IApi) {
   return path.join(getAbsOutputDir(api), 'bundled');
 }
 
