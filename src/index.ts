@@ -236,7 +236,7 @@ export default function (api: IApi) {
     const buildDir = getBuildDir(api);
 
     fsExtra.copySync(buildDir, getBundledDir(api), { overwrite: true });
-    fsExtra.rmSync(buildDir, { force: true });
+    fsExtra.rmSync(buildDir, { recursive: true, force: true });
 
     // Prevent electron-builder from installing app deps
     fsExtra.ensureDirSync(`${absOutputDir}/bundled/node_modules`);
