@@ -51,22 +51,34 @@ export default function (api: IApi) {
     key: 'electronBuilder',
     config: {
       default: defaultConfig,
-      schema(joi) {
-        return joi.object({
-          buildType: joi.string(),
-          parallelBuild: joi.boolean(),
-          mainSrc: joi.string(),
-          preloadSrc: joi.string(),
-          outputDir: joi.string(),
-          externals: joi.array(),
-          builderOptions: joi.object(),
-          routerMode: joi.string(),
-          rendererTarget: joi.string(),
-          debugPort: joi.number(),
-          preloadEntry: joi.object(),
-          viteConfig: joi.func(),
-          mainWebpackChain: joi.func(),
-          logProcess: joi.func(),
+      schema({ zod }) {
+        return zod.object({
+          buildType: zod.enum(['vite', 'webpack']).optional(),
+          parallelBuild: zod.boolean().optional(),
+          mainSrc: zod.string().optional(),
+          preloadSrc: zod.string().optional(),
+          outputDir: zod.string().optional(),
+          externals: zod.string().array().optional(),
+          builderOptions: zod.record(zod.string(), zod.any()).optional(),
+          routerMode: zod.enum(['hash', 'memory', 'browser']).optional(),
+          rendererTarget: zod.enum(['electron-renderer', 'web']).optional(),
+          debugPort: zod.number().optional(),
+          preloadEntry: zod.record(zod.string(), zod.string()).optional(),
+          viteConfig: zod
+            .function()
+            .args(zod.any(), zod.enum(['main', 'preload']))
+            .returns(zod.void())
+            .optional(),
+          mainWebpackChain: zod
+            .function()
+            .args(zod.any(), zod.enum(['main', 'preload']))
+            .returns(zod.void())
+            .optional(),
+          logProcess: zod
+            .function()
+            .args(zod.string(), zod.enum(['normal', 'error']))
+            .returns(zod.void())
+            .optional(),
         });
       },
     },

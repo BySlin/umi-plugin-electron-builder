@@ -128,8 +128,10 @@ $ pnpm i serialport @types/serialport
 
 ### 配置 .umirc.ts
 
-```javascript
+```typescript
+import Config from '@umijs/bundler-webpack/compiled/webpack-5-chain';
 import { defineConfig } from 'umi';
+import { InlineConfig } from 'vite';
 
 export default defineConfig({
   electronBuilder: {
@@ -153,19 +155,19 @@ export default defineConfig({
       //使用时输出文件会和主进程在同一目录下 preload: path.join(__dirname, 'preload.js')
       'index.ts': 'preload.js',
     },
-    viteConfig(config: InlineConfig, type: ConfigType) {
+    viteConfig(config: InlineConfig, type: "main" | "preload") {
       //主进程Vite配置
       //配置参考 https://vitejs.dev/config/
       //ConfigType分为main和preload可分别配置
     },
     //通过 webpack-chain 的 API 修改 webpack 配置。
-    mainWebpackChain(config: Config, type: ConfigType) {
+    mainWebpackChain(config: Config, type: "main" | "preload") {
       //ConfigType分为main和preload可分别配置
       // if (type === 'main') {}
       // if (type === 'preload') {}
     },
     //2.1.10新增 开启自定义主进程日志时
-    logProcess(log: string, type: LogType) {
+    logProcess(log: string, type: "normal" | "error") {
       if (type === 'normal') {
         console.log(log);
       } else if (type === 'error') {
