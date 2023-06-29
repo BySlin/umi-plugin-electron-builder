@@ -6,7 +6,15 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 let mainWindow: BrowserWindow;
 
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } },
+  {
+    scheme: 'app',
+    privileges: {
+      secure: true,
+      standard: true,
+      supportFetchAPI: true,
+      allowServiceWorkers: true,
+    },
+  },
 ]);
 
 function createWindow() {

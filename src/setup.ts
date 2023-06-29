@@ -85,6 +85,12 @@ export default (api: IApi) => {
     isUpdateRootPkg = true;
   }
 
+  // 打包成文件夹 不封装成安装包
+  if (rootPkg.scripts['electron:dir'] == null) {
+    rootPkg.scripts['electron:dir'] = 'umi build electron --dir';
+    isUpdateRootPkg = true;
+  }
+
   // 打包electron windows平台
   if (rootPkg.scripts['electron:build:win'] == null) {
     rootPkg.scripts['electron:build:win'] = 'umi build electron --win';
