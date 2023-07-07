@@ -207,7 +207,7 @@ export default function (api: IApi) {
     //删除不需要的依赖
     Object.keys(buildPkg.dependencies!).forEach((dependency) => {
       if (
-        !externals.includes(dependency) ||
+        !externals.includes(dependency) &&
         !externalPackages.includes(dependency)
       ) {
         delete buildPkg.dependencies![dependency];
