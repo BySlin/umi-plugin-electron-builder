@@ -10,3 +10,4 @@
 /dist
 /.mfsu
 pnpm-lock.yaml
+yarn.lock

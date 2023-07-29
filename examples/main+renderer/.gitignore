@@ -12,3 +12,4 @@
 pnpm-lock.yaml
 /src/renderer/.umi
 /src/renderer/.umi-production
+yarn.lock

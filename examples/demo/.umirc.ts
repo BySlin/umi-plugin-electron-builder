@@ -1,6 +1,6 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  npmClient: 'pnpm',
+  npmClient: 'yarn',
   plugins: ['umi-plugin-electron-builder'],
 });

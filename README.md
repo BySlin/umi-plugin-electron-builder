@@ -17,7 +17,7 @@ main+renderer项目结构示例 <a href="https://github.com/BySlin/umi-plugin-el
 ## 安装
 
 ```shell
-$ pnpm i umi-plugin-electron-builder --save-dev
+$ yarn add umi-plugin-electron-builder --dev
 ```
 
 umi4需要手动启用插件
@@ -26,7 +26,7 @@ umi4需要手动启用插件
 import { defineConfig } from "umi";
 
 export default defineConfig({
-  npmClient: "pnpm",
+  npmClient: "yarn",
   plugins: ["umi-plugin-electron-builder"],
 });
 ```
@@ -34,13 +34,13 @@ export default defineConfig({
 配置完成之后，执行
 
 ```shell
-$ pnpm postinstall
+$ yarn postinstall
 ```
 
 执行以下指令，生成主进程文件 src/main/index.ts
 
 ```shell
-$ pnpm electron:init
+$ yarn electron:init
 ```
 
 默认安装最新版本的 electron
@@ -70,7 +70,7 @@ $ pnpm electron:init
 ### 开发
 
 ```
-$ pnpm electron:dev
+$ yarn electron:dev
 ```
 
 ### 调试主进程（VS Code）
@@ -123,7 +123,7 @@ $ umi build electron --win --arm64   //arm64位
 例：使用 serialport 插件
 
 ```
-$ pnpm i serialport @types/serialport
+$ yarn add serialport @types/serialport
 ```
 
 ### 配置 .umirc.ts
